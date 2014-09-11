@@ -15,9 +15,7 @@ public class RedmineReader {
     
     public static void read()
     {
-    	System.out.println("before");
     	RedmineManager mgr = new RedmineManager(redmineHost,apiAccessKey);
-    	System.out.println("after");
     	try{
     		tryGetIssues(mgr);
     		mgr.shutdown();
