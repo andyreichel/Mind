@@ -60,6 +60,7 @@ public class GitReader implements SCMReader {
 
 		RevTree tree = getTree(repository);
 		printFile(repository, tree);
+		
 
 	}
 
@@ -69,8 +70,8 @@ public class GitReader implements SCMReader {
 		// now try to find a specific file
 		TreeWalk treeWalk = new TreeWalk(repository);
 		treeWalk.addTree(tree);
-		treeWalk.setRecursive(false);
-		treeWalk.setFilter(PathFilter.create("GitReader.java"));
+		treeWalk.setRecursive(true);
+		treeWalk.setFilter(PathFilter.create("src/main/java/main/java/GitReader.java"));
 		if (!treeWalk.next()) {
 			throw new IllegalStateException(
 					"Did not find expected file 'GitReader.java'");
