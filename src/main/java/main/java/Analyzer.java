@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+
 public class Analyzer {
 	public static void main(String[] args)
 	{
@@ -14,7 +18,7 @@ public class Analyzer {
 	{
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 		HashMap<String, Integer> map = sonarReader.getNumberOfViolationsPerRule(version, className);
-		Iterator it = map.entrySet().iterator();
+		Iterator<Map.Entry<String, Integer>> it = map.entrySet().iterator();
 		
 		while(it.hasNext())
 		{
