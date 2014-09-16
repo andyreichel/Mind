@@ -12,12 +12,14 @@ import org.apache.commons.configuration.Configuration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class SonarWebApiAccess {
+public class SonarWebApiImpl implements SonarWebApi {
 	private String sonarHost; 
+	private String project;
 	
-	public SonarWebApiAccess(Configuration config)
+	public SonarWebApiImpl(Configuration config)
 	{
 		this.sonarHost = config.getString("sonar.host");
+		this.project = config.getString("sonar.project");
 	}
 	
 	public List<String> getListOfAllRules() throws IOException
@@ -59,5 +61,21 @@ public class SonarWebApiAccess {
 
 		// print result
 		return response.toString();
+	}
+
+	public List<String> getListOfAllResources() throws IOException {
+		String resourcesJSON = sendGet(sonarHost + "api/resources?resource=" + project + ";depth=-1;scopes=FIL");
+		JSONArray resourcesArray = new JSONArray(resourcesJSON.substring(0, resourcesJSON.length()));
+		List<String> resourcesList = new ArrayList<String>();
+		for(int i = 0; i < resourcesArray.length(); i++)
+		{
+			resourcesList.add(((JSONObject) (resourcesArray.get(i))).get("key").toString());
+		}
+		return resourcesList;
+	}
+
+	public int getNumberOfViolationsOfSpecificRuleForResource(
+			String resourceKey, String rule) throws IOException {
+		return 0;
 	}
 }

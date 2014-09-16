@@ -1,5 +1,6 @@
 package test.java;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import main.java.Analyzer;
@@ -9,15 +10,13 @@ import main.java.SonarReader;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class TestAnalyzer {
 
 	
 	@Test
-	public void getTechnicalDebtRowForRevisionTest_successfull()
+	public void getTechnicalDebtRowForRevisionTest_successfull() throws IOException
 	{
 		SCMReader scmReader = new SCMReader(){ 
 			public int getSizeOfClass(String version, String className) { return 100; }
@@ -61,7 +60,7 @@ public class TestAnalyzer {
 	}
 	
 	@Test
-	public void getTechnicalDebtRowForRevisionTest_noViolations() throws ConfigurationException
+	public void getTechnicalDebtRowForRevisionTest_noViolations() throws IOException
 	{
 		SCMReader scmReader = new SCMReader(){ 
 			public int getSizeOfClass(String version, String className) { return 100; }
