@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -35,6 +37,34 @@ public class SonarWebApiImpl implements SonarWebApi {
 		return rulesList;
 	}
 	
+
+	public List<String> getListOfAllResources() throws IOException {
+		String resourcesJSON = sendGet(sonarHost + "api/resources?resource=" + project + ";depth=-1;scopes=FIL");
+		JSONArray resourcesArray = new JSONArray(resourcesJSON.substring(0, resourcesJSON.length()));
+		List<String> resourcesList = new ArrayList<String>();
+		for(int i = 0; i < resourcesArray.length(); i++)
+		{
+			resourcesList.add(((JSONObject) (resourcesArray.get(i))).get("key").toString());
+		}
+		return resourcesList;
+	}
+
+	public int getNumberOfViolationsOfSpecificRuleForResource(String versionDate, String resourceKey, String rule) throws IOException {
+		String numberOfViolationsJSON = sendGet(sonarHost + "api/timemachine?resource=" + project + "&metrics=violations&resource="  + resourceKey + "&fromDateTime=" + versionDate + "&toDateTime=" + versionDate);
+		return JsonParserForSonarApiResponses.getNumberOfViolationsOfSpecificRuleForResource(numberOfViolationsJSON);
+	}
+
+	public HashMap<String, String> getMapOfAllVersionsOfProject() throws IOException {
+		String versionsJSON = sendGet(sonarHost + "api/events?resource=" + project + "&categories=Version");
+		
+		return JsonParserForSonarApiResponses.getMapOfAllVersions(versionsJSON);
+	}
+
+	public int getSizeOfResource(String resourceKey, String versionDate) throws IOException {
+		String versionsJSON = sendGet(sonarHost + "api/timemachine?resource=" + project + "&metrics=ncloc&fromDateTime=" + versionDate + "&toDateTime=" + versionDate + "&resource=" + resourceKey);
+		return JsonParserForSonarApiResponses.getNloc(versionsJSON);
+	}
+
 	private static String sendGet(String url) throws IOException {
 
 		URL obj = new URL(url);
@@ -59,23 +89,6 @@ public class SonarWebApiImpl implements SonarWebApi {
 		}
 		in.close();
 
-		// print result
 		return response.toString();
-	}
-
-	public List<String> getListOfAllResources() throws IOException {
-		String resourcesJSON = sendGet(sonarHost + "api/resources?resource=" + project + ";depth=-1;scopes=FIL");
-		JSONArray resourcesArray = new JSONArray(resourcesJSON.substring(0, resourcesJSON.length()));
-		List<String> resourcesList = new ArrayList<String>();
-		for(int i = 0; i < resourcesArray.length(); i++)
-		{
-			resourcesList.add(((JSONObject) (resourcesArray.get(i))).get("key").toString());
-		}
-		return resourcesList;
-	}
-
-	public int getNumberOfViolationsOfSpecificRuleForResource(
-			String resourceKey, String rule) throws IOException {
-		return 0;
 	}
 }

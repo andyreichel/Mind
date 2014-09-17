@@ -2,6 +2,7 @@ package mind;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,14 +33,22 @@ public class TestSonarReaderImpl {
 				return resources;
 			}
 
-			public int getNumberOfViolationsOfSpecificRuleForResource(
-					String resourceKey, String rule) throws IOException {
+			public int getNumberOfViolationsOfSpecificRuleForResource(String version, String resourceKey, String rule) throws IOException {
 				
 				if(rule.equals("r1"))
 					return 50;
 				if(rule.equals("r2"))
 					return 25;
 				throw new RuleNotFoundException();
+			}
+
+			public HashMap<String, String> getMapOfAllVersionsOfProject() {
+				return null;
+			}
+
+			public int getSizeOfResource(String resourceKey, String versionDate) {
+				// TODO Auto-generated method stub
+				return 0;
 			}};
 			
 		SonarReaderImpl sreader = new SonarReaderImpl(api);
@@ -67,12 +76,19 @@ public class TestSonarReaderImpl {
 				return resources;
 			}
 
-			public int getNumberOfViolationsOfSpecificRuleForResource(
-					String resourceKey, String rule) throws IOException {
+			public int getNumberOfViolationsOfSpecificRuleForResource(String version, String resourceKey, String rule) throws IOException {
 				
 				if(rule.equals("r1"))
 					return 0;
 				throw new RuleNotFoundException();
+			}
+
+			public HashMap<String, String> getMapOfAllVersionsOfProject() {
+				return null;
+			}
+
+			public int getSizeOfResource(String resourceKey, String versionDate) {
+				return 0;
 			}};
 			
 		SonarReaderImpl sreader = new SonarReaderImpl(api);
@@ -99,10 +115,17 @@ public class TestSonarReaderImpl {
 				return resources;
 			}
 
-			public int getNumberOfViolationsOfSpecificRuleForResource(
-					String resourceKey, String rule) throws IOException {
+			public int getNumberOfViolationsOfSpecificRuleForResource(String version, String resourceKey, String rule) throws IOException {
 				
 				throw new ResourceNotFoundException(resourceKey);
+			}
+
+			public HashMap<String, String> getMapOfAllVersionsOfProject() {
+				return null;
+			}
+
+			public int getSizeOfResource(String resourceKey, String versionDate) {
+				return 0;
 			}};
 			
 		SonarReaderImpl sreader = new SonarReaderImpl(api);
