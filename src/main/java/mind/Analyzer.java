@@ -1,18 +1,24 @@
 package mind;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 
 public class Analyzer {
 	private SonarReader sonarReader;
@@ -22,8 +28,30 @@ public class Analyzer {
 	
 	public static void main(String[] args) throws ConfigurationException, IOException, InvalidRemoteException, TransportException, GitAPIException
 	{
-		SCMReader scm = new GitReader(new PropertiesConfiguration("mind.properties"));
-		//SonarReader sonar = new SonarReaderImpl();
+		Repository repository = ShowBranchDiff.openRepository();
+	
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		DiffFormatter df = new DiffFormatter(out);
+		df.setRepository(repository);
+		// the diff works on TreeIterators, we prepare two for the two branches
+		AbstractTreeIterator oldTreeParser = ShowBranchDiff.prepareTreeParser(repository,
+				"refs/remotes/origin/master");
+		AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repository,
+				"refs/remotes/origin/V2");
+		// then the procelain diff-command returns a list of diff entries
+		List<DiffEntry> diff = new Git(repository).diff()
+				.setOldTree(oldTreeParser).setNewTree(newTreeParser).call();
+		ArrayList<String> diffText = new ArrayList<String>();
+		for (DiffEntry entry : diff) {
+			df.format(entry);
+			RawText r = new RawText(out.toByteArray());
+			r.getLineDelimiter();
+			diffText.add(out.toString());
+			System.out.println(out.toString());
+			out.reset();
+			System.out.println("Entry: " + entry);
+		}
+		repository.close();
 	}
 	
 	public Analyzer(SonarReader sonarReader, SonarWebApi api, IssueTrackerReader issueTrackerReader, SCMReader scmReader)
