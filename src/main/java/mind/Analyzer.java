@@ -36,7 +36,7 @@ public class Analyzer {
 		System.out.println(repository.getConfig());
 		StoredConfig bla = repository.getConfig();
 		bla.load();
-		//bla.setString("diff", null, "external", "\"C:/Users/TechDebt/workspacenew/Mind/mydiff.sh\"");
+		bla.setString("diff", null, "external", "\"C:/Users/TechDebt/workspacenew/Mind/mydiff.sh\"");
 		bla.save();
 		System.out.println(bla.getSections().toString());
 		System.out.println(bla.getNames("diff").toString());
@@ -46,7 +46,7 @@ public class Analyzer {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		DiffFormatter df = new DiffFormatter(out);
 		
-		//df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
+		df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
 		
 		df.setRepository(repository);
 		// the diff works on TreeIterators, we prepare two for the two branches
@@ -57,8 +57,8 @@ public class Analyzer {
 		
 		// then the procelain diff-command returns a list of diff entries
 		Git myGit = new Git(repository);
-		//myGit.getRepository().getConfig().setString("diff", null, "external", "\"C:/Users/TechDebt/workspacenew/Mind/mydiff.sh\"");
-		//myGit.getRepository().getConfig().save();
+		myGit.getRepository().getConfig().setString("diff", null, "external", "\"C:/Users/TechDebt/workspacenew/Mind/mydiff.sh\"");
+		myGit.getRepository().getConfig().save();
 		
 		
 		List<DiffEntry> diff = myGit.diff()
