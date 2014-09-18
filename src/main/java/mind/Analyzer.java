@@ -32,7 +32,6 @@ public class Analyzer {
 		DiffFormatter formatter= new DiffFormatter(System.out);
 		formatter.setRepository(repo);
 		formatter.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
-		formatter.flush();
 		
 		AbstractTreeIterator oldTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 		"refs/remotes/origin/V2");
