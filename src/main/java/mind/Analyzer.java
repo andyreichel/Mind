@@ -2,6 +2,7 @@ package mind;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.eclipse.jgit.api.DiffCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -45,15 +45,22 @@ public class Analyzer {
 		//bla.setString("diff", "", name, value);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		DiffFormatter df = new DiffFormatter(out);
-		
-		df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
-		
 		df.setRepository(repository);
+		df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
+		df.setDetectRenames(true);
+		
+		
+		
+		
 		// the diff works on TreeIterators, we prepare two for the two branches
 		AbstractTreeIterator oldTreeParser = ShowBranchDiff.prepareTreeParser(repository,
 				"refs/remotes/origin/master");
 		AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repository,
 				"refs/remotes/origin/V2");
+
+		
+		List<DiffEntry> diffs = df.scan(oldTreeParser, newTreeParser);
+		
 		
 		// then the procelain diff-command returns a list of diff entries
 		Git myGit = new Git(repository);
@@ -61,11 +68,11 @@ public class Analyzer {
 		myGit.getRepository().getConfig().save();
 		
 		
-		List<DiffEntry> diff = myGit.diff()
-				.setOldTree(oldTreeParser).setNewTree(newTreeParser).call();
-		
+//		List<DiffEntry> diff = myGit.diff()
+//				.setOldTree(oldTreeParser).setNewTree(newTreeParser).call();
+//		
 		ArrayList<String> diffText = new ArrayList<String>();
-		for (DiffEntry entry : diff) {
+		for (DiffEntry entry : diffs) {
 			df.format(entry);
 			RawText r = new RawText(out.toByteArray());
 			r.getLineDelimiter();
