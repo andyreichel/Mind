@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.eclipse.jgit.api.DiffCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -17,7 +18,10 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.diff.RawTextComparator;
+import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 
 public class Analyzer {
@@ -26,21 +30,40 @@ public class Analyzer {
 	private IssueTrackerReader issueTrackerReader;
 	private SCMReader scmReader;
 	
-	public static void main(String[] args) throws ConfigurationException, IOException, InvalidRemoteException, TransportException, GitAPIException
+	public static void main(String[] args) throws ConfigurationException, IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigInvalidException
 	{
 		Repository repository = ShowBranchDiff.openRepository();
-	
+		System.out.println(repository.getConfig());
+		StoredConfig bla = repository.getConfig();
+		bla.load();
+		bla.setString("diff", null, "external", "\"C:/Users/TechDebt/workspacenew/Mind/mydiff.sh\"");
+		bla.save();
+		System.out.println(bla.getSections().toString());
+		System.out.println(bla.getNames("diff").toString());
+		System.out.println(bla.getSubsections("diff").toString());
+		System.out.println(bla.getString("diff", null, "external"));//("diff", "", "external"));
+		//bla.setString("diff", "", name, value);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		DiffFormatter df = new DiffFormatter(out);
+		
+		df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
+		
 		df.setRepository(repository);
 		// the diff works on TreeIterators, we prepare two for the two branches
 		AbstractTreeIterator oldTreeParser = ShowBranchDiff.prepareTreeParser(repository,
 				"refs/remotes/origin/master");
 		AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repository,
 				"refs/remotes/origin/V2");
+		
 		// then the procelain diff-command returns a list of diff entries
-		List<DiffEntry> diff = new Git(repository).diff()
+		Git myGit = new Git(repository);
+		myGit.getRepository().getConfig().setString("diff", null, "external", "\"C:/Users/TechDebt/workspacenew/Mind/mydiff.sh\"");
+		myGit.getRepository().getConfig().save();
+		
+		
+		List<DiffEntry> diff = myGit.diff()
 				.setOldTree(oldTreeParser).setNewTree(newTreeParser).call();
+		
 		ArrayList<String> diffText = new ArrayList<String>();
 		for (DiffEntry entry : diff) {
 			df.format(entry);
