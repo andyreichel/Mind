@@ -43,7 +43,6 @@ AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 		formatter.format(diffs);
 		DiffEntry diffentry= diffs.get(0);
 		
-		
 		for(DiffEntry diff : diffs)
 		{
 			System.out.println(diff.getChangeType());
