@@ -28,6 +28,7 @@ public class Analyzer {
 			IOException, InvalidRemoteException, TransportException,
 			GitAPIException, ConfigInvalidException {
 		Repository repo = ShowBranchDiff.openRepository();
+		repo.getConfig().load();
 		
 		DiffFormatter formatter= new DiffFormatter(System.out);
 		formatter.setRepository(repo);
