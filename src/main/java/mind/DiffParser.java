@@ -24,7 +24,9 @@ public class DiffParser {
 					numberChangesPerResource.put(resourceName, numberChanges);
 					numberChanges = 0;
 				}
-				resourceName = line.substring(6);
+				
+				resourceName = line.substring(line.lastIndexOf("/")+1);
+				
 			}
 			if(line.startsWith("@@"))
 			{
