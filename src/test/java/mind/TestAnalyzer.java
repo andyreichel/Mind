@@ -1,9 +1,14 @@
 package mind;
 
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -33,17 +38,19 @@ public class TestAnalyzer {
 	@Test
 	public void getTechnicalDebtRowForRevisionTest_successfull() throws IOException
 	{
-		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("1", "someClass");
-		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("1", "someClass");
+		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("1","201405");
+		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("0","201305");
+		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
+		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getValue(), version0.getValue(), "someClass", null);
 		Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass("1", "someClass", issueTrackerReader);
 		HashMap<String, Integer> violationsPerRule = new HashMap<String, Integer>();
 		violationsPerRule.put("r1", 1);
 		violationsPerRule.put("r2", 0);
 		
-		Mockito.doReturn(violationsPerRule).when(sonarReader).getNumberOfViolationsPerRule("1", "someClass");
+		Mockito.doReturn(violationsPerRule).when(sonarReader).getNumberOfViolationsPerRule("201405", "someClass");
 		
 		Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader);
-		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision("1", "someClass");
+		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision(version1, version0, "someClass");
 		
 		HashMap<String,Integer> expectedRow = new HashMap<String, Integer>();
 		expectedRow.put("r1", 1);
@@ -58,12 +65,16 @@ public class TestAnalyzer {
 	@Test
 	public void getTechnicalDebtRowForRevisionTest_noViolations() throws IOException
 	{
-		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("1", "someClass");
-		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("1", "someClass");
-		Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass("1", "someClass", issueTrackerReader);
+		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","201405");
+		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("v0","201305");
+		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
+		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getValue(), version0.getValue(), "someClass", null);
+		Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass(version1.getKey(), "someClass", issueTrackerReader);
 			
 		Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader);
-		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision("1", "someClass");
+		
+
+		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision(version1, version0, "someClass");
 		
 		HashMap<String,Integer> expectedRow = new HashMap<String, Integer>();
 		expectedRow.put("size", 100);
@@ -84,18 +95,22 @@ public class TestAnalyzer {
 		allRules.add("r1");
 		allRules.add("r2");
 		
-		HashMap<String, String> versions = new HashMap<String, String>();
+		List<AbstractMap.SimpleEntry<String, String>> allVersions = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
+		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","20141001");
+		Entry<String, String> version2 = new AbstractMap.SimpleEntry<String, String>("v2","20141002");
+		Entry<String, String> time0 = new AbstractMap.SimpleEntry<String, String>("0","0");
+		allVersions.add(new AbstractMap.SimpleEntry<String, String>(time0.getKey(), time0.getValue()));
+		allVersions.add(new AbstractMap.SimpleEntry<String, String>(version1.getKey(), version1.getValue()));
+		allVersions.add(new AbstractMap.SimpleEntry<String, String>(version2.getKey(), version2.getValue()));
 		
-		versions.put("v1", "20141001");
-		versions.put("v2", "20141002");
 		
 		Mockito.doReturn(allResources).when(api).getListOfAllResources();
-		Mockito.doReturn(versions).when(api).getMapOfAllVersionsOfProject();
+		Mockito.doReturn(allVersions).when(api).getMapOfAllVersionsOfProject();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
-		Mockito.doReturn(100).when(scmReader).getNumberOfLOCtouched("20141001", "class1");
-		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched("20141002", "class1");
-		Mockito.doReturn(100).when(scmReader).getNumberOfLOCtouched("20141001", "class2");
-		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched("20141002", "class2");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getValue(), time0.getValue(), "class1", null);
+		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getValue(), version1.getValue(), "class1", null);
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getValue(), time0.getValue(), "class2", null);
+		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getValue(), version1.getValue(), "class2", null);
 		
 		HashMap<String, Integer> violationsPerRuleClass1V1 = new HashMap<String, Integer>();
 		violationsPerRuleClass1V1.put("r1", 1);
@@ -118,10 +133,10 @@ public class TestAnalyzer {
 		Mockito.doReturn(violationsPerRuleClass2V1).when(sonarReader).getNumberOfViolationsPerRule("20141001", "class2");
 		Mockito.doReturn(violationsPerRuleClass2V2).when(sonarReader).getNumberOfViolationsPerRule("20141002", "class2");
 		
-		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("20141001", "class1", issueTrackerReader);
-		Mockito.doReturn(7).when(scmReader).getNumberOfDefectsRelatedToClass("20141002", "class1", issueTrackerReader);
-		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("20141001", "class2", issueTrackerReader);
-		Mockito.doReturn(3).when(scmReader).getNumberOfDefectsRelatedToClass("20141002", "class2", issueTrackerReader);
+		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("v1", "class1", issueTrackerReader);
+		Mockito.doReturn(7).when(scmReader).getNumberOfDefectsRelatedToClass("v2", "class1", issueTrackerReader);
+		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("v1", "class2", issueTrackerReader);
+		Mockito.doReturn(3).when(scmReader).getNumberOfDefectsRelatedToClass("v2", "class2", issueTrackerReader);
 		
 		Mockito.doReturn(500).when(sonarReader).getSizeOfClass("20141001", "class1");
 		Mockito.doReturn(550).when(sonarReader).getSizeOfClass("20141002", "class1");
@@ -134,7 +149,7 @@ public class TestAnalyzer {
 		
 		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
 		class1v1_row.put("numberDefects", 5);
-		class1v1_row.put("locTouched", 100);
+		class1v1_row.put("locTouched", 0);
 		class1v1_row.put("size", 500);
 		class1v1_row.put("r1", 1);
 		class1v1_row.put("r2", 0);
@@ -148,7 +163,7 @@ public class TestAnalyzer {
 		
 		HashMap<String, Integer> class2v1_row = new HashMap<String, Integer>();
 		class2v1_row.put("numberDefects", 5);
-		class2v1_row.put("locTouched", 100);
+		class2v1_row.put("locTouched", 0);
 		class2v1_row.put("size", 500);
 		class2v1_row.put("r1", 13);
 		class2v1_row.put("r2", 9);
@@ -166,7 +181,6 @@ public class TestAnalyzer {
 		expectedTable.put("class2_v2", class2v2_row);
 		
 		HashMap<String, HashMap<String, Integer>> actualTable = testAna.getTechnicalDebtTable();
-		System.out.println(expectedTable.get("class1_v1").get("numberDefects"));
 		Assert.assertEquals(expectedTable, actualTable);
 	}
 }

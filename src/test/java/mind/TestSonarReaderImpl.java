@@ -1,6 +1,7 @@
 package mind;
 
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class TestSonarReaderImpl {
 				throw new RuleNotFoundException();
 			}
 
-			public HashMap<String, String> getMapOfAllVersionsOfProject() {
+			public List<AbstractMap.SimpleEntry<String, String>> getMapOfAllVersionsOfProject() {
 				return null;
 			}
 
@@ -83,7 +84,7 @@ public class TestSonarReaderImpl {
 				throw new RuleNotFoundException();
 			}
 
-			public HashMap<String, String> getMapOfAllVersionsOfProject() {
+			public List<AbstractMap.SimpleEntry<String, String>> getMapOfAllVersionsOfProject() {
 				return null;
 			}
 
@@ -120,7 +121,7 @@ public class TestSonarReaderImpl {
 				throw new ResourceNotFoundException(resourceKey);
 			}
 
-			public HashMap<String, String> getMapOfAllVersionsOfProject() {
+			public List<AbstractMap.SimpleEntry<String, String>> getMapOfAllVersionsOfProject() {
 				return null;
 			}
 

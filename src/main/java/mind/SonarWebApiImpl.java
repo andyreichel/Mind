@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class SonarWebApiImpl implements SonarWebApi {
 		return JsonParserForSonarApiResponses.getNumberOfViolationsOfSpecificRuleForResource(numberOfViolationsJSON);
 	}
 
-	public HashMap<String, String> getMapOfAllVersionsOfProject() throws IOException {
+	public List<AbstractMap.SimpleEntry<String, String>> getMapOfAllVersionsOfProject() throws IOException {
 		String versionsJSON = sendGet(sonarHost + "api/events?resource=" + project + "&categories=Version");
 		
 		return JsonParserForSonarApiResponses.getMapOfAllVersions(versionsJSON);

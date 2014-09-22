@@ -1,6 +1,7 @@
 package mind;
 
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -66,24 +67,28 @@ AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException {
 		List<String> resources = api.getListOfAllResources();
-		HashMap<String, String> versionMap = api.getMapOfAllVersionsOfProject();
+		List<AbstractMap.SimpleEntry<String, String>> versionMap = api.getMapOfAllVersionsOfProject();
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
+		
 		for (String resource : resources) {
-			for (Entry<String, String> version : versionMap.entrySet()) {
-				table.put(
-						resource + "_" + version.getKey(),
-						getTechnicalDebtRowForRevision(version.getValue(),
-								resource));
+				for(int i = versionMap.size()-1; i > 0 ; i--)
+				{
+					int currentVersionId = i;
+					int previousVersionId = i-1;
+					table.put(
+					resource + "_" + versionMap.get(currentVersionId).getKey(),
+					getTechnicalDebtRowForRevision(versionMap.get(currentVersionId), versionMap.get(previousVersionId), resource));
+				}
+
 			}
-		}
 		return table;
 	}
 
 	public HashMap<String, Integer> getTechnicalDebtRowForRevision(
-			String versionDate, String className) throws IOException {
+			Entry<String, String> currentVersion, Entry<String, String> previousVersion, String className) throws IOException {
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 		HashMap<String, Integer> map = sonarReader
-				.getNumberOfViolationsPerRule(versionDate, className);
+				.getNumberOfViolationsPerRule(currentVersion.getValue(), className);
 		Iterator<Map.Entry<String, Integer>> it = map.entrySet().iterator();
 
 		while (it.hasNext()) {
@@ -94,12 +99,12 @@ AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 		}
 
 		technicalDebtRow.put("locTouched",
-				scmReader.getNumberOfLOCtouched(versionDate, className));
+				scmReader.getNumberOfLOCtouched(currentVersion.getValue(), previousVersion.getValue(), className, null));
 		technicalDebtRow.put("size",
-				sonarReader.getSizeOfClass(versionDate, className));
+				sonarReader.getSizeOfClass(currentVersion.getValue(), className));
 
 		technicalDebtRow.put("numberDefects", scmReader
-				.getNumberOfDefectsRelatedToClass(versionDate, className,
+				.getNumberOfDefectsRelatedToClass(currentVersion.getKey(), className,
 						issueTrackerReader));
 		return technicalDebtRow;
 	}

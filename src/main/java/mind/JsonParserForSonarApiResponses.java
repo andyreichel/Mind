@@ -1,22 +1,26 @@
 package mind;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonParserForSonarApiResponses {
-	public static HashMap<String, String> getMapOfAllVersions(String json) throws JSONException
+	public static List<AbstractMap.SimpleEntry<String, String>> getMapOfAllVersions(String json) throws JSONException
 	{
 		JSONArray versions = new JSONArray(json);
-		HashMap<String, String> allVersions = new HashMap<String, String>();
-		
+		//HashMap<String, String> allVersions = new HashMap<String, String>();
+		List<AbstractMap.SimpleEntry<String, String>> allVersions = new ArrayList<AbstractMap.SimpleEntry<String,String>>();
 		
 		for(int i = 0; i <versions.length(); i++)
 		{
 			JSONObject obj = (JSONObject) versions.get(i);
-			allVersions.put(obj.getString("n"), obj.getString("dt"));
+			//allVersions.put(obj.getString("n"), obj.getString("dt"));
+			allVersions.add(new AbstractMap.SimpleEntry<String, String>(obj.getString("n"), obj.getString("dt")));
 		}
 		
 		return allVersions;
