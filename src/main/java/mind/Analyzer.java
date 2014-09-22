@@ -1,6 +1,9 @@
 package mind;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,6 +17,9 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.HistogramDiff;
+import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.Repository;
@@ -30,8 +36,8 @@ public class Analyzer {
 			GitAPIException, ConfigInvalidException {
 		Repository repo = ShowBranchDiff.openRepository();
 		repo.getConfig().load();
-		
-		DiffFormatter formatter= new DiffFormatter(System.out);
+		OutputStream out = new ByteArrayOutputStream();
+		DiffFormatter formatter= new DiffFormatter(out);
 		formatter.setRepository(repo);
 		formatter.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
 		
@@ -41,22 +47,34 @@ AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 		"refs/remotes/origin/master");
 		formatter.setContext(0);
 		List<DiffEntry> diffs = formatter.scan(oldTreeParser, newTreeParser);
-		
-		formatter.format(diffs);
-		
-		DiffEntry diffentry= diffs.get(0);
-		
-		for(DiffEntry diff : diffs)
-		{
-			System.out.println(diff.getChangeType());
-			//System.out.println(diff);
-			
-		}
-		
+		//formatter.format(diffs);
+		formatter.format(diffs.get(0));
+		//System.out.println(diffs.get(0));
+//		for(DiffEntry diff : diffs)
+//		{
+//			System.out.println(diff.getChangeType());
+//			//diff.
+//			
+//		}
+		//System.out.println(getDiff("C:\\Users\\TechDebt\\workspacenew\\Mind\\README", "C:\\Users\\TechDebt\\workspacenew\\MindBranchV2\\README"));
 		
 
 	}
 
+	private static String getDiff(String file1, String file2) {
+	    OutputStream out = new ByteArrayOutputStream();
+	    try {
+	        RawText rt1 = new RawText(new File(file1));
+	        RawText rt2 = new RawText(new File(file2));
+	        EditList diffList = new EditList();
+	        diffList.addAll(new HistogramDiff().diff(RawTextComparator.WS_IGNORE_ALL, rt1, rt2));
+	        new DiffFormatter(out).format(diffList, rt1, rt2);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return out.toString();
+	}
+	
 	public Analyzer(SonarReader sonarReader, SonarWebApi api,
 			IssueTrackerReader issueTrackerReader, SCMReader scmReader) {
 		this.sonarReader = sonarReader;

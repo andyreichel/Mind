@@ -124,7 +124,7 @@ public class GitReader implements SCMReader {
 		return 0;
 	}
 
-	public int getNumberOfLOCtouched(String version1, String version2, String className, FileComparer fileComparer) {
+	public int getNumberOfLOCtouched(String version1, String version2, String className, BranchComparer fileComparer) {
 		return 0;
 	}
 
