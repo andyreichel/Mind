@@ -39,7 +39,7 @@ public class Analyzer {
 		"refs/remotes/origin/V2");
 AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 		"refs/remotes/origin/master");
-	formatter.setContext(0);
+		formatter.setContext(0);
 		List<DiffEntry> diffs = formatter.scan(oldTreeParser, newTreeParser);
 		
 		formatter.format(diffs);
