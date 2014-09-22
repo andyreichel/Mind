@@ -3,13 +3,8 @@ package mind;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import mind.RuleNotFoundException;
-import mind.SonarReaderImpl;
-import mind.SonarWebApi;
 
 import org.junit.Assert;
 import org.junit.Test;

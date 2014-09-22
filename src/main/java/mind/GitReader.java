@@ -29,11 +29,18 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 public class GitReader implements SCMReader {
 	String gitUrl;
+	BranchComparer branchComparer;
 
 	Repository repository;
 
 	public GitReader(Configuration config) throws IOException,
 			InvalidRemoteException, TransportException, GitAPIException {
+		initGitConnection(config);
+		branchComparer = new BranchComparerImpl();
+	}
+	
+	private void initGitConnection(Configuration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException
+	{
 		String gitName = config.getString("git.name");
 		String gitPw = config.getString("git.password");
 		gitUrl = config.getString("git.url");
@@ -60,8 +67,6 @@ public class GitReader implements SCMReader {
 
 		RevTree tree = getTree(repository);
 		printFile(repository, tree);
-		
-
 	}
 
 	private static void printFile(Repository repository, RevTree tree)
@@ -124,8 +129,11 @@ public class GitReader implements SCMReader {
 		return 0;
 	}
 
-	public int getNumberOfLOCtouched(String version1, String version2, String className, BranchComparer fileComparer) {
-		return 0;
+	public int getNumberOfLOCtouched(String branchName1, String branchName2, String className) throws IOException {
+		return branchComparer.getMapWithNumberOfChangesPerResource(branchName1, branchName2).get(className);
 	}
 
+	public BranchComparer getBranchComparer() {
+		return branchComparer;
+	}
 }

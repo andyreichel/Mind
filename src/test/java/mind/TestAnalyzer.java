@@ -5,9 +5,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -41,7 +38,7 @@ public class TestAnalyzer {
 		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("1","201405");
 		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("0","201305");
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
-		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getValue(), version0.getValue(), "someClass", null);
+		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getValue(), version0.getValue(), "someClass");
 		Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass("1", "someClass", issueTrackerReader);
 		HashMap<String, Integer> violationsPerRule = new HashMap<String, Integer>();
 		violationsPerRule.put("r1", 1);
@@ -68,7 +65,7 @@ public class TestAnalyzer {
 		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","201405");
 		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("v0","201305");
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
-		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getValue(), version0.getValue(), "someClass", null);
+		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getValue(), version0.getValue(), "someClass");
 		Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass(version1.getKey(), "someClass", issueTrackerReader);
 			
 		Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader);
@@ -107,10 +104,10 @@ public class TestAnalyzer {
 		Mockito.doReturn(allResources).when(api).getListOfAllResources();
 		Mockito.doReturn(allVersions).when(api).getMapOfAllVersionsOfProject();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getValue(), time0.getValue(), "class1", null);
-		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getValue(), version1.getValue(), "class1", null);
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getValue(), time0.getValue(), "class2", null);
-		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getValue(), version1.getValue(), "class2", null);
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getValue(), time0.getValue(), "class1");
+		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getValue(), version1.getValue(), "class1");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getValue(), time0.getValue(), "class2");
+		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getValue(), version1.getValue(), "class2");
 		
 		HashMap<String, Integer> violationsPerRuleClass1V1 = new HashMap<String, Integer>();
 		violationsPerRuleClass1V1.put("r1", 1);

@@ -16,21 +16,26 @@ public class DiffParser {
 		String resourceName = null;
 		while( (line=bufReader.readLine()) != null )
 		{
-			
-			if(line.startsWith("---"))
+			if(!(line.startsWith("--- /dev/null") || line.startsWith("+++ /dev/null")))
 			{
-				if(resourceName != null)
+				if(line.startsWith("+++"))
 				{
-					numberChangesPerResource.put(resourceName, numberChanges);
-					numberChanges = 0;
+					if(resourceName != null)
+					{
+						numberChangesPerResource.put(resourceName, numberChanges);
+						numberChanges = 0;
+					}
+					
+					resourceName = line.substring(line.lastIndexOf("/")+1);
+					
 				}
-				
-				resourceName = line.substring(line.lastIndexOf("/")+1);
-				
-			}
-			if(line.startsWith("@@"))
+				if(line.startsWith("@@"))
+				{
+					numberChanges++;
+				}
+			}else
 			{
-				numberChanges++;
+				bufReader.readLine();
 			}
 		}
 		if(resourceName != null)

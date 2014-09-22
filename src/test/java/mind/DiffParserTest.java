@@ -58,6 +58,39 @@ public class DiffParserTest {
 		Assert.assertEquals(expectedOutput, DiffParser.getMapOfChangesPerResourceFromDiffOutput(diffOutput));
 	}
 	
+	
+	@Test
+	public void getMapOfChangesPerResourceFromDiffOutputTest_renamed() throws IOException
+	{
+		String diffOutput = "--- /dev/null" + "\n" +
+		"+++ b/src/RENAMED" + "\n" +
+		"@@ -0,0 +1,8 @@" + "\n" +
+		"+asdfa" + "\n" +
+		"+asdfasdfasd" + "\n" +
+		"+Hier ist die änderung" + "\n" +
+		"+asdfaasdf" + "\n" +
+		"+" + "\n" +
+		"+asdfaad" + "\n" +
+		"+asdf" + "\n" +
+		"+neu" + "\n" +
+		"diff --git a/src/SOMEOTHERFILE b/src/SOMEOTHERFILE" + "\n" +
+		"deleted file mode 100644" + "\n" +
+		"index dd949e0..0000000" + "\n" +
+		"--- a/src/SOMEOTHERFILE" + "\n" +
+		"+++ /dev/null" + "\n" +
+		"@@ -1,7 +0,0 @@" + "\n" +
+		"-asdfa" + "\n" +
+		"-asdfasdfasd" + "\n" +
+		"-f" + "\n" +
+		"-asdfaasdf" + "\n" +
+		"-af" + "\n" +
+		"-asdfaad" + "\n" +
+		"-asdf" + "\n";
+		
+		HashMap<String, Integer> expectedOutput = new HashMap<String, Integer>();
+		Assert.assertEquals(expectedOutput, DiffParser.getMapOfChangesPerResourceFromDiffOutput(diffOutput));
+	}
+		
 	@Test
 	public void getMapOfChangesPerResourceFromDiffOutputTest_noOutput() throws IOException
 	{
