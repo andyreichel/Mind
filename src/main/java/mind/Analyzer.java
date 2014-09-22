@@ -39,9 +39,11 @@ public class Analyzer {
 		"refs/remotes/origin/V2");
 AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 		"refs/remotes/origin/master");
-
+	formatter.setContext(0);
 		List<DiffEntry> diffs = formatter.scan(oldTreeParser, newTreeParser);
+		
 		formatter.format(diffs);
+		
 		DiffEntry diffentry= diffs.get(0);
 		
 		for(DiffEntry diff : diffs)
@@ -79,7 +81,6 @@ AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 					resource + "_" + versionMap.get(currentVersionId).getKey(),
 					getTechnicalDebtRowForRevision(versionMap.get(currentVersionId), versionMap.get(previousVersionId), resource));
 				}
-
 			}
 		return table;
 	}
@@ -97,7 +98,7 @@ AbstractTreeIterator newTreeParser = ShowBranchDiff.prepareTreeParser(repo,
 			technicalDebtRow.put(pairs.getKey(), pairs.getValue());
 			it.remove();
 		}
-
+		
 		technicalDebtRow.put("locTouched",
 				scmReader.getNumberOfLOCtouched(currentVersion.getValue(), previousVersion.getValue(), className, null));
 		technicalDebtRow.put("size",
