@@ -38,7 +38,7 @@ public class SonarWebApiImpl implements SonarWebApi {
 	
 
 	public List<String> getListOfAllResources() throws IOException {
-		String resourcesJSON = sendGet(sonarHost + "api/resources?resource=" + project + ";depth=-1;scopes=FIL");
+		String resourcesJSON = sendGet(sonarHost + "/api/resources?resource=" + project + ";depth=-1;scopes=FIL");
 		JSONArray resourcesArray = new JSONArray(resourcesJSON.substring(0, resourcesJSON.length()));
 		List<String> resourcesList = new ArrayList<String>();
 		for(int i = 0; i < resourcesArray.length(); i++)
@@ -49,23 +49,23 @@ public class SonarWebApiImpl implements SonarWebApi {
 	}
 
 	public int getNumberOfViolationsOfSpecificRuleForResource(String versionDate, String resourceKey, String rule) throws IOException {
-		String numberOfViolationsJSON = sendGet(sonarHost + "api/timemachine?resource=" + project + "&metrics=violations&resource="  + resourceKey + "&fromDateTime=" + versionDate + "&toDateTime=" + versionDate);
+		String numberOfViolationsJSON = sendGet(sonarHost + "/api/timemachine?resource=" + project + "&metrics=violations&resource="  + resourceKey + "&fromDateTime=" + versionDate + "&toDateTime=" + versionDate);
 		return JsonParserForSonarApiResponses.getNumberOfViolationsOfSpecificRuleForResource(numberOfViolationsJSON);
 	}
 
 	public List<AbstractMap.SimpleEntry<String, String>> getMapOfAllVersionsOfProject() throws IOException {
-		String versionsJSON = sendGet(sonarHost + "api/events?resource=" + project + "&categories=Version");
+		String versionsJSON = sendGet(sonarHost + "/api/events?resource=" + project + "&categories=Version");
 		
 		return JsonParserForSonarApiResponses.getMapOfAllVersions(versionsJSON);
 	}
 
 	public int getSizeOfResource(String resourceKey, String versionDate) throws IOException {
-		String versionsJSON = sendGet(sonarHost + "api/timemachine?resource=" + project + "&metrics=ncloc&fromDateTime=" + versionDate + "&toDateTime=" + versionDate + "&resource=" + resourceKey);
+		String versionsJSON = sendGet(sonarHost + "/api/timemachine?resource=" + project + "&metrics=ncloc&fromDateTime=" + versionDate + "&toDateTime=" + versionDate + "&resource=" + resourceKey);
 		return JsonParserForSonarApiResponses.getNloc(versionsJSON);
 	}
 
 	private static String sendGet(String url) throws IOException {
-
+		System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 

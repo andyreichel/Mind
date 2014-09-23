@@ -2,6 +2,7 @@ package mind;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.apache.commons.configuration.Configuration;
 import org.eclipse.jgit.api.CloneCommand;
@@ -33,10 +34,10 @@ public class GitReader implements SCMReader {
 
 	Repository repository;
 
-	public GitReader(Configuration config) throws IOException,
+	public GitReader(Configuration config, BranchComparer branchComparer) throws IOException,
 			InvalidRemoteException, TransportException, GitAPIException {
 		initGitConnection(config);
-		branchComparer = new BranchComparerImpl();
+		this.branchComparer = branchComparer;
 	}
 	
 	private void initGitConnection(Configuration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException
@@ -62,61 +63,6 @@ public class GitReader implements SCMReader {
 		repository = builder
 				.setGitDir(new File(localPath.getAbsolutePath() + "/.git"))
 				.readEnvironment().findGitDir().build();
-
-		System.out.println(repository.getFullBranch());
-
-		RevTree tree = getTree(repository);
-		printFile(repository, tree);
-	}
-
-	private static void printFile(Repository repository, RevTree tree)
-			throws MissingObjectException, IncorrectObjectTypeException,
-			CorruptObjectException, IOException {
-		// now try to find a specific file
-		TreeWalk treeWalk = new TreeWalk(repository);
-		treeWalk.addTree(tree);
-		treeWalk.setRecursive(true);
-		treeWalk.setFilter(PathFilter.create("src/main/java/mind/GitReader.java"));
-		if (!treeWalk.next()) {
-			throw new IllegalStateException(
-					"Did not find expected file 'GitReader.java'");
-		}
-		FileMode fileMode = treeWalk.getFileMode(0);
-		ObjectLoader loader = repository.open(treeWalk.getObjectId(0));
-		System.out.println("README.md: " + getFileMode(fileMode) + ", type: "
-				+ fileMode.getObjectType() + ", mode: " + fileMode + " size: "
-				+ loader.getSize());
-	}
-
-	private static String getFileMode(FileMode fileMode) {
-		if (fileMode.equals(FileMode.EXECUTABLE_FILE)) {
-			return "Executable File";
-		} else if (fileMode.equals(FileMode.REGULAR_FILE)) {
-			return "Normal File";
-		} else if (fileMode.equals(FileMode.TREE)) {
-			return "Directory";
-		} else if (fileMode.equals(FileMode.SYMLINK)) {
-			return "Symlink";
-		} else {
-			// there are a few others, see FileMode javadoc for details
-			throw new IllegalArgumentException(
-					"Unknown type of file encountered: " + fileMode);
-		}
-	}
-
-	private static RevTree getTree(Repository repository)
-			throws AmbiguousObjectException, IncorrectObjectTypeException,
-			IOException, MissingObjectException {
-		ObjectId lastCommitId = repository.resolve(Constants.HEAD);
-		// a RevWalk allows to walk over commits based on some filtering
-		RevWalk revWalk = new RevWalk(repository);
-		RevCommit commit = revWalk.parseCommit(lastCommitId);
-		System.out.println("Time of commit (seconds since epoch): "
-				+ commit.getCommitTime());
-		// and using commit's tree find the path
-		RevTree tree = commit.getTree();
-		System.out.println("Having tree: " + tree);
-		return tree;
 	}
 
 	public int getSizeOfClass(String version, String className)
@@ -129,8 +75,19 @@ public class GitReader implements SCMReader {
 		return 0;
 	}
 
-	public int getNumberOfLOCtouched(String branchName1, String branchName2, String className) throws IOException {
-		return branchComparer.getMapWithNumberOfChangesPerResource(branchName1, branchName2).get(className);
+	public int getNumberOfLOCtouched(String branchName1, String branchName2, String classId) throws IOException {
+		HashMap<String, Integer> mapWithNumberOfChangesPerResource = branchComparer.getMapWithNumberOfChangesPerResource(branchName1, branchName2);
+		if(!mapWithNumberOfChangesPerResource.containsKey(stripOfClassNameFromClassId(classId)))
+			return 0;
+		return mapWithNumberOfChangesPerResource.get(stripOfClassNameFromClassId(classId));
+	}
+	
+	private static String stripOfClassNameFromClassId(String classId)
+	{
+		int slashIndex = classId.lastIndexOf("/");
+		if(slashIndex == -1)
+			return classId;
+		return classId.substring(slashIndex);
 	}
 
 	public BranchComparer getBranchComparer() {

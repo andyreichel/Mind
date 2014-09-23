@@ -44,7 +44,7 @@
 							<goal>java</goal>
 						</goals>
 						<configuration>
-							<mainClass>mind.Analyzer</mainClass>
+							<mainClass>mind.Main</mainClass>
 						</configuration>
 					</execution>
 				</executions>

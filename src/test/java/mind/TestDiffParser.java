@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 
-public class DiffParserTest {
+public class TestDiffParser {
 	@Test
 	public void getMapOfChangesPerResourceFromDiffOutputTest_oneEntry() throws IOException
 	{

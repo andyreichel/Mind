@@ -40,7 +40,6 @@ public class DiffParser {
 		}
 		if(resourceName != null)
 			numberChangesPerResource.put(resourceName, numberChanges);
-		
 		return numberChangesPerResource;
 	}
 }

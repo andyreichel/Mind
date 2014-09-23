@@ -19,11 +19,6 @@ public class Analyzer {
 	private IssueTrackerReader issueTrackerReader;
 	private SCMReader scmReader;
 
-	public static void main(String[] args) {
-		
-
-	}
-
 	public Analyzer(SonarReader sonarReader, SonarWebApi api,
 			IssueTrackerReader issueTrackerReader, SCMReader scmReader) {
 		this.sonarReader = sonarReader;
@@ -36,6 +31,7 @@ public class Analyzer {
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException {
 		List<String> resources = api.getListOfAllResources();
+		System.out.println("heeeeey" + resources);
 		List<AbstractMap.SimpleEntry<String, String>> versionMap = api.getMapOfAllVersionsOfProject();
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
 		
@@ -67,7 +63,7 @@ public class Analyzer {
 		}
 		
 		technicalDebtRow.put("locTouched",
-				scmReader.getNumberOfLOCtouched(currentVersion.getValue(), previousVersion.getValue(), className));
+				scmReader.getNumberOfLOCtouched(currentVersion.getKey(), previousVersion.getKey(), className));
 		technicalDebtRow.put("size",
 				sonarReader.getSizeOfClass(currentVersion.getValue(), className));
 
