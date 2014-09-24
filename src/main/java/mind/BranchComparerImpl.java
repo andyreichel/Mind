@@ -23,16 +23,22 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 public class BranchComparerImpl implements BranchComparer {
+	GitApiImpl gitConnection;
+	
+	public BranchComparerImpl(GitApiImpl gitConnection)
+	{
+		this.gitConnection = gitConnection;
+	}
+	
 	public HashMap<String, Integer> getMapWithNumberOfChangesPerResource(
 			String branchName1, String branchName2) throws IOException{
-		Repository repo = openRepository();
 		OutputStream out = new ByteArrayOutputStream();
 		DiffFormatter formatter= new DiffFormatter(out);
-		formatter.setRepository(repo);
+		formatter.setRepository(gitConnection.getRepository());
 		formatter.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
-		AbstractTreeIterator oldTreeParser = prepareTreeParser(repo,
+		AbstractTreeIterator oldTreeParser = prepareTreeParser(gitConnection.getRepository(),
 		"refs/remotes/origin/TYPO3_3-6");
-AbstractTreeIterator newTreeParser = prepareTreeParser(repo,
+AbstractTreeIterator newTreeParser = prepareTreeParser(gitConnection.getRepository(),
 		"refs/remotes/origin/TYPO3_3-7");
 		formatter.setContext(0);
 		List<DiffEntry> diffs = formatter.scan(oldTreeParser, newTreeParser);
@@ -61,13 +67,13 @@ AbstractTreeIterator newTreeParser = prepareTreeParser(repo,
 			return oldTreeParser;
 		}
 		 
-		 public static Repository openRepository() throws IOException {
-			 FileRepositoryBuilder builder = new FileRepositoryBuilder();
-			 builder.setGitDir(new File("C:\\Users\\TechDebt\\workspacenew\\typo3\\TYPO3.CMS_3-6//.git"));
-			 Repository repository = builder
-			 .readEnvironment() // scan environment GIT_* variables
-			 .findGitDir() // scan up the file system tree
-			 .build();
-			 return repository;
-			 }
+//		 public static Repository openRepository() throws IOException {
+//			 FileRepositoryBuilder builder = new FileRepositoryBuilder();
+//			 builder.setGitDir(new File("C:\\Users\\TechDebt\\workspacenew\\typo3\\TYPO3.CMS_3-6//.git"));
+//			 Repository repository = builder
+//			 .readEnvironment() // scan environment GIT_* variables
+//			 .findGitDir() // scan up the file system tree
+//			 .build();
+//			 return repository;
+//			 }
 }

@@ -1,10 +1,16 @@
-das ist meine datei
-
-die zweite zeile
-die dritte zei
-
-die vierte zeile
-die fünfte zeile    
+Limitations:
+-Comments are included in loc changed
+-repos file large files take a very long time to clone. This is a restriction of jgit: http://dev.eclipse.org/mhonarc/lists/jgit-dev/msg00689.html
 
 
+Lessons learned:
+- Sonar Web Api for Timemachine does not provide the historical data in a
+file-specific base
+- Development of Sonar Java Api will continued thats why we should use Web Api
 
+
+Conditions:
+-Versions in Sonar have the same name as the branch in git
+
+Tasks:
+Make everything open source.

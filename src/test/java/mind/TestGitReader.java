@@ -21,16 +21,27 @@ public class TestGitReader {
 	@Mock
 	BranchComparer branchComparer;
 	
+	@Mock
+	IssueTrackerReader issueTrackerReader;
+	
+	@Mock
+	GitApiImpl gitConnection;
+	
 	@Test
 	public void getNumberOfLOCtouchedTest_noLineTouched() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
 	{
 		HashMap<String, Integer> mapWithNumberOfChangesPerResource = new HashMap<String, Integer>();
 		Mockito.doReturn(mapWithNumberOfChangesPerResource).when(branchComparer).getMapWithNumberOfChangesPerResource("3-6", "3-7");
 		Configuration config = new PropertiesConfiguration("mind.properties");
-		GitReader git = new GitReader(config, branchComparer);
-		
-		
+		Mockito.doNothing().when(gitConnection).initGit(config);
+		GitReader git = new GitReader(gitConnection, branchComparer);
 		
 		Assert.assertEquals(0, git.getNumberOfLOCtouched("3-6", "3-7", "class1"));
+	}
+	
+	@Test
+	public void getNumberOfDefectsRelatedToClassTest()
+	{
+		
 	}
 }

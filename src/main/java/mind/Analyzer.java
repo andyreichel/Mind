@@ -30,8 +30,18 @@ public class Analyzer {
 	public HashMap<String, HashMap<String, Integer>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException {
+		
+		//branches = getListOfAllRelevantBranches
+		//for(branch : branches)
+		// git.clone(branch)
+		// sonar.execute(branch)
+		//for(resource)
+		// loctouched = getLocTouched(resource)
+		// size = getSize(resource)
+		// getViolations
+		// getDefects
+		
 		List<String> resources = api.getListOfAllResources();
-		System.out.println("heeeeey" + resources);
 		List<AbstractMap.SimpleEntry<String, String>> versionMap = api.getMapOfAllVersionsOfProject();
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
 		
