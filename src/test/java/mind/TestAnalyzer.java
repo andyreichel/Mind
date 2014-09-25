@@ -2,14 +2,17 @@ package mind;
 
 import java.io.IOException;
 import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import com.taskadapter.redmineapi.RedmineException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestAnalyzer {
@@ -39,7 +44,7 @@ public class TestAnalyzer {
 		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("0","201305");
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getKey(), version0.getKey(), "someClass");
-		Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass("1", "someClass", issueTrackerReader);
+		//Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass("1", "someClass", issueTrackerReader);
 		HashMap<String, Integer> violationsPerRule = new HashMap<String, Integer>();
 		violationsPerRule.put("r1", 1);
 		violationsPerRule.put("r2", 0);
@@ -66,7 +71,7 @@ public class TestAnalyzer {
 		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("v0","201305");
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getKey(), version0.getKey(), "someClass");
-		Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass(version1.getKey(), "someClass", issueTrackerReader);
+		//Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass(version1.getKey(), "someClass", issueTrackerReader);
 			
 		Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader);
 		
@@ -82,7 +87,7 @@ public class TestAnalyzer {
 	}
 	
 	@Test 
-	public void getTechnicalDebtTableTest() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException
+	public void getTechnicalDebtTableTest() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException
 	{
 		List<String> allResources = new ArrayList<String>();
 		allResources.add("class1");
@@ -130,10 +135,32 @@ public class TestAnalyzer {
 		Mockito.doReturn(violationsPerRuleClass2V1).when(sonarReader).getNumberOfViolationsPerRule("20141001", "class2");
 		Mockito.doReturn(violationsPerRuleClass2V2).when(sonarReader).getNumberOfViolationsPerRule("20141002", "class2");
 		
-		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("v1", "class1", issueTrackerReader);
-		Mockito.doReturn(7).when(scmReader).getNumberOfDefectsRelatedToClass("v2", "class1", issueTrackerReader);
-		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("v1", "class2", issueTrackerReader);
-		Mockito.doReturn(3).when(scmReader).getNumberOfDefectsRelatedToClass("v2", "class2", issueTrackerReader);
+//		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("v1", "class1", issueTrackerReader);
+//		Mockito.doReturn(7).when(scmReader).getNumberOfDefectsRelatedToClass("v2", "class1", issueTrackerReader);
+//		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("v1", "class2", issueTrackerReader);
+//		Mockito.doReturn(3).when(scmReader).getNumberOfDefectsRelatedToClass("v2", "class2", issueTrackerReader);
+		
+		HashMap<Integer, String> mapOfBugsRelatedToTheirVersion = new HashMap<Integer, String>();
+		mapOfBugsRelatedToTheirVersion.put(10001, "v1");
+		mapOfBugsRelatedToTheirVersion.put(10002, "v1");
+		mapOfBugsRelatedToTheirVersion.put(10003, "v1");
+		mapOfBugsRelatedToTheirVersion.put(10004, "v2");
+		mapOfBugsRelatedToTheirVersion.put(10005, "v2");
+		
+		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
+		
+		HashMap<String, List<String>> commitMessagesAndTouchedFilesForEachRevision = new HashMap<String, List<String>>();
+		List<String> touchedFilesRev1 = new ArrayList<String>();
+		touchedFilesRev1.add("file1");
+		touchedFilesRev1.add("file2");
+		List<String> touchedFilesRev2 = new ArrayList<String>();
+		touchedFilesRev2.add("file2");
+		touchedFilesRev2.add("file4");
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10000", touchedFilesRev1);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10001", touchedFilesRev2);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug", touchedFilesRev2);
+		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
+		
 		
 		Mockito.doReturn(500).when(sonarReader).getSizeOfClass("20141001", "class1");
 		Mockito.doReturn(550).when(sonarReader).getSizeOfClass("20141002", "class1");
@@ -179,5 +206,113 @@ public class TestAnalyzer {
 		
 		HashMap<String, HashMap<String, Integer>> actualTable = testAna.getTechnicalDebtTable();
 		Assert.assertEquals(expectedTable, actualTable);
+	}
+	
+	@Test
+	public void getMapOfNumberOfDefectsRelatedToResourceTest_successfull() throws RedmineException, NoHeadException, IOException, GitAPIException
+	{
+		List<String> resources = new ArrayList<String>();
+		resources.add("project:path/file1");
+		resources.add("project:path/file2");
+		resources.add("project:path/file3");
+		resources.add("project:path/file4");
+		resources.add("project:path/file5");
+		
+		
+		List<String> touchedFilesRev1 = new ArrayList<String>();
+		touchedFilesRev1.add("file1");
+		touchedFilesRev1.add("file2");
+		List<String> touchedFilesRev2 = new ArrayList<String>();
+		touchedFilesRev2.add("file2");
+		touchedFilesRev2.add("file4");
+		
+		HashMap<String, List<String>> commitMessagesAndTouchedFilesForEachRevision = new HashMap<String, List<String>>();
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10000", touchedFilesRev1);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10001", touchedFilesRev2);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug", touchedFilesRev2);
+		
+		
+		HashMap<Integer, String> mapOfBugsRelatedToTheirVersion = new HashMap<Integer, String>();
+		mapOfBugsRelatedToTheirVersion.put(10000, "1.0");
+		mapOfBugsRelatedToTheirVersion.put(10001, "1.1");
+		
+		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
+		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
+		
+		List<AbstractMap.SimpleEntry<String, String>> versionMap = new ArrayList<AbstractMap.SimpleEntry<String,String>>();
+		AbstractMap.SimpleEntry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("1.0", "201415");
+		AbstractMap.SimpleEntry<String, String> version2 = new AbstractMap.SimpleEntry<String, String>("1.1", "201416");
+		
+		versionMap.add(version1);
+		versionMap.add(version2);
+		
+		HashMap<String, HashMap<String, Integer>> expectedMapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
+		HashMap<String, Integer> version10NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();
+		version10NumberOfDefectsRelatedToResource.put("file1", 1);
+		version10NumberOfDefectsRelatedToResource.put("file2", 1);
+		version10NumberOfDefectsRelatedToResource.put("file3", 0);
+		version10NumberOfDefectsRelatedToResource.put("file4", 0);
+		version10NumberOfDefectsRelatedToResource.put("file5", 0);
+		HashMap<String, Integer> version11NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();
+		version11NumberOfDefectsRelatedToResource.put("file1", 0);
+		version11NumberOfDefectsRelatedToResource.put("file2", 1);
+		version11NumberOfDefectsRelatedToResource.put("file3", 0);
+		version11NumberOfDefectsRelatedToResource.put("file4", 1);
+		version11NumberOfDefectsRelatedToResource.put("file5", 0);
+		expectedMapOfNumberOfDefectsRelatedToResource.put("1.0", version10NumberOfDefectsRelatedToResource);
+		expectedMapOfNumberOfDefectsRelatedToResource.put("1.1", version11NumberOfDefectsRelatedToResource);
+		
+		Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader);
+		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(versionMap,resources, "someBranch"));
+	}
+	
+	@Test
+	public void getMapOfNumberOfDefectsRelatedToResourceTest_referenceOfBugInMultipleMessages() throws RedmineException, NoHeadException, IOException, GitAPIException
+	{
+
+		
+		List<String> resources = new ArrayList<String>();
+		resources.add("project:path/file1");
+		resources.add("project:path/file2");
+		resources.add("project:path/file3");
+		resources.add("project:path/file4");
+		resources.add("project:path/file5");
+		
+		
+		List<String> touchedFilesRev1 = new ArrayList<String>();
+		touchedFilesRev1.add("file1");
+		touchedFilesRev1.add("file2");
+		List<String> touchedFilesRev2 = new ArrayList<String>();
+		touchedFilesRev2.add("file2");
+		touchedFilesRev2.add("file4");
+		
+		HashMap<String, List<String>> commitMessagesAndTouchedFilesForEachRevision = new HashMap<String, List<String>>();
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10000", touchedFilesRev1);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a g 10000", touchedFilesRev1);
+		commitMessagesAndTouchedFilesForEachRevision.put("this g 10000", touchedFilesRev2);
+		
+		
+		HashMap<Integer, String> mapOfBugsRelatedToTheirVersion = new HashMap<Integer, String>();
+		mapOfBugsRelatedToTheirVersion.put(10000, "1.0");
+		
+		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
+		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
+		
+		List<AbstractMap.SimpleEntry<String, String>> versionMap = new ArrayList<AbstractMap.SimpleEntry<String,String>>();
+		AbstractMap.SimpleEntry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("1.0", "201415");
+		
+		versionMap.add(version1);
+		
+		HashMap<String, HashMap<String, Integer>> expectedMapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
+		HashMap<String, Integer> version10NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();
+		version10NumberOfDefectsRelatedToResource.put("file1", 1);
+		version10NumberOfDefectsRelatedToResource.put("file2", 2);
+		version10NumberOfDefectsRelatedToResource.put("file3", 0);
+		version10NumberOfDefectsRelatedToResource.put("file4", 1);
+		version10NumberOfDefectsRelatedToResource.put("file5", 0);
+		expectedMapOfNumberOfDefectsRelatedToResource.put("1.0", version10NumberOfDefectsRelatedToResource);
+		
+		Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader);
+		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(versionMap,resources, "someBranch"));
 	}
 }

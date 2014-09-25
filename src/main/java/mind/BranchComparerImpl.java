@@ -66,14 +66,4 @@ AbstractTreeIterator newTreeParser = prepareTreeParser(gitConnection.getReposito
 			walk.dispose();
 			return oldTreeParser;
 		}
-		 
-//		 public static Repository openRepository() throws IOException {
-//			 FileRepositoryBuilder builder = new FileRepositoryBuilder();
-//			 builder.setGitDir(new File("C:\\Users\\TechDebt\\workspacenew\\typo3\\TYPO3.CMS_3-6//.git"));
-//			 Repository repository = builder
-//			 .readEnvironment() // scan environment GIT_* variables
-//			 .findGitDir() // scan up the file system tree
-//			 .build();
-//			 return repository;
-//			 }
 }
