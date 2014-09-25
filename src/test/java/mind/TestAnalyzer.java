@@ -44,7 +44,6 @@ public class TestAnalyzer {
 		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("0","201305");
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getKey(), version0.getKey(), "someClass");
-		//Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass("1", "someClass", issueTrackerReader);
 		HashMap<String, Integer> violationsPerRule = new HashMap<String, Integer>();
 		violationsPerRule.put("r1", 1);
 		violationsPerRule.put("r2", 0);
@@ -52,7 +51,7 @@ public class TestAnalyzer {
 		Mockito.doReturn(violationsPerRule).when(sonarReader).getNumberOfViolationsPerRule("201405", "someClass");
 		
 		Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader);
-		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision(version1, version0, "someClass");
+		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision(version1, version0, "someClass", 2);
 		
 		HashMap<String,Integer> expectedRow = new HashMap<String, Integer>();
 		expectedRow.put("r1", 1);
@@ -71,12 +70,11 @@ public class TestAnalyzer {
 		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("v0","201305");
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getKey(), version0.getKey(), "someClass");
-		//Mockito.doReturn(2).when(scmReader).getNumberOfDefectsRelatedToClass(version1.getKey(), "someClass", issueTrackerReader);
 			
 		Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader);
 		
 
-		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision(version1, version0, "someClass");
+		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision(version1, version0, "someClass",2);
 		
 		HashMap<String,Integer> expectedRow = new HashMap<String, Integer>();
 		expectedRow.put("size", 100);
@@ -135,11 +133,6 @@ public class TestAnalyzer {
 		Mockito.doReturn(violationsPerRuleClass2V1).when(sonarReader).getNumberOfViolationsPerRule("20141001", "class2");
 		Mockito.doReturn(violationsPerRuleClass2V2).when(sonarReader).getNumberOfViolationsPerRule("20141002", "class2");
 		
-//		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("v1", "class1", issueTrackerReader);
-//		Mockito.doReturn(7).when(scmReader).getNumberOfDefectsRelatedToClass("v2", "class1", issueTrackerReader);
-//		Mockito.doReturn(5).when(scmReader).getNumberOfDefectsRelatedToClass("v1", "class2", issueTrackerReader);
-//		Mockito.doReturn(3).when(scmReader).getNumberOfDefectsRelatedToClass("v2", "class2", issueTrackerReader);
-		
 		HashMap<Integer, String> mapOfBugsRelatedToTheirVersion = new HashMap<Integer, String>();
 		mapOfBugsRelatedToTheirVersion.put(10001, "v1");
 		mapOfBugsRelatedToTheirVersion.put(10002, "v1");
@@ -151,14 +144,17 @@ public class TestAnalyzer {
 		
 		HashMap<String, List<String>> commitMessagesAndTouchedFilesForEachRevision = new HashMap<String, List<String>>();
 		List<String> touchedFilesRev1 = new ArrayList<String>();
-		touchedFilesRev1.add("file1");
-		touchedFilesRev1.add("file2");
+		touchedFilesRev1.add("class1");
+		touchedFilesRev1.add("class2");
 		List<String> touchedFilesRev2 = new ArrayList<String>();
-		touchedFilesRev2.add("file2");
-		touchedFilesRev2.add("file4");
-		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10000", touchedFilesRev1);
+		touchedFilesRev2.add("class2");
 		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10001", touchedFilesRev2);
-		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug", touchedFilesRev2);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10002", touchedFilesRev1);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug"	  , touchedFilesRev2);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10003", touchedFilesRev2);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10004", touchedFilesRev2);
+		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10005", touchedFilesRev1);
+		
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
 		
@@ -172,28 +168,28 @@ public class TestAnalyzer {
 		HashMap<String, HashMap<String, Integer>> expectedTable = new HashMap<String, HashMap<String,Integer>>();
 		
 		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
-		class1v1_row.put("numberDefects", 5);
+		class1v1_row.put("numberDefects", 1);
 		class1v1_row.put("locTouched", 0);
 		class1v1_row.put("size", 500);
 		class1v1_row.put("r1", 1);
 		class1v1_row.put("r2", 0);
 		
 		HashMap<String, Integer> class1v2_row = new HashMap<String, Integer>();
-		class1v2_row.put("numberDefects", 7);
+		class1v2_row.put("numberDefects", 1);
 		class1v2_row.put("locTouched", 150);
 		class1v2_row.put("size", 550);
 		class1v2_row.put("r1", 5);
 		class1v2_row.put("r2", 7);
 		
 		HashMap<String, Integer> class2v1_row = new HashMap<String, Integer>();
-		class2v1_row.put("numberDefects", 5);
+		class2v1_row.put("numberDefects", 3);
 		class2v1_row.put("locTouched", 0);
 		class2v1_row.put("size", 500);
 		class2v1_row.put("r1", 13);
 		class2v1_row.put("r2", 9);
 
 		HashMap<String, Integer> class2v2_row = new HashMap<String, Integer>();
-		class2v2_row.put("numberDefects", 3);
+		class2v2_row.put("numberDefects", 2);
 		class2v2_row.put("locTouched", 150);
 		class2v2_row.put("size", 550);
 		class2v2_row.put("r1", 0);
@@ -290,10 +286,12 @@ public class TestAnalyzer {
 		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10000", touchedFilesRev1);
 		commitMessagesAndTouchedFilesForEachRevision.put("this is a g 10000", touchedFilesRev1);
 		commitMessagesAndTouchedFilesForEachRevision.put("this g 10000", touchedFilesRev2);
+		commitMessagesAndTouchedFilesForEachRevision.put("this g 10001", touchedFilesRev2);
 		
 		
 		HashMap<Integer, String> mapOfBugsRelatedToTheirVersion = new HashMap<Integer, String>();
 		mapOfBugsRelatedToTheirVersion.put(10000, "1.0");
+		mapOfBugsRelatedToTheirVersion.put(10001, "1.0");
 		
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
@@ -308,7 +306,7 @@ public class TestAnalyzer {
 		version10NumberOfDefectsRelatedToResource.put("file1", 1);
 		version10NumberOfDefectsRelatedToResource.put("file2", 2);
 		version10NumberOfDefectsRelatedToResource.put("file3", 0);
-		version10NumberOfDefectsRelatedToResource.put("file4", 1);
+		version10NumberOfDefectsRelatedToResource.put("file4", 2);
 		version10NumberOfDefectsRelatedToResource.put("file5", 0);
 		expectedMapOfNumberOfDefectsRelatedToResource.put("1.0", version10NumberOfDefectsRelatedToResource);
 		

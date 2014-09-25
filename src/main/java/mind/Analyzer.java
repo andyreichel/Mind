@@ -3,10 +3,12 @@ package mind;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -34,38 +36,30 @@ public class Analyzer {
 	public HashMap<String, HashMap<String, Integer>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException {
-		
-		//branches = getListOfAllRelevantBranches
-		//for(branch : branches)
-		// git.clone(branch)
-		// sonar.execute(branch)
-		//for(resource)
-		// loctouched = getLocTouched(resource)
-		// size = getSize(resource)
-		// getViolations
-		// getDefects
-		
 		List<String> resources = api.getListOfAllResources();
 		List<AbstractMap.SimpleEntry<String, String>> versionMap = api.getMapOfAllVersionsOfProject();
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
-		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(versionMap, resources, "master");
+		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(versionMap, resources, "someBranch");
 		
 		
 		for (String resource : resources) {
 				for(int i = versionMap.size()-1; i > 0 ; i--)
 				{
+					
 					int currentVersionId = i;
 					int previousVersionId = i-1;
+					int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionMap.get(currentVersionId).getKey()).get(resource);
+					
 					table.put(
 					resource + "_" + versionMap.get(currentVersionId).getKey(),
-					getTechnicalDebtRowForRevision(versionMap.get(currentVersionId), versionMap.get(previousVersionId), resource));
+					getTechnicalDebtRowForRevision(versionMap.get(currentVersionId), versionMap.get(previousVersionId), resource, numberOfDefectsForThisResourceInThisVersion));
 				}
 			}
 		return table;
 	}
 
 	public HashMap<String, Integer> getTechnicalDebtRowForRevision(
-			Entry<String, String> currentVersion, Entry<String, String> previousVersion, String className) throws IOException {
+			Entry<String, String> currentVersion, Entry<String, String> previousVersion, String className, int numberDefects) throws IOException {
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 		HashMap<String, Integer> map = sonarReader
 				.getNumberOfViolationsPerRule(currentVersion.getValue(), className);
@@ -82,23 +76,44 @@ public class Analyzer {
 				scmReader.getNumberOfLOCtouched(currentVersion.getKey(), previousVersion.getKey(), className));
 		technicalDebtRow.put("size",
 				sonarReader.getSizeOfClass(currentVersion.getValue(), className));
-
+		technicalDebtRow.put("numberDefects", numberDefects);
 		return technicalDebtRow;
 	}
 	
+	//FIXME: TO COMPLICATED AND VERY VERY SLOW
 	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(List<AbstractMap.SimpleEntry<String, String>> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException
 	{
+		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = getMapOfDefectsRealtedToResource(versionMap, resources, branch);
 		HashMap<String, HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
+		
+		for(Entry<String, HashMap<String, Set<Integer>>> map : mapOfDefectsRelatedToResource.entrySet())
+		{
+			HashMap<String, Integer> resourceToNumberOfDefects = new HashMap<String, Integer>();
+			for(Entry<String, Set<Integer>> resourceCount : map.getValue().entrySet())
+			{
+				resourceToNumberOfDefects.put(resourceCount.getKey(), resourceCount.getValue().size());
+				mapOfNumberOfDefectsRelatedToResource.put(map.getKey(), resourceToNumberOfDefects);
+			}
+			
+		}
+		return mapOfNumberOfDefectsRelatedToResource;
+	}
+	
+	
+	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRealtedToResource(List<AbstractMap.SimpleEntry<String, String>> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException 
+	{
+		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Set<Integer>>>();
 		
 
 		for(Entry<String, String> version : versionMap)
 		{
-			HashMap<String, Integer> resourceToNumberDefectsMap = new HashMap<String, Integer>();
+			HashMap<String, Set<Integer>> resourceToDefectsMap = new HashMap<String, Set<Integer>>();
 			for(String resource : resources)
 			{
-				resourceToNumberDefectsMap.put(ResourceUtils.stripOfClassNameFromClassId(resource), 0);
+				Set<Integer> setOfDefectIds= new HashSet<Integer>();
+				resourceToDefectsMap.put(ResourceUtils.stripOfClassNameFromClassId(resource), setOfDefectIds);
 			}
-			mapOfNumberOfDefectsRelatedToResource.put(version.getKey(), new HashMap<String, Integer>(resourceToNumberDefectsMap));
+			mapOfDefectsRelatedToResource.put(version.getKey(), new HashMap<String, Set<Integer>>(resourceToDefectsMap));
 		}
 		
 		HashMap<String, List<String>> commitMessagesAndTouchedResourcesForEachRev = scmReader.getCommitMessagesAndTouchedFilesForEachRevision(branch);
@@ -112,13 +127,12 @@ public class Analyzer {
 						for(String resource : commit.getValue())
 						{
 							String strippedResource = ResourceUtils.stripOfClassNameFromClassId(resource);
-							HashMap<String, Integer> resourceToNumberOfDef = mapOfNumberOfDefectsRelatedToResource.get(bug.getValue());
-							resourceToNumberOfDef.put(resource, resourceToNumberOfDef.get(strippedResource).intValue()+1);
+							HashMap<String, Set<Integer>> resourceToNumberOfDef = mapOfDefectsRelatedToResource.get(bug.getValue());
+							resourceToNumberOfDef.get(strippedResource).add(bug.getKey());
 						}
 					}
 				}
 		}
-		
-		return mapOfNumberOfDefectsRelatedToResource;
+		return mapOfDefectsRelatedToResource;
 	}
 }

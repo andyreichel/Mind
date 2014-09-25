@@ -18,11 +18,11 @@ public class Main {
 	{
 		Configuration config = new PropertiesConfiguration("mind.properties");
 		GitApi api = new GitApiImpl(config);
-		HashMap<String, List<String>> commits = api.getCommitMessagesAndTouchedFilesForEachRevision("2.4-stable");
 		SonarWebApi sonar = new SonarWebApiImpl(config);
 		List<String> resources = sonar.getListOfAllResources();
 		System.out.println(resources.get(0));
 		
+	//	Analyzer ana = new Analyzer(sonarReader, api, issueTrackerReader, scmReader)
 		
 
 	}
