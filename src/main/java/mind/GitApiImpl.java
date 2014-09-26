@@ -57,7 +57,7 @@ public class GitApiImpl implements GitApi {
 		String gitPw = config.getString("git.password");
 		gitUrl = config.getString("git.url");
 		workingDir = config.getString("git.workingdir");
-		branches = config.getString("git.mainbranches").split(";");
+		branches = config.getString("git.versiontags").split(";");
 		
 
 		cp = new UsernamePasswordCredentialsProvider(gitName, gitPw);

@@ -56,6 +56,7 @@ public class SonarWebApiImpl implements SonarWebApi {
 
 	public List<AbstractMap.SimpleEntry<String, String>> getMapOfAllVersionsOfProject() throws IOException {
 		String versionsJSON = sendGet(sonarHost + "/api/events?resource=" + project + "&categories=Version");
+		System.out.println(versionsJSON);
 		return JsonParserForSonarApiResponses.getMapOfAllVersions(versionsJSON);
 	}
 
