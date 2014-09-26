@@ -1,8 +1,8 @@
 package mind;
 
 import java.io.IOException;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.JSONException;
@@ -51,9 +51,18 @@ public class SonarReaderImpl implements SonarReader {
 		return api.getListOfAllResources();
 	}
 
-	public List<SimpleEntry<String, String>> getMapOfAllVersionsOfProject()
-			throws IOException {
-		return api.getMapOfAllVersionsOfProject();
+	public LinkedHashMap<String, String> getMapOfAllConfiguredVersionsOfProject()
+			throws IOException, ConfiguredVersionNotExistInSonarException {
+		LinkedHashMap<String, String> mapOfAllConfiguredVersions = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> mapOfAllVersions = api.getMapOfAllVersionsOfProject();
+		for(String version : api.getConfiguredVersions())
+		{
+			if(!mapOfAllVersions.containsKey(version))
+			{
+				throw new ConfiguredVersionNotExistInSonarException(version + " not found in sonar.");
+			}
+			mapOfAllConfiguredVersions.put(version, mapOfAllVersions.get(version));
+		}
+		return mapOfAllConfiguredVersions;
 	}
-
 }

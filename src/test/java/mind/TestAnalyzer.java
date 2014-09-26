@@ -5,6 +5,7 @@ import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -68,6 +69,7 @@ public class TestAnalyzer {
 	{
 		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","201405");
 		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("v0","201305");
+		
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getKey(), version0.getKey(), "someClass");
 			
@@ -85,7 +87,7 @@ public class TestAnalyzer {
 	}
 	
 	@Test(expected = VersionIdentifierConflictException.class)
-	public void getTechnicalDebtTableTest_versionInSonarAndIssueTrackerAreNotEqual() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException
+	public void getTechnicalDebtTableTest_versionInSonarAndIssueTrackerAreNotEqual() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException
 	{
 		List<String> allResources = new ArrayList<String>();
 		allResources.add("class1");
@@ -93,17 +95,13 @@ public class TestAnalyzer {
 		List<String> allRules = new ArrayList<String>();
 		allRules.add("r1");
 		
-		List<AbstractMap.SimpleEntry<String, String>> allVersions = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
-		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1-stable","20141001");
-		Entry<String, String> time0 = new AbstractMap.SimpleEntry<String, String>("0","0");
-		allVersions.add(new AbstractMap.SimpleEntry<String, String>(time0.getKey(), time0.getValue()));
-		allVersions.add(new AbstractMap.SimpleEntry<String, String>(version1.getKey(), version1.getValue()));
+		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
+		allVersions.put("v1-stable","20141001");
 		
-		
-		Mockito.doReturn(allResources).when(api).getListOfAllResources();
-		Mockito.doReturn(allVersions).when(api).getMapOfAllVersionsOfProject();
+		Mockito.doReturn(allResources).when(sonarReader).getListOfAllResources();
+		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), time0.getKey(), "class1");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched("v1-stable", "0", "class1");
 		Mockito.doReturn("someBranch").when(scmReader).getHeadBranch();
 		
 		HashMap<String, Integer> violationsPerRuleClass1V1 = new HashMap<String, Integer>();
@@ -144,7 +142,7 @@ public class TestAnalyzer {
 	}
 	
 	@Test 
-	public void getTechnicalDebtTableTest_resourcesFromCommitAreNotTheSameAsInSonar() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException
+	public void getTechnicalDebtTableTest_resourcesFromCommitAreNotTheSameAsInSonar() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException
 	{
 		List<String> allResources = new ArrayList<String>();
 		allResources.add("class1");
@@ -152,17 +150,15 @@ public class TestAnalyzer {
 		List<String> allRules = new ArrayList<String>();
 		allRules.add("r1");
 		
-		List<AbstractMap.SimpleEntry<String, String>> allVersions = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
+		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
 		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","20141001");
-		Entry<String, String> time0 = new AbstractMap.SimpleEntry<String, String>("0","0");
-		allVersions.add(new AbstractMap.SimpleEntry<String, String>(time0.getKey(), time0.getValue()));
-		allVersions.add(new AbstractMap.SimpleEntry<String, String>(version1.getKey(), version1.getValue()));
+		allVersions.put(version1.getKey(), version1.getValue());
 		
 		
 		Mockito.doReturn(allResources).when(sonarReader).getListOfAllResources();
-		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllVersionsOfProject();
+		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), time0.getKey(), "class1");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), "0", "class1");
 		Mockito.doReturn("someBranch").when(scmReader).getHeadBranch();
 		
 		HashMap<String, Integer> violationsPerRuleClass1V1 = new HashMap<String, Integer>();
@@ -203,7 +199,7 @@ public class TestAnalyzer {
 	}
 	
 	@Test 
-	public void getTechnicalDebtTableTest() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException
+	public void getTechnicalDebtTableTest() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException
 	{
 		List<String> allResources = new ArrayList<String>();
 		allResources.add("class1");
@@ -213,21 +209,19 @@ public class TestAnalyzer {
 		allRules.add("r1");
 		allRules.add("r2");
 		
-		List<AbstractMap.SimpleEntry<String, String>> allVersions = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
+		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
 		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","20141001");
 		Entry<String, String> version2 = new AbstractMap.SimpleEntry<String, String>("v2","20141002");
-		Entry<String, String> time0 = new AbstractMap.SimpleEntry<String, String>("0","0");
-		allVersions.add(new AbstractMap.SimpleEntry<String, String>(time0.getKey(), time0.getValue()));
-		allVersions.add(new AbstractMap.SimpleEntry<String, String>(version1.getKey(), version1.getValue()));
-		allVersions.add(new AbstractMap.SimpleEntry<String, String>(version2.getKey(), version2.getValue()));
+		allVersions.put(version1.getKey(), version1.getValue());
+		allVersions.put(version2.getKey(), version2.getValue());
 		
 		
 		Mockito.doReturn(allResources).when(sonarReader).getListOfAllResources();
-		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllVersionsOfProject();
+		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), time0.getKey(), "class1");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), "0", "class1");
 		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getKey(), version1.getKey(), "class1");
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), time0.getKey(), "class2");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), "0", "class2");
 		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getKey(), version1.getKey(), "class2");
 		Mockito.doReturn("someBranch").when(scmReader).getHeadBranch();
 		
@@ -354,12 +348,9 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		List<AbstractMap.SimpleEntry<String, String>> versionMap = new ArrayList<AbstractMap.SimpleEntry<String,String>>();
-		AbstractMap.SimpleEntry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("1.0", "201415");
-		AbstractMap.SimpleEntry<String, String> version2 = new AbstractMap.SimpleEntry<String, String>("1.1", "201416");
-		
-		versionMap.add(version1);
-		versionMap.add(version2);
+		LinkedHashMap<String, String> versionMap = new LinkedHashMap<String, String>();
+		versionMap.put("1.0", "201415");
+		versionMap.put("1.1", "201416");
 		
 		HashMap<String, HashMap<String, Integer>> expectedMapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
 		HashMap<String, Integer> version10NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();
@@ -415,10 +406,8 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		List<AbstractMap.SimpleEntry<String, String>> versionMap = new ArrayList<AbstractMap.SimpleEntry<String,String>>();
-		AbstractMap.SimpleEntry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("1.0", "201415");
-		
-		versionMap.add(version1);
+		LinkedHashMap<String, String> versionMap = new LinkedHashMap<String, String>();
+		versionMap.put("1.0", "201415");
 		
 		HashMap<String, HashMap<String, Integer>> expectedMapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
 		HashMap<String, Integer> version10NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();
@@ -461,10 +450,8 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		List<AbstractMap.SimpleEntry<String, String>> versionMap = new ArrayList<AbstractMap.SimpleEntry<String,String>>();
-		AbstractMap.SimpleEntry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("1.0", "201415");
-		
-		versionMap.add(version1);
+		LinkedHashMap<String, String> versionMap = new LinkedHashMap<String, String>();
+		versionMap.put("1.0", "201415");
 		
 		HashMap<String, HashMap<String, Integer>> expectedMapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
 		HashMap<String, Integer> version10NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();

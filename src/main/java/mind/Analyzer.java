@@ -5,8 +5,10 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -32,22 +34,24 @@ public class Analyzer {
 
 	public HashMap<String, HashMap<String, Integer>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
-			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException {
+			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException {
 		List<String> resources = sonarReader.getListOfAllResources();
-		List<AbstractMap.SimpleEntry<String, String>> versionMap = sonarReader.getMapOfAllVersionsOfProject();
+		LinkedHashMap<String, String> versionMap = sonarReader.getMapOfAllConfiguredVersionsOfProject();
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
 		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(versionMap, resources, scmReader.getHeadBranch());
 		
 		for (String resource : resources) {
-				for(int i = versionMap.size()-1; i > 0 ; i--)
+			Iterator<Entry<String, String>> it = versionMap.entrySet().iterator();
+			Map.Entry<String, String> previousVersion = new AbstractMap.SimpleEntry<String, String>("0", "0");
+				while(it.hasNext())
 				{
-					int currentVersionId = i;
-					int previousVersionId = i-1;
-					int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionMap.get(currentVersionId).getKey()).get(resource);
+					Map.Entry<String, String> currentVersion = it.next();
+					int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(currentVersion.getKey()).get(resource);
 					
 					table.put(
-					resource + "_" + versionMap.get(currentVersionId).getKey(),
-					getTechnicalDebtRowForRevision(versionMap.get(currentVersionId), versionMap.get(previousVersionId), resource, numberOfDefectsForThisResourceInThisVersion));
+					resource + "_" + currentVersion.getKey(),
+					getTechnicalDebtRowForRevision(currentVersion, previousVersion, resource, numberOfDefectsForThisResourceInThisVersion));
+					previousVersion = currentVersion;
 				}
 			}
 		return table;
@@ -76,9 +80,9 @@ public class Analyzer {
 	}
 	
 	//FIXME: TO COMPLICATED AND VERY VERY SLOW
-	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(List<AbstractMap.SimpleEntry<String, String>> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException
+	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(HashMap<String, String> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException
 	{
-		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = getMapOfDefectsRealtedToResource(versionMap, resources, branch);
+		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = getMapOfDefectsRelatedToResource(versionMap, resources, branch);
 		HashMap<String, HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
 		
 		for(Entry<String, HashMap<String, Set<Integer>>> map : mapOfDefectsRelatedToResource.entrySet())
@@ -95,12 +99,12 @@ public class Analyzer {
 	}
 	
 	
-	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRealtedToResource(List<AbstractMap.SimpleEntry<String, String>> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException 
+	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRelatedToResource(HashMap<String, String> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException 
 	{
 		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Set<Integer>>>();
 		
 
-		for(Entry<String, String> version : versionMap)
+		for(Entry<String, String> version : versionMap.entrySet())
 		{
 			HashMap<String, Set<Integer>> resourceToDefectsMap = new HashMap<String, Set<Integer>>();
 			for(String resource : resources)

@@ -2,6 +2,7 @@ package mind;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
@@ -18,12 +19,12 @@ public class TestJsonParserForSonarApiResponses {
 				+ "{\"id\":\"33\",\"rk\":\"Typo3\",\"n\":\"3.6\",\"c\":\"Version\",\"dt\":\"2014-09-11T10:10:08-0400\"},"
 				+ "{\"id\":\"31\",\"rk\":\"Typo3\",\"n\":\"1.0\",\"c\":\"Version\",\"dt\":\"2014-09-10T15:38:12-0400\"}]";
 		
-		List<AbstractMap.SimpleEntry<String, String>> expectedMap = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
-		expectedMap.add(new AbstractMap.SimpleEntry<String, String>("4.0", "2014-09-11T10:11:40-0400"));
-		expectedMap.add(new AbstractMap.SimpleEntry<String, String>("3.8", "2014-09-11T10:11:07-0400"));
-		expectedMap.add(new AbstractMap.SimpleEntry<String, String>("3.7", "2014-09-11T10:10:37-0400"));
-		expectedMap.add(new AbstractMap.SimpleEntry<String, String>("3.6", "2014-09-11T10:10:08-0400"));
-		expectedMap.add(new AbstractMap.SimpleEntry<String, String>("1.0", "2014-09-10T15:38:12-0400"));
+		HashMap<String, String> expectedMap = new HashMap<String, String>();
+		expectedMap.put("4.0", "2014-09-11T10:11:40-0400");
+		expectedMap.put("3.8", "2014-09-11T10:11:07-0400");
+		expectedMap.put("3.7", "2014-09-11T10:10:37-0400");
+		expectedMap.put("3.6", "2014-09-11T10:10:08-0400");
+		expectedMap.put("1.0", "2014-09-10T15:38:12-0400");
 		
 		Assert.assertEquals(expectedMap, JsonParserForSonarApiResponses.getMapOfAllVersions(testJson));
 	}
@@ -41,7 +42,7 @@ public class TestJsonParserForSonarApiResponses {
 	{
 		String testJson = "[]";
 		
-		List<AbstractMap.SimpleEntry<String, String>> expectedMap = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
+		HashMap<String, String> expectedMap = new HashMap<String, String>();
 		
 		Assert.assertEquals(expectedMap, JsonParserForSonarApiResponses.getMapOfAllVersions(testJson));
 	}
@@ -51,8 +52,8 @@ public class TestJsonParserForSonarApiResponses {
 	{
 		String testJson = "[{\"id\":\"36\",\"rk\":\"Typo3\",\"n\":\"4.0\",\"c\":\"Version\",\"dt\":\"2014-09-11T10:11:40-0400\"}]";
 		
-		List<AbstractMap.SimpleEntry<String, String>> expectedMap = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
-		expectedMap.add(new AbstractMap.SimpleEntry<String, String>("4.0", "2014-09-11T10:11:40-0400"));
+		HashMap<String, String> expectedMap = new HashMap<String, String>();
+		expectedMap.put("4.0", "2014-09-11T10:11:40-0400");
 		
 		Assert.assertEquals(expectedMap, JsonParserForSonarApiResponses.getMapOfAllVersions(testJson));
 	}

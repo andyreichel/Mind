@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -16,11 +17,13 @@ import org.json.JSONObject;
 public class SonarWebApiImpl implements SonarWebApi {
 	private String sonarHost; 
 	private String project;
+	private List<String> configuredVersions;
 	
 	public SonarWebApiImpl(Configuration config)
 	{
 		this.sonarHost = config.getString("sonar.host");
 		this.project = config.getString("sonar.project");
+		this.configuredVersions = Arrays.asList(config.getString("sonar.versiontags").split(";"));
 	}
 	
 	public List<String> getListOfAllRules() throws IOException
@@ -54,7 +57,7 @@ public class SonarWebApiImpl implements SonarWebApi {
 		return JsonParserForSonarApiResponses.getNumberOfViolationsOfSpecificRuleForResource(numberOfViolationsJSON);
 	}
 
-	public List<AbstractMap.SimpleEntry<String, String>> getMapOfAllVersionsOfProject() throws IOException {
+	public LinkedHashMap<String, String> getMapOfAllVersionsOfProject() throws IOException {
 		String versionsJSON = sendGet(sonarHost + "/api/events?resource=" + project + "&categories=Version");
 		System.out.println(versionsJSON);
 		return JsonParserForSonarApiResponses.getMapOfAllVersions(versionsJSON);
@@ -90,5 +93,10 @@ public class SonarWebApiImpl implements SonarWebApi {
 		in.close();
 
 		return response.toString();
+	}
+	
+	public List<String> getConfiguredVersions()
+	{
+		return configuredVersions;
 	}
 }

@@ -12,7 +12,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 import com.taskadapter.redmineapi.RedmineException;
 
 public class Main {
-	public static void main(String[] args) throws ConfigurationException, InvalidRemoteException, TransportException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException
+	public static void main(String[] args) throws ConfigurationException, InvalidRemoteException, TransportException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException
 	{
 		Configuration config = new PropertiesConfiguration("mind.properties");
 		

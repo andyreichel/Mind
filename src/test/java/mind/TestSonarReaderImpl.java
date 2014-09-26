@@ -2,8 +2,10 @@ package mind;
 
 import java.io.IOException;
 import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.junit.Assert;
@@ -95,8 +97,58 @@ public class TestSonarReaderImpl {
 	}
 	
 	@Test
-	public void getMapOfAllVersionsOfProjectTest_onlySubsetOfVersionsConfigured()
+	public void getMapOfAllConfiguredVersionsOfProjectTest_successfull() throws IOException, ConfiguredVersionNotExistInSonarException
 	{
+		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
+		allVersions.put("version1", "2014");
 		
+		List<String> allConfiguredVersions = new ArrayList<String>();
+		allConfiguredVersions.add("version1");
+		
+		Mockito.doReturn(allConfiguredVersions).when(api).getConfiguredVersions();
+		Mockito.doReturn(allVersions).when(api).getMapOfAllVersionsOfProject();
+		
+		LinkedHashMap<String, String> expectedMapOfAllConfiguredVersionsOfProject = new LinkedHashMap<String, String>();
+		expectedMapOfAllConfiguredVersionsOfProject.put("version1", "2014");
+		
+		SonarReaderImpl sreader = new SonarReaderImpl(api);
+		Assert.assertEquals(expectedMapOfAllConfiguredVersionsOfProject, sreader.getMapOfAllConfiguredVersionsOfProject());
+	}
+	
+	@Test
+	public void getMapOfAllConfiguredVersionsOfProjectTest_onlySubsetConfigured() throws IOException, ConfiguredVersionNotExistInSonarException
+	{
+		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
+		allVersions.put("version1", "2014");
+		allVersions.put("version2", "2014");
+		
+		List<String> allConfiguredVersions = new ArrayList<String>();
+		allConfiguredVersions.add("version1");
+		
+		Mockito.doReturn(allConfiguredVersions).when(api).getConfiguredVersions();
+		Mockito.doReturn(allVersions).when(api).getMapOfAllVersionsOfProject();
+		
+		LinkedHashMap<String, String> expectedMapOfAllConfiguredVersionsOfProject = new LinkedHashMap<String, String>();
+		expectedMapOfAllConfiguredVersionsOfProject.put("version1", "2014");
+		
+		SonarReaderImpl sreader = new SonarReaderImpl(api);
+		Assert.assertEquals(expectedMapOfAllConfiguredVersionsOfProject, sreader.getMapOfAllConfiguredVersionsOfProject());
+	}
+	
+	@Test(expected=ConfiguredVersionNotExistInSonarException.class)
+	public void getMapOfAllConfiguredVersionsOfProjectTest_configuredVersionsDoNotExistInSonar() throws IOException, ConfiguredVersionNotExistInSonarException
+	{
+		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
+		allVersions.put("version1", "2014");
+		
+		List<String> allConfiguredVersions = new ArrayList<String>();
+		allConfiguredVersions.add("blubb");
+		
+		Mockito.doReturn(allConfiguredVersions).when(api).getConfiguredVersions();
+		Mockito.doReturn(allVersions).when(api).getMapOfAllVersionsOfProject();
+		
+		
+		SonarReaderImpl sreader = new SonarReaderImpl(api);
+		sreader.getMapOfAllConfiguredVersionsOfProject();
 	}
 }
