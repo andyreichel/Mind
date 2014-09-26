@@ -20,32 +20,27 @@ import com.taskadapter.redmineapi.RedmineException;
 
 public class Analyzer {
 	private SonarReader sonarReader;
-	private SonarWebApi api;
 	private IssueTrackerReader issueTrackerReader;
 	private SCMReader scmReader;
 	HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = new HashMap<String, HashMap<String,Integer>>();
 
-	public Analyzer(SonarReader sonarReader, SonarWebApi api,
-			IssueTrackerReader issueTrackerReader, SCMReader scmReader) {
+	public Analyzer(SonarReader sonarReader, IssueTrackerReader issueTrackerReader, SCMReader scmReader) {
 		this.sonarReader = sonarReader;
-		this.api = api;
 		this.issueTrackerReader = issueTrackerReader;
 		this.scmReader = scmReader;
 	}
 
 	public HashMap<String, HashMap<String, Integer>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
-			TransportException, GitAPIException, RedmineException {
-		List<String> resources = api.getListOfAllResources();
-		List<AbstractMap.SimpleEntry<String, String>> versionMap = api.getMapOfAllVersionsOfProject();
+			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException {
+		List<String> resources = sonarReader.getListOfAllResources();
+		List<AbstractMap.SimpleEntry<String, String>> versionMap = sonarReader.getMapOfAllVersionsOfProject();
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
-		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(versionMap, resources, "someBranch");
-		
+		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(versionMap, resources, scmReader.getHeadBranch());
 		
 		for (String resource : resources) {
 				for(int i = versionMap.size()-1; i > 0 ; i--)
 				{
-					
 					int currentVersionId = i;
 					int previousVersionId = i-1;
 					int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionMap.get(currentVersionId).getKey()).get(resource);
@@ -59,7 +54,7 @@ public class Analyzer {
 	}
 
 	public HashMap<String, Integer> getTechnicalDebtRowForRevision(
-			Entry<String, String> currentVersion, Entry<String, String> previousVersion, String className, int numberDefects) throws IOException {
+			Entry<String, String> currentVersion, Entry<String, String> previousVersion, String className, int numberDefects) throws IOException, NoSuchBranchException {
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 		HashMap<String, Integer> map = sonarReader
 				.getNumberOfViolationsPerRule(currentVersion.getValue(), className);
@@ -81,7 +76,7 @@ public class Analyzer {
 	}
 	
 	//FIXME: TO COMPLICATED AND VERY VERY SLOW
-	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(List<AbstractMap.SimpleEntry<String, String>> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException
+	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(List<AbstractMap.SimpleEntry<String, String>> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException
 	{
 		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = getMapOfDefectsRealtedToResource(versionMap, resources, branch);
 		HashMap<String, HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
@@ -100,7 +95,7 @@ public class Analyzer {
 	}
 	
 	
-	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRealtedToResource(List<AbstractMap.SimpleEntry<String, String>> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException 
+	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRealtedToResource(List<AbstractMap.SimpleEntry<String, String>> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException 
 	{
 		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Set<Integer>>>();
 		
@@ -111,7 +106,7 @@ public class Analyzer {
 			for(String resource : resources)
 			{
 				Set<Integer> setOfDefectIds= new HashSet<Integer>();
-				resourceToDefectsMap.put(ResourceUtils.stripOfClassNameFromClassId(resource), setOfDefectIds);
+				resourceToDefectsMap.put(resource, setOfDefectIds);
 			}
 			mapOfDefectsRelatedToResource.put(version.getKey(), new HashMap<String, Set<Integer>>(resourceToDefectsMap));
 		}
@@ -126,9 +121,14 @@ public class Analyzer {
 					{
 						for(String resource : commit.getValue())
 						{
-							String strippedResource = ResourceUtils.stripOfClassNameFromClassId(resource);
 							HashMap<String, Set<Integer>> resourceToNumberOfDef = mapOfDefectsRelatedToResource.get(bug.getValue());
-							resourceToNumberOfDef.get(strippedResource).add(bug.getKey());
+							if(resourceToNumberOfDef == null)
+							{
+								throw new VersionIdentifierConflictException("Check if versions in SCM, Issue Tracker and Git are the same");
+							}
+								 
+							if(resourceToNumberOfDef.containsKey(resource))
+								resourceToNumberOfDef.get(resource).add(bug.getKey());
 						}
 					}
 				}

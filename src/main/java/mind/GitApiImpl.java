@@ -36,6 +36,7 @@ public class GitApiImpl implements GitApi {
 	private CredentialsProvider cp;
 	private String gitUrl;
 	private String workingDir;
+	String[] branches;
 	
 	public GitApiImpl(Configuration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException
 	{
@@ -56,6 +57,8 @@ public class GitApiImpl implements GitApi {
 		String gitPw = config.getString("git.password");
 		gitUrl = config.getString("git.url");
 		workingDir = config.getString("git.workingdir");
+		branches = config.getString("git.mainbranches").split(";");
+		
 
 		cp = new UsernamePasswordCredentialsProvider(gitName, gitPw);
 
@@ -189,5 +192,13 @@ public class GitApiImpl implements GitApi {
 	public Repository getRepository()
 	{
 		return repo;
+	}
+
+	public String getHeadBranch() throws NoSuchBranchException {
+		if(branches.length == 0)
+		{
+			throw new NoSuchBranchException("No branches available");
+		}
+		return branches[branches.length-1];
 	}
 }

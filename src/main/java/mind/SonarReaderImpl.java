@@ -1,6 +1,7 @@
 package mind;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +45,15 @@ public class SonarReaderImpl implements SonarReader {
 			return 0;
 		}
 		
+	}
+
+	public List<String> getListOfAllResources() throws IOException {
+		return api.getListOfAllResources();
+	}
+
+	public List<SimpleEntry<String, String>> getMapOfAllVersionsOfProject()
+			throws IOException {
+		return api.getMapOfAllVersionsOfProject();
 	}
 
 }

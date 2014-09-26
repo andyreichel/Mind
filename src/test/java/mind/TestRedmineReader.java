@@ -98,6 +98,5 @@ public class TestRedmineReader {
 		
 		RedmineReader redmineReader = new RedmineReader(redmineApi);
 		Assert.assertEquals(expectedMapOfBugsRelatedToTheirVersion, redmineReader.getMapOfBugsRelatedToTheirVersion());
-		
 	}
 }

@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
@@ -23,23 +24,23 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 public class BranchComparerImpl implements BranchComparer {
-	GitApiImpl gitConnection;
+	GitApi gitApi;
 	
-	public BranchComparerImpl(GitApiImpl gitConnection)
+	public BranchComparerImpl(GitApi gitApi)
 	{
-		this.gitConnection = gitConnection;
+		this.gitApi = gitApi;
 	}
 	
 	public HashMap<String, Integer> getMapWithNumberOfChangesPerResource(
-			String branchName1, String branchName2) throws IOException{
+			String branchName1, String branchName2) throws IOException, NoSuchBranchException{
 		OutputStream out = new ByteArrayOutputStream();
 		DiffFormatter formatter= new DiffFormatter(out);
-		formatter.setRepository(gitConnection.getRepository());
+		formatter.setRepository(gitApi.getRepository());
 		formatter.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
-		AbstractTreeIterator oldTreeParser = prepareTreeParser(gitConnection.getRepository(),
-		"refs/remotes/origin/TYPO3_3-6");
-AbstractTreeIterator newTreeParser = prepareTreeParser(gitConnection.getRepository(),
-		"refs/remotes/origin/TYPO3_3-7");
+		AbstractTreeIterator oldTreeParser = prepareTreeParser(gitApi.getRepository(),
+		"refs/remotes/origin/" + branchName1);
+AbstractTreeIterator newTreeParser = prepareTreeParser(gitApi.getRepository(),
+		"refs/remotes/origin/" + branchName2);
 		formatter.setContext(0);
 		List<DiffEntry> diffs = formatter.scan(oldTreeParser, newTreeParser);
 		formatter.format(diffs);
@@ -49,10 +50,14 @@ AbstractTreeIterator newTreeParser = prepareTreeParser(gitConnection.getReposito
 	
 	 public static AbstractTreeIterator prepareTreeParser(
 				Repository repository, String ref) throws IOException,
-				MissingObjectException, IncorrectObjectTypeException {
+				MissingObjectException, IncorrectObjectTypeException, NoSuchBranchException {
 			// from the commit we can build the tree which allows us to construct
 			// the TreeParser
 			Ref head = repository.getRef(ref);
+			if(head == null)
+			{
+				throw new NoSuchBranchException("Ref " + ref + " not found.");
+			}
 			RevWalk walk = new RevWalk(repository);
 			RevCommit commit = walk.parseCommit(head.getObjectId());
 			RevTree tree = walk.parseTree(commit.getTree().getId());

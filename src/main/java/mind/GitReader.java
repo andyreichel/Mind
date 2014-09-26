@@ -11,29 +11,19 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 public class GitReader implements SCMReader {
 	BranchComparer branchComparer;
-	GitApiImpl gitApi;
+	GitApi gitApi;
 	
-	public GitReader(GitApiImpl gitApi, BranchComparer branchComparer) throws IOException,
+	public GitReader(GitApi gitApi, BranchComparer branchComparer) throws IOException,
 			InvalidRemoteException, TransportException, GitAPIException {
 		this.branchComparer = branchComparer;
 		this.gitApi = gitApi;
 	}
-	
-	public int getSizeOfClass(String version, String className)
-			throws IOException {
-		return 0;
-	}
 
-	public int getNumberOfDefectsRelatedToClass(String version,
-			String className, IssueTrackerReader itReader) {
-		return 0;
-	}
-
-	public int getNumberOfLOCtouched(String branchName1, String branchName2, String classId) throws IOException {
+	public int getNumberOfLOCtouched(String branchName1, String branchName2, String classId) throws IOException, NoSuchBranchException {
 		HashMap<String, Integer> mapWithNumberOfChangesPerResource = branchComparer.getMapWithNumberOfChangesPerResource(branchName1, branchName2);
-		if(!mapWithNumberOfChangesPerResource.containsKey(ResourceUtils.stripOfClassNameFromClassId(classId)))
+		if(!mapWithNumberOfChangesPerResource.containsKey(classId))
 			return 0;
-		return mapWithNumberOfChangesPerResource.get(ResourceUtils.stripOfClassNameFromClassId(classId));
+		return mapWithNumberOfChangesPerResource.get(classId);
 	}
 	
 	
@@ -44,5 +34,9 @@ public class GitReader implements SCMReader {
 
 	public BranchComparer getBranchComparer() {
 		return branchComparer;
+	}
+
+	public String getHeadBranch() throws NoSuchBranchException {
+		return gitApi.getHeadBranch();
 	}
 }
