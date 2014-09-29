@@ -56,7 +56,7 @@ public class TestVersionDAO {
 		Mockito.doReturn(sonarVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
 		
 		VersionDAO versionDao = new VersionDAO(scmReader, itReader, sonarReader);
-		Assert.assertEquals(0, versionDao.getIssueTrackerVersion("a"));
+		Assert.assertEquals("0", versionDao.getIssueTrackerVersion("a"));
 	}
 	
 	@Test(expected=UnequalNumberOfVersionsException.class)
@@ -71,6 +71,6 @@ public class TestVersionDAO {
 		Mockito.doReturn(itVersions).when(itReader).getConfiguredVersions();
 		Mockito.doReturn(sonarVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
 		
-		VersionDAO versionDao = new VersionDAO(scmReader, itReader, sonarReader);
+		new VersionDAO(scmReader, itReader, sonarReader);
 	}
 }
