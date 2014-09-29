@@ -1,5 +1,5 @@
 package mind;
-
+//1.0
 import java.io.IOException;
 import java.util.HashMap;
 
