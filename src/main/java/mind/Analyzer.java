@@ -40,7 +40,6 @@ public class Analyzer {
 		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
 		
 		for (String resource : resources) {
-			
 			String previousVersionKey = "0";
 			for(String currentVersionKey : versionDao.getKeySet())
 			{
@@ -50,7 +49,6 @@ public class Analyzer {
 				getTechnicalDebtRowForRevision(currentVersionKey, previousVersionKey, resource, numberOfDefectsForThisResourceInThisVersion));
 				previousVersionKey = currentVersionKey;
 			}
-			
 		}
 		return table;
 	}
@@ -58,9 +56,9 @@ public class Analyzer {
 	public HashMap<String, Integer> getTechnicalDebtRowForRevision(
 			String currentVersionKey, String previousVersionKey, String className, int numberDefects) throws IOException, NoSuchBranchException, KeyNotFoundException {
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
-		HashMap<String, Integer> map = sonarReader
+		HashMap<String, Integer> mapOfViolationsPerRule = sonarReader
 				.getNumberOfViolationsPerRule(versionDao.getSonarDateVersion(currentVersionKey), className);
-		Iterator<Map.Entry<String, Integer>> it = map.entrySet().iterator();
+		Iterator<Map.Entry<String, Integer>> it = mapOfViolationsPerRule.entrySet().iterator();
 
 		while (it.hasNext()) {
 			Map.Entry<String, Integer> pairs = (Map.Entry<String, Integer>) it
@@ -131,10 +129,6 @@ public class Analyzer {
 						for(String resource : commit.getValue())
 						{
 							HashMap<String, Set<Integer>> resourceToNumberOfDef = mapOfDefectsRelatedToResource.get(bug.getValue());
-							if(resourceToNumberOfDef == null)
-							{
-								throw new VersionIdentifierConflictException("Check if versions in SCM, Issue Tracker and Git are the same");
-							}
 								 
 							if(resourceToNumberOfDef.containsKey(resource))
 								resourceToNumberOfDef.get(resource).add(bug.getKey());

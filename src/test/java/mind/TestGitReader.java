@@ -40,8 +40,30 @@ public class TestGitReader {
 	}
 	
 	@Test
-	public void getNumberOfDefectsRelatedToClassTest()
+	public void getNumberOfLOCtouchedTest_2violations() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
 	{
+		HashMap<String, Integer> mapWithNumberOfChangesPerResource = new HashMap<String, Integer>();
+		mapWithNumberOfChangesPerResource.put("class1", 2);
+		Mockito.doReturn(mapWithNumberOfChangesPerResource).when(branchComparer).getMapWithNumberOfChangesPerResource("3-6", "3-7");
+		Configuration config = new PropertiesConfiguration("mind.properties");
+		Mockito.doNothing().when(gitConnection).initGit(config);
+		GitReader git = new GitReader(gitConnection, branchComparer);
 		
+		Assert.assertEquals(2, git.getNumberOfLOCtouched("3-6", "3-7", "class1"));
 	}
+	
+	@Test
+	public void getNumberOfLOCtouchedTest_resourceNotFound() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
+	{
+		HashMap<String, Integer> mapWithNumberOfChangesPerResource = new HashMap<String, Integer>();
+		mapWithNumberOfChangesPerResource.put("blabla", 2);
+		Mockito.doReturn(mapWithNumberOfChangesPerResource).when(branchComparer).getMapWithNumberOfChangesPerResource("3-6", "3-7");
+		Configuration config = new PropertiesConfiguration("mind.properties");
+		Mockito.doNothing().when(gitConnection).initGit(config);
+		GitReader git = new GitReader(gitConnection, branchComparer);
+		
+		Assert.assertEquals(0, git.getNumberOfLOCtouched("3-6", "3-7", "class1"));
+	}
+	
+	
 }
