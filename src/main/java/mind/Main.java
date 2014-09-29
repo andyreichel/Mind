@@ -19,6 +19,10 @@ public class Main {
 		Configuration config = new PropertiesConfiguration("mind.properties");
 		
 		GitApi api = new GitApiImpl(config);
+		api.cloneBranch("1.0-stable");
+		api.cloneBranch("1.1-stable");
+		api.cloneBranch("1.2-stable");
+		api.cloneBranch("1.3-stable");
 		SonarWebApi sonar = new SonarWebApiImpl(config);
 		SonarReader sonarReader = new SonarReaderImpl(sonar);
 		IssueTrackerReader issueTrackerReader = new RedmineReader(new RedmineApiImpl(config));
