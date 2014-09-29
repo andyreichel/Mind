@@ -1,5 +1,6 @@
 package mind;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -26,6 +27,11 @@ public class RedmineApiImpl implements RedmineApi {
 
 	public String getBugKey() throws RedmineException {
 		return config.getString("redmine.bugkey");
+	}
+	
+	public List<String> getConfiguredVersions()
+	{
+		return Arrays.asList(config.getString("redmine.versiontags").split(";"));
 	}
 	
 }

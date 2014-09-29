@@ -13,4 +13,5 @@ public interface SCMReader {
 	public BranchComparer getBranchComparer();
 	public HashMap<String, List<String>> getCommitMessagesAndTouchedFilesForEachRevision(String branch) throws IOException, NoHeadException, GitAPIException;
 	public String getHeadBranch() throws NoSuchBranchException;
+	public List<String> getConfiguredVersions();
 }

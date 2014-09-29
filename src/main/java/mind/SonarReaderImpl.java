@@ -26,8 +26,8 @@ public class SonarReaderImpl implements SonarReader {
 				numberOfViolationsPerRule.put(rule, api.getNumberOfViolationsOfSpecificRuleForResource(version, resourceKey, rule));
 			}catch(JSONException e)
 			{
-				System.out.println(e.getMessage());
-				System.out.println("Version: " + version + " ResourceKey: " + resourceKey + " Rule: " + rule + " not found");
+				//System.out.println(e.getMessage());
+				//System.out.println("Version: " + version + " ResourceKey: " + resourceKey + " Rule: " + rule + " not found");
 			}
 		}
 		
@@ -40,8 +40,8 @@ public class SonarReaderImpl implements SonarReader {
 			return api.getSizeOfResource(resourceKey, versionDate);
 		}catch(JSONException e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println("Version: " + versionDate + " ResourceKey: " + resourceKey + " not found");
+			//System.out.println(e.getMessage());
+			//System.out.println("Version: " + versionDate + " ResourceKey: " + resourceKey + " not found");
 			return 0;
 		}
 		

@@ -42,7 +42,6 @@ public class SonarWebApiImpl implements SonarWebApi {
 
 	public List<String> getListOfAllResources() throws IOException {
 		String resourcesJSON = sendGet(sonarHost + "/api/resources?resource=" + project + ";depth=-1;scopes=FIL");
-		System.out.println(sonarHost + "/api/resources?resource=" + project + ";depth=-1;scopes=FIL" + "++");
 		JSONArray resourcesArray = new JSONArray(resourcesJSON.substring(0, resourcesJSON.length()));
 		List<String> resourcesList = new ArrayList<String>();
 		for(int i = 0; i < resourcesArray.length(); i++)
@@ -59,7 +58,6 @@ public class SonarWebApiImpl implements SonarWebApi {
 
 	public LinkedHashMap<String, String> getMapOfAllVersionsOfProject() throws IOException {
 		String versionsJSON = sendGet(sonarHost + "/api/events?resource=" + project + "&categories=Version");
-		System.out.println(versionsJSON);
 		return JsonParserForSonarApiResponses.getMapOfAllVersions(versionsJSON);
 	}
 
@@ -69,7 +67,6 @@ public class SonarWebApiImpl implements SonarWebApi {
 	}
 
 	private static String sendGet(String url) throws IOException {
-		System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 

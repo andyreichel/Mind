@@ -39,12 +39,25 @@ public class TestAnalyzer {
 	SonarWebApi api;
 	
 	@Test
-	public void getTechnicalDebtRowForRevisionTest_successfull() throws IOException, NoSuchBranchException
+	public void getTechnicalDebtRowForRevisionTest_successfull() throws IOException, NoSuchBranchException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
-		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("1","201405");
-		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("0","201305");
-		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
-		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getKey(), version0.getKey(), "someClass");
+		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
+		sonarVersionMap.put("1", "201405");
+		sonarVersionMap.put("0", "201305");
+		
+		List<String> itVersionMap = new ArrayList<String>();
+		itVersionMap.add("1");
+		itVersionMap.add("0");
+		List<String> scmVersionMap = new ArrayList<String>();
+		scmVersionMap.add("1");
+		scmVersionMap.add("0");
+		
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
+		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
+		
+		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("201405", "someClass");
+		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("1", "0", "someClass");
 		HashMap<String, Integer> violationsPerRule = new HashMap<String, Integer>();
 		violationsPerRule.put("r1", 1);
 		violationsPerRule.put("r2", 0);
@@ -52,7 +65,7 @@ public class TestAnalyzer {
 		Mockito.doReturn(violationsPerRule).when(sonarReader).getNumberOfViolationsPerRule("201405", "someClass");
 		
 		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader);
-		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision(version1, version0, "someClass", 2);
+		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision("1", "0", "someClass", 2);
 		
 		HashMap<String,Integer> expectedRow = new HashMap<String, Integer>();
 		expectedRow.put("r1", 1);
@@ -65,18 +78,32 @@ public class TestAnalyzer {
 	}
 	
 	@Test
-	public void getTechnicalDebtRowForRevisionTest_noViolations() throws IOException, NoSuchBranchException
+	public void getTechnicalDebtRowForRevisionTest_noViolations() throws IOException, NoSuchBranchException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
-		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","201405");
-		Entry<String, String> version0 = new AbstractMap.SimpleEntry<String, String>("v0","201305");
+		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
+		sonarVersionMap.put("v1", "201405");
+		sonarVersionMap.put("v0", "201305");
 		
-		Mockito.doReturn(100).when(sonarReader).getSizeOfClass(version1.getValue(), "someClass");
-		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched(version1.getKey(), version0.getKey(), "someClass");
+		List<String> itVersionMap = new ArrayList<String>();
+		itVersionMap.add("v1");
+		itVersionMap.add("v0");
+		List<String> scmVersionMap = new ArrayList<String>();
+		scmVersionMap.add("v1");
+		scmVersionMap.add("v0");
+		
+		
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
+		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
+		
+		
+		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("201405", "someClass");
+		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("v1", "v0", "someClass");
 			
 		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader);
 		
 
-		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision(version1, version0, "someClass",2);
+		HashMap<String, Integer> analyzedRow = ana.getTechnicalDebtRowForRevision("v1", "v0", "someClass",2);
 		
 		HashMap<String,Integer> expectedRow = new HashMap<String, Integer>();
 		expectedRow.put("size", 100);
@@ -86,63 +113,8 @@ public class TestAnalyzer {
 		Assert.assertEquals(expectedRow, analyzedRow);
 	}
 	
-	@Test(expected = VersionIdentifierConflictException.class)
-	public void getTechnicalDebtTableTest_versionInSonarAndIssueTrackerAreNotEqual() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException
-	{
-		List<String> allResources = new ArrayList<String>();
-		allResources.add("class1");
-		
-		List<String> allRules = new ArrayList<String>();
-		allRules.add("r1");
-		
-		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
-		allVersions.put("v1-stable","20141001");
-		
-		Mockito.doReturn(allResources).when(sonarReader).getListOfAllResources();
-		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
-		Mockito.doReturn(allRules).when(api).getListOfAllRules();
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched("v1-stable", "0", "class1");
-		Mockito.doReturn("someBranch").when(scmReader).getHeadBranch();
-		
-		HashMap<String, Integer> violationsPerRuleClass1V1 = new HashMap<String, Integer>();
-		violationsPerRuleClass1V1.put("r1", 1);
-		
-		Mockito.doReturn(violationsPerRuleClass1V1).when(sonarReader).getNumberOfViolationsPerRule("20141001", "class1");
-		
-		HashMap<Integer, String> mapOfBugsRelatedToTheirVersion = new HashMap<Integer, String>();
-		mapOfBugsRelatedToTheirVersion.put(10001, "v1");
-		
-		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
-		
-		HashMap<String, List<String>> commitMessagesAndTouchedFilesForEachRevision = new HashMap<String, List<String>>();
-		List<String> touchedFilesRev1 = new ArrayList<String>();
-		touchedFilesRev1.add("class1blabla");
-		
-		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10001", touchedFilesRev1);
-		
-		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
-		
-		
-		Mockito.doReturn(500).when(sonarReader).getSizeOfClass("20141001", "class1");
-
-		Analyzer testAna = new Analyzer(sonarReader, issueTrackerReader, scmReader);
-		
-		HashMap<String, HashMap<String, Integer>> expectedTable = new HashMap<String, HashMap<String,Integer>>();
-		
-		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
-		class1v1_row.put("numberDefects", 0);
-		class1v1_row.put("locTouched", 0);
-		class1v1_row.put("size", 500);
-		class1v1_row.put("r1", 1);
-		
-		expectedTable.put("class1_v1", class1v1_row);
-		
-		HashMap<String, HashMap<String, Integer>> actualTable = testAna.getTechnicalDebtTable();
-		Assert.assertEquals(expectedTable, actualTable);
-	}
-	
 	@Test 
-	public void getTechnicalDebtTableTest_resourcesFromCommitAreNotTheSameAsInSonar() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException
+	public void getTechnicalDebtTableTest_resourcesFromCommitAreNotTheSameAsInSonar() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
 		List<String> allResources = new ArrayList<String>();
 		allResources.add("class1");
@@ -154,7 +126,14 @@ public class TestAnalyzer {
 		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","20141001");
 		allVersions.put(version1.getKey(), version1.getValue());
 		
+		List<String> issueTrackerVersions = new ArrayList<String>();
+		issueTrackerVersions.add("v1");
 		
+		List<String> scmVersions = new ArrayList<String>();
+		scmVersions.add("v1");
+		
+		Mockito.doReturn(scmVersions).when(scmReader).getConfiguredVersions();
+		Mockito.doReturn(issueTrackerVersions).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(allResources).when(sonarReader).getListOfAllResources();
 		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
@@ -199,7 +178,7 @@ public class TestAnalyzer {
 	}
 	
 	@Test 
-	public void getTechnicalDebtTableTest() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException
+	public void getTechnicalDebtTableTest() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
 		List<String> allResources = new ArrayList<String>();
 		allResources.add("class1");
@@ -215,9 +194,19 @@ public class TestAnalyzer {
 		allVersions.put(version1.getKey(), version1.getValue());
 		allVersions.put(version2.getKey(), version2.getValue());
 		
+		List<String> issueTrackerVersions = new ArrayList<String>();
+		issueTrackerVersions.add("v1");
+		issueTrackerVersions.add("v2");
+		
+		List<String> scmVersions = new ArrayList<String>();
+		scmVersions.add("v1");
+		scmVersions.add("v2");
+		
+		Mockito.doReturn(scmVersions).when(scmReader).getConfiguredVersions();
+		Mockito.doReturn(issueTrackerVersions).when(issueTrackerReader).getConfiguredVersions();
+		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
 		
 		Mockito.doReturn(allResources).when(sonarReader).getListOfAllResources();
-		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
 		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), "0", "class1");
 		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getKey(), version1.getKey(), "class1");
@@ -318,7 +307,7 @@ public class TestAnalyzer {
 	}
 	
 	@Test
-	public void getMapOfNumberOfDefectsRelatedToResourceTest_successfull() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException
+	public void getMapOfNumberOfDefectsRelatedToResourceTest_successfull() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException
 	{
 		List<String> resources = new ArrayList<String>();
 		resources.add("project:path/file1");
@@ -348,9 +337,21 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		LinkedHashMap<String, String> versionMap = new LinkedHashMap<String, String>();
-		versionMap.put("1.0", "201415");
-		versionMap.put("1.1", "201416");
+		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
+		sonarVersionMap.put("1.0", "201415");
+		sonarVersionMap.put("1.1", "201416");
+		
+		List<String> itVersionMap = new ArrayList<String>();
+		itVersionMap.add("1.0");
+		itVersionMap.add("1.1");
+		List<String> scmVersionMap = new ArrayList<String>();
+		scmVersionMap.add("1.0");
+		scmVersionMap.add("1.1");
+		
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
+		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
+		
 		
 		HashMap<String, HashMap<String, Integer>> expectedMapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
 		HashMap<String, Integer> version10NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();
@@ -369,14 +370,12 @@ public class TestAnalyzer {
 		expectedMapOfNumberOfDefectsRelatedToResource.put("1.1", version11NumberOfDefectsRelatedToResource);
 		
 		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader);
-		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(versionMap,resources, "someBranch"));
+		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(resources, "someBranch"));
 	}
 	
 	@Test
-	public void getMapOfNumberOfDefectsRelatedToResourceTest_referenceOfBugInMultipleMessages() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException
+	public void getMapOfNumberOfDefectsRelatedToResourceTest_referenceOfBugInMultipleMessages() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException
 	{
-
-		
 		List<String> resources = new ArrayList<String>();
 		resources.add("project:path/file1");
 		resources.add("project:path/file2");
@@ -406,8 +405,17 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		LinkedHashMap<String, String> versionMap = new LinkedHashMap<String, String>();
-		versionMap.put("1.0", "201415");
+		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
+		sonarVersionMap.put("1.0", "201415");
+		List<String> itVersionMap = new ArrayList<String>();
+		itVersionMap.add("1.0");
+		List<String> scmVersionMap = new ArrayList<String>();
+		scmVersionMap.add("1.0");
+		
+		
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
+		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
 		
 		HashMap<String, HashMap<String, Integer>> expectedMapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
 		HashMap<String, Integer> version10NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();
@@ -419,11 +427,11 @@ public class TestAnalyzer {
 		expectedMapOfNumberOfDefectsRelatedToResource.put("1.0", version10NumberOfDefectsRelatedToResource);
 		
 		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader);
-		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(versionMap,resources, "someBranch"));
+		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(resources, "someBranch"));
 	}
 	
 	@Test
-	public void getMapOfNumberOfDefectsRelatedToResourceTest_VersionOfRedmineAndSonarAreNotEqual() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException
+	public void getMapOfNumberOfDefectsRelatedToResourceTest_VersionOfRedmineAndSonarAreNotEqual() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException
 	{
 		List<String> resources = new ArrayList<String>();
 		resources.add("project:path/file1");
@@ -450,8 +458,17 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		LinkedHashMap<String, String> versionMap = new LinkedHashMap<String, String>();
-		versionMap.put("1.0", "201415");
+		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
+		sonarVersionMap.put("1.0", "201415");
+		List<String> itVersionMap = new ArrayList<String>();
+		itVersionMap.add("1.0");
+		List<String> scmVersionMap = new ArrayList<String>();
+		scmVersionMap.add("1.0");
+		
+		
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
+		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
 		
 		HashMap<String, HashMap<String, Integer>> expectedMapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
 		HashMap<String, Integer> version10NumberOfDefectsRelatedToResource = new HashMap<String, Integer>();
@@ -463,6 +480,6 @@ public class TestAnalyzer {
 		expectedMapOfNumberOfDefectsRelatedToResource.put("1.0", version10NumberOfDefectsRelatedToResource);
 		
 		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader);
-		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(versionMap,resources, "someBranch"));
+		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(resources, "someBranch"));
 	}
 }

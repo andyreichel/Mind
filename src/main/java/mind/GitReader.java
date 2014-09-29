@@ -39,4 +39,8 @@ public class GitReader implements SCMReader {
 	public String getHeadBranch() throws NoSuchBranchException {
 		return gitApi.getHeadBranch();
 	}
+
+	public List<String> getConfiguredVersions() {
+		return gitApi.getConfiguredVersions();
+	}
 }

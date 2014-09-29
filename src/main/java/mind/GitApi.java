@@ -16,5 +16,6 @@ public interface GitApi {
 	HashMap<String, List<String>> getCommitMessagesAndTouchedFilesForEachRevision(String branch) throws IOException, NoHeadException, GitAPIException;
 	public Repository getRepository();
 	public String getHeadBranch() throws NoSuchBranchException;
+	public List<String> getConfiguredVersions();
 	
 }

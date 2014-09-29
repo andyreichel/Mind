@@ -1,14 +1,11 @@
 package mind;
 
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -25,43 +22,44 @@ public class Analyzer {
 	private IssueTrackerReader issueTrackerReader;
 	private SCMReader scmReader;
 	HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = new HashMap<String, HashMap<String,Integer>>();
+	VersionDAO versionDao;
 
-	public Analyzer(SonarReader sonarReader, IssueTrackerReader issueTrackerReader, SCMReader scmReader) {
+	public Analyzer(SonarReader sonarReader, IssueTrackerReader issueTrackerReader, SCMReader scmReader) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException {
 		this.sonarReader = sonarReader;
 		this.issueTrackerReader = issueTrackerReader;
 		this.scmReader = scmReader;
+		versionDao = new VersionDAO(scmReader, issueTrackerReader, sonarReader);
 	}
 
 	public HashMap<String, HashMap<String, Integer>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
-			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException {
+			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		List<String> resources = sonarReader.getListOfAllResources();
-		LinkedHashMap<String, String> versionMap = sonarReader.getMapOfAllConfiguredVersionsOfProject();
+		
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
-		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(versionMap, resources, scmReader.getHeadBranch());
+		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
 		
 		for (String resource : resources) {
-			Iterator<Entry<String, String>> it = versionMap.entrySet().iterator();
-			Map.Entry<String, String> previousVersion = new AbstractMap.SimpleEntry<String, String>("0", "0");
-				while(it.hasNext())
-				{
-					Map.Entry<String, String> currentVersion = it.next();
-					int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(currentVersion.getKey()).get(resource);
-					
-					table.put(
-					resource + "_" + currentVersion.getKey(),
-					getTechnicalDebtRowForRevision(currentVersion, previousVersion, resource, numberOfDefectsForThisResourceInThisVersion));
-					previousVersion = currentVersion;
-				}
+			
+			String previousVersionKey = "0";
+			for(String currentVersionKey : versionDao.getKeySet())
+			{
+				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);
+				table.put(
+				resource + "_" + versionDao.getMainKeyVersion(currentVersionKey),
+				getTechnicalDebtRowForRevision(currentVersionKey, previousVersionKey, resource, numberOfDefectsForThisResourceInThisVersion));
+				previousVersionKey = currentVersionKey;
 			}
+			
+		}
 		return table;
 	}
 
 	public HashMap<String, Integer> getTechnicalDebtRowForRevision(
-			Entry<String, String> currentVersion, Entry<String, String> previousVersion, String className, int numberDefects) throws IOException, NoSuchBranchException {
+			String currentVersionKey, String previousVersionKey, String className, int numberDefects) throws IOException, NoSuchBranchException, KeyNotFoundException {
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 		HashMap<String, Integer> map = sonarReader
-				.getNumberOfViolationsPerRule(currentVersion.getValue(), className);
+				.getNumberOfViolationsPerRule(versionDao.getSonarDateVersion(currentVersionKey), className);
 		Iterator<Map.Entry<String, Integer>> it = map.entrySet().iterator();
 
 		while (it.hasNext()) {
@@ -71,18 +69,25 @@ public class Analyzer {
 			it.remove();
 		}
 		
-		technicalDebtRow.put("locTouched",
-				scmReader.getNumberOfLOCtouched(currentVersion.getKey(), previousVersion.getKey(), className));
+		try
+		{
+			technicalDebtRow.put("locTouched",
+					scmReader.getNumberOfLOCtouched(versionDao.getScmVersion(currentVersionKey), versionDao.getScmVersion(previousVersionKey), className));
+		}catch(KeyNotFoundException e)
+		{
+			technicalDebtRow.put("locTouched",0);
+		}
+			
 		technicalDebtRow.put("size",
-				sonarReader.getSizeOfClass(currentVersion.getValue(), className));
+				sonarReader.getSizeOfClass(versionDao.getSonarDateVersion(currentVersionKey), className));
 		technicalDebtRow.put("numberDefects", numberDefects);
 		return technicalDebtRow;
 	}
 	
 	//FIXME: TO COMPLICATED AND VERY VERY SLOW
-	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(HashMap<String, String> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException
+	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException, KeyNotFoundException
 	{
-		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = getMapOfDefectsRelatedToResource(versionMap, resources, branch);
+		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = getMapOfDefectsRelatedToResource(resources, branch);
 		HashMap<String, HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Integer>>();
 		
 		for(Entry<String, HashMap<String, Set<Integer>>> map : mapOfDefectsRelatedToResource.entrySet())
@@ -99,12 +104,12 @@ public class Analyzer {
 	}
 	
 	
-	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRelatedToResource(HashMap<String, String> versionMap, List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException 
+	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRelatedToResource( List<String> resources, String branch) throws NoHeadException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException, KeyNotFoundException 
 	{
 		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = new HashMap<String, HashMap<String,Set<Integer>>>();
 		
 
-		for(Entry<String, String> version : versionMap.entrySet())
+		for(String version : versionDao.getKeySet())
 		{
 			HashMap<String, Set<Integer>> resourceToDefectsMap = new HashMap<String, Set<Integer>>();
 			for(String resource : resources)
@@ -112,7 +117,7 @@ public class Analyzer {
 				Set<Integer> setOfDefectIds= new HashSet<Integer>();
 				resourceToDefectsMap.put(resource, setOfDefectIds);
 			}
-			mapOfDefectsRelatedToResource.put(version.getKey(), new HashMap<String, Set<Integer>>(resourceToDefectsMap));
+			mapOfDefectsRelatedToResource.put(versionDao.getMainKeyVersion(version), new HashMap<String, Set<Integer>>(resourceToDefectsMap));
 		}
 		
 		HashMap<String, List<String>> commitMessagesAndTouchedResourcesForEachRev = scmReader.getCommitMessagesAndTouchedFilesForEachRevision(branch);

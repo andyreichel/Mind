@@ -3,6 +3,7 @@ package mind;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +37,7 @@ public class GitApiImpl implements GitApi {
 	private CredentialsProvider cp;
 	private String gitUrl;
 	private String workingDir;
-	String[] branches;
+	List<String> configuredVersions;
 	
 	public GitApiImpl(Configuration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException
 	{
@@ -57,7 +58,7 @@ public class GitApiImpl implements GitApi {
 		String gitPw = config.getString("git.password");
 		gitUrl = config.getString("git.url");
 		workingDir = config.getString("git.workingdir");
-		branches = config.getString("git.versiontags").split(";");
+		configuredVersions = Arrays.asList(config.getString("git.versiontags").split(";"));
 		
 
 		cp = new UsernamePasswordCredentialsProvider(gitName, gitPw);
@@ -195,10 +196,15 @@ public class GitApiImpl implements GitApi {
 	}
 
 	public String getHeadBranch() throws NoSuchBranchException {
-		if(branches.length == 0)
+		if(configuredVersions.size() == 0)
 		{
 			throw new NoSuchBranchException("No branches available");
 		}
-		return branches[branches.length-1];
+		return configuredVersions.get(configuredVersions.size()-1);
+	}
+
+	public List<String> getConfiguredVersions() {
+		// TODO Auto-generated method stub
+		return configuredVersions;
 	}
 }

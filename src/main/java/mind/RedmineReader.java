@@ -26,4 +26,10 @@ public class RedmineReader implements IssueTrackerReader {
 		}
 		return mapOfBugsRelatedToTheirVersion;
 	}
+	
+	
+	public List<String> getConfiguredVersions()
+	{
+		return api.getConfiguredVersions();
+	}
 }
