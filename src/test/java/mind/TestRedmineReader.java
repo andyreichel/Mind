@@ -25,7 +25,6 @@ public class TestRedmineReader {
 	@Test
 	public void getListOfBugIdsForEveryBranch_threeBugs() throws RedmineException
 	{
-		
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");
 		Project project = new Project();
@@ -98,5 +97,35 @@ public class TestRedmineReader {
 		
 		RedmineReader redmineReader = new RedmineReader(redmineApi);
 		Assert.assertEquals(expectedMapOfBugsRelatedToTheirVersion, redmineReader.getMapOfBugsRelatedToTheirVersion());
+	}
+	
+	@Test
+	public void getListOfBugIdsForEveryBranch_oneBug_noTargetVersionGiven() throws RedmineException
+	{
+		Issue bug1 = new Issue();
+		Tracker bugTracker = new Tracker(1, "Bug");
+		Tracker issueTracker = new Tracker(2, "Issue");
+		Project project = new Project();
+		project.setName("testproject");;
+		bug1.setId(10000);
+		bug1.setTracker(bugTracker);
+		Issue bug2 = new Issue();
+		bug2.setId(10001);
+		bug2.setTracker(issueTracker);
+		Issue bug3 = new Issue();
+		bug3.setId(10002);
+		bug3.setTracker(issueTracker);
+		
+		
+		List<Issue> issueList = new ArrayList<Issue>();
+		issueList.add(bug1);
+		issueList.add(bug2);
+		issueList.add(bug3);
+		
+		Mockito.doReturn(issueList).when(redmineApi).getAllIssues();
+		Mockito.doReturn("Bug").when(redmineApi).getBugKey();
+		
+		RedmineReader redmineReader = new RedmineReader(redmineApi);
+		Assert.assertEquals(0, redmineReader.getMapOfBugsRelatedToTheirVersion().size());
 	}
 }

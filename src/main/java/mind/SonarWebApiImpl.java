@@ -28,7 +28,8 @@ public class SonarWebApiImpl implements SonarWebApi {
 	
 	public List<String> getListOfAllRules() throws IOException
 	{
-		String json2 = sendGet(sonarHost + "/api/rules/search");
+		//FIXME:ONLYWORKS WITH JAVA SQUID RULE REPOSITORY
+		String json2 = sendGet(sonarHost + "/api/rules/search?repositories=squid");
 		JSONObject rulesObj = new JSONObject(json2);
 		List<String> rulesList = new ArrayList<String>();
 		JSONArray rules = (JSONArray) rulesObj.get("rules");

@@ -23,12 +23,14 @@ public class Analyzer {
 	private SCMReader scmReader;
 	HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = new HashMap<String, HashMap<String,Integer>>();
 	VersionDAO versionDao;
+	SonarRunnerApi sonarRunner;
 
-	public Analyzer(SonarReader sonarReader, IssueTrackerReader issueTrackerReader, SCMReader scmReader) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException {
+	public Analyzer(SonarReader sonarReader, IssueTrackerReader issueTrackerReader, SCMReader scmReader, SonarRunnerApi sonarRunner) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException {
 		this.sonarReader = sonarReader;
 		this.issueTrackerReader = issueTrackerReader;
 		this.scmReader = scmReader;
 		versionDao = new VersionDAO(scmReader, issueTrackerReader, sonarReader);
+		this.sonarRunner = sonarRunner;
 	}
 
 	public HashMap<String, HashMap<String, Integer>> getTechnicalDebtTable()
@@ -39,10 +41,13 @@ public class Analyzer {
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
 		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
 		
+		
+		
 		for (String resource : resources) {
 			String previousVersionKey = "0";
 			for(String currentVersionKey : versionDao.getKeySet())
 			{
+				sonarRunner.runSonar(versionDao.getScmVersion(currentVersionKey));
 				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);
 				table.put(
 				resource + "_" + versionDao.getMainKeyVersion(currentVersionKey),
@@ -93,6 +98,7 @@ public class Analyzer {
 			HashMap<String, Integer> resourceToNumberOfDefects = new HashMap<String, Integer>();
 			for(Entry<String, Set<Integer>> resourceCount : map.getValue().entrySet())
 			{
+				
 				resourceToNumberOfDefects.put(resourceCount.getKey(), resourceCount.getValue().size());
 				mapOfNumberOfDefectsRelatedToResource.put(map.getKey(), resourceToNumberOfDefects);
 			}
@@ -128,10 +134,13 @@ public class Analyzer {
 					{
 						for(String resource : commit.getValue())
 						{
-							HashMap<String, Set<Integer>> resourceToNumberOfDef = mapOfDefectsRelatedToResource.get(bug.getValue());
-								 
-							if(resourceToNumberOfDef.containsKey(resource))
-								resourceToNumberOfDef.get(resource).add(bug.getKey());
+							if(mapOfDefectsRelatedToResource.containsKey(bug.getValue()))
+							{
+								HashMap<String, Set<Integer>> resourceToNumberOfDef = mapOfDefectsRelatedToResource.get(bug.getValue());
+								
+								if(resourceToNumberOfDef.containsKey(resource))
+									resourceToNumberOfDef.get(resource).add(bug.getKey());	
+							}
 						}
 					}
 				}

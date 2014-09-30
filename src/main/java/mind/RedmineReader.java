@@ -22,7 +22,10 @@ public class RedmineReader implements IssueTrackerReader {
 		for(Issue issue : listOfAllIssues)
 		{
 			if(api.getBugKey().equals(issue.getTracker().getName()))
-					mapOfBugsRelatedToTheirVersion.put(issue.getId(), issue.getTargetVersion().getName());
+			{
+				if(issue.getTargetVersion() != null)
+				mapOfBugsRelatedToTheirVersion.put(issue.getId(), issue.getTargetVersion().getName());
+			}
 		}
 		return mapOfBugsRelatedToTheirVersion;
 	}

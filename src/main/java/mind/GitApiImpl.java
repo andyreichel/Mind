@@ -38,6 +38,7 @@ public class GitApiImpl implements GitApi {
 	private String gitUrl;
 	private String workingDir;
 	List<String> configuredVersions;
+	String project;
 	
 	public GitApiImpl(Configuration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException
 	{
@@ -59,7 +60,7 @@ public class GitApiImpl implements GitApi {
 		gitUrl = config.getString("git.url");
 		workingDir = config.getString("git.workingdir");
 		configuredVersions = Arrays.asList(config.getString("git.versiontags").split(";"));
-		
+		project = config.getString("sonar.project");
 
 		cp = new UsernamePasswordCredentialsProvider(gitName, gitPw);
 
@@ -133,7 +134,7 @@ public class GitApiImpl implements GitApi {
      * @return list of files changed in a commit
      * @throws Exception 
      */
-    public static List<String> getFilesInCommit(Repository repository, RevCommit commit) throws IOException {
+    public List<String> getFilesInCommit(Repository repository, RevCommit commit) throws IOException {
             List<String> list = new ArrayList<String>();
             if (!hasCommits(repository)) {
                     return list;
@@ -162,8 +163,8 @@ public class GitApiImpl implements GitApi {
                             df.setDetectRenames(true);
                             List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
                             for (DiffEntry diff : diffs) {
-                                    String objectId = diff.getNewId().name();
-                                         list.add(diff.getNewPath());
+                            	String pathFittingToSonarsResourceKeyFormat = project + ":" + diff.getNewPath(); 
+                                    list.add(pathFittingToSonarsResourceKeyFormat);
                             }
                     }
             } catch (Throwable t) {
