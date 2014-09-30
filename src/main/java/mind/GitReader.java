@@ -21,9 +21,19 @@ public class GitReader implements SCMReader {
 
 	public int getNumberOfLOCtouched(String branchName1, String branchName2, String classId) throws IOException, NoSuchBranchException {
 		HashMap<String, Integer> mapWithNumberOfChangesPerResource = branchComparer.getMapWithNumberOfChangesPerResource(branchName1, branchName2);
-		if(!mapWithNumberOfChangesPerResource.containsKey(classId))
+		
+		int projectKeySignIndex = classId.indexOf(":");
+		if(projectKeySignIndex == -1)
+		{
 			return 0;
-		return mapWithNumberOfChangesPerResource.get(classId);
+		}
+		
+		String projectKeyStrippedOfResourceKey = classId.substring(projectKeySignIndex+1);
+		if(!mapWithNumberOfChangesPerResource.containsKey(projectKeyStrippedOfResourceKey))
+		{
+			return 0;
+		}
+		return mapWithNumberOfChangesPerResource.get(projectKeyStrippedOfResourceKey);
 	}
 	
 	

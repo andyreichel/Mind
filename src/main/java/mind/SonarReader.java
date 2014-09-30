@@ -9,5 +9,6 @@ public interface SonarReader {
 	public HashMap<String, Integer> getNumberOfViolationsPerRule(String versionDate, String className) throws IOException;
 	public int getSizeOfClass(String version, String className) throws IOException;
 	public List<String >getListOfAllResources() throws IOException;
-	public LinkedHashMap<String, String> getMapOfAllConfiguredVersionsOfProject() throws IOException,ConfiguredVersionNotExistInSonarException;
+	public String getDateOfLastSonarAnalyse(String version) throws IOException;
+	public List<String> getConfiguredVersions();
 }

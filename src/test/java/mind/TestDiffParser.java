@@ -54,7 +54,7 @@ public class TestDiffParser {
 
 		HashMap<String, Integer> expectedOutput = new HashMap<String, Integer>();
 		expectedOutput.put("README", 2);
-		expectedOutput.put("SOMEOTHERFILE", 3);
+		expectedOutput.put("src/SOMEOTHERFILE", 3);
 		Assert.assertEquals(expectedOutput, DiffParser.getMapOfChangesPerResourceFromDiffOutput(diffOutput));
 	}
 	

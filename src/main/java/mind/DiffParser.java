@@ -26,7 +26,7 @@ public class DiffParser {
 						numberChanges = 0;
 					}
 					
-					resourceName = line.substring(line.lastIndexOf("/")+1);
+					resourceName = line.substring(line.indexOf("/")+1);
 					
 				}
 				if(line.startsWith("@@"))

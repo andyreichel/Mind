@@ -7,18 +7,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonParserForSonarApiResponses {
-	public static LinkedHashMap<String, String> getMapOfAllVersions(String json) throws JSONException
+	public static String getDateOfLastSonarAnalyse(String version, String json) throws JSONException
 	{
 		JSONArray versions = new JSONArray(json);
-		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
 		
-		for(int i = 0; i <versions.length(); i++)
-		{
-			JSONObject obj = (JSONObject) versions.get(i);
-			allVersions.put(obj.getString("n"), obj.getString("dt"));
-		}
-		
-		return allVersions;
+		JSONObject obj = (JSONObject) versions.get(0);
+		return obj.getString("dt");
 	}
 	
 	public static int getNloc(String json)

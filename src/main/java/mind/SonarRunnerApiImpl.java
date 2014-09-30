@@ -19,11 +19,14 @@ public class SonarRunnerApiImpl implements SonarRunnerApi {
 	
 	public void runSonar(String version) throws ConfigurationException {
 		Runner<?> runner = ForkedRunner.create();
+		String projectBaseDir = ConfigAccessor.getValue(config, "git.workingdir")+ "\\" + version;
 		String sonarRunnerConfigPath = ConfigAccessor.getValue(config, "git.workingdir") + "\\" + version + "\\sonar-project.properties";
 		String sonarQubeConfigPath = ConfigAccessor.getValue(config, "sonar.sonarQubeConfig");
+		
 		Configuration sonarRunnerConfig = new PropertiesConfiguration(sonarRunnerConfigPath);
 		Configuration sonarQubeConfig = new PropertiesConfiguration(sonarQubeConfigPath);
 		
+		runner.setProperty("sonar.projectBaseDir", projectBaseDir);
 		addAllPropertiesToRunner(runner, sonarRunnerConfig);
 		addAllPropertiesToRunner(runner, sonarQubeConfig);
 		runner.execute();

@@ -13,14 +13,14 @@ import java.util.Map;
 public class VersionDAO {
 	private List<String> scmVersions;
 	private List<String> issueTrackerVersions;
-	private LinkedHashMap<String, String> sonarVersions;
+	private List<String> sonarVersions;
 	private LinkedHashMap<String, HashMap<String, String>> versionDao;
 	
 	public VersionDAO(SCMReader scmReader, IssueTrackerReader itReader, SonarReader sonarReader) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException
 	{
 		scmVersions = scmReader.getConfiguredVersions();
-		sonarVersions = sonarReader.getMapOfAllConfiguredVersionsOfProject();
 		issueTrackerVersions = itReader.getConfiguredVersions();
+		sonarVersions = sonarReader.getConfiguredVersions();
 		
 		if(!isNumberOfVersionsEqual())
 			throw new UnequalNumberOfVersionsException(	"SCM has "+ scmVersions.size() + " versions.\n" +
@@ -32,15 +32,12 @@ public class VersionDAO {
 	private void createVersionDAO()
 	{
 		LinkedHashMap<String, HashMap<String, String>> versionDao = new LinkedHashMap<String, HashMap<String, String>>();
-		Iterator<Map.Entry<String, String>> sonarIt = sonarVersions.entrySet().iterator();
 		for(int i = 0; i < issueTrackerVersions.size(); i++)
 		{
-			Map.Entry<String, String> sonarEntry = sonarIt.next();
 			HashMap<String, String> versionMap = new HashMap<String, String>();
 			versionMap.put("SCM", scmVersions.get(i));
 			versionMap.put("IT", issueTrackerVersions.get(i));
-			versionMap.put("SONARKEY", sonarEntry.getKey());
-			versionMap.put("SONARDATE", sonarEntry.getValue());
+			versionMap.put("SONAR", sonarVersions.get(i));
 			//Does not matter which key is taken as main key
 			versionDao.put(issueTrackerVersions.get(i), versionMap);
 		}
@@ -65,12 +62,7 @@ public class VersionDAO {
 	
 	public String getSonarKeyVersion(String key) throws KeyNotFoundException
 	{
-		return getVersion(key, "SONARKEY");
-	}
-	
-	public String getSonarDateVersion(String key) throws KeyNotFoundException
-	{
-		return getVersion(key, "SONARDATE");
+		return getVersion(key, "SONAR");
 	}
 	
 	public String getIssueTrackerVersion(String key) throws KeyNotFoundException

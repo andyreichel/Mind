@@ -1,6 +1,7 @@
 package mind;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ public class SonarReaderImpl implements SonarReader {
 				numberOfViolationsPerRule.put(rule, api.getNumberOfViolationsOfSpecificRuleForResource(version, resourceKey, rule));
 			}catch(JSONException e)
 			{
+				//FIXME: DO SOMETHING
 				//System.out.println(e.getMessage());
 				//System.out.println("Version: " + version + " ResourceKey: " + resourceKey + " Rule: " + rule + " not found");
 			}
@@ -51,18 +53,12 @@ public class SonarReaderImpl implements SonarReader {
 		return api.getListOfAllResources();
 	}
 
-	public LinkedHashMap<String, String> getMapOfAllConfiguredVersionsOfProject()
-			throws IOException, ConfiguredVersionNotExistInSonarException {
-		LinkedHashMap<String, String> mapOfAllConfiguredVersions = new LinkedHashMap<String, String>();
-		LinkedHashMap<String, String> mapOfAllVersions = api.getMapOfAllVersionsOfProject();
-		for(String version : api.getConfiguredVersions())
-		{
-			if(!mapOfAllVersions.containsKey(version))
-			{
-				throw new ConfiguredVersionNotExistInSonarException(version + " not found in sonar.");
-			}
-			mapOfAllConfiguredVersions.put(version, mapOfAllVersions.get(version));
-		}
-		return mapOfAllConfiguredVersions;
+	public String getDateOfLastSonarAnalyse(String version) throws IOException
+	{
+		return api.getDateOfLastSonarAnalyse(version);
+	}
+
+	public List<String> getConfiguredVersions() {
+		return api.getConfiguredVersions();
 	}
 }

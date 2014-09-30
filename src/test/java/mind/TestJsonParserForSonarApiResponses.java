@@ -11,22 +11,13 @@ import org.junit.Test;
 
 public class TestJsonParserForSonarApiResponses {
 	@Test
-	public void getMapOfAllVersions_successFull()
+	public void getDateOfLastSonarAnalyse_successFull()
 	{
 		String testJson = "[{\"id\":\"36\",\"rk\":\"Typo3\",\"n\":\"4.0\",\"c\":\"Version\",\"dt\":\"2014-09-11T10:11:40-0400\"},"
-				+ "{\"id\":\"35\",\"rk\":\"Typo3\",\"n\":\"3.8\",\"c\":\"Version\",\"dt\":\"2014-09-11T10:11:07-0400\"},"
-				+ "{\"id\":\"34\",\"rk\":\"Typo3\",\"n\":\"3.7\",\"c\":\"Version\",\"dt\":\"2014-09-11T10:10:37-0400\"},"
-				+ "{\"id\":\"33\",\"rk\":\"Typo3\",\"n\":\"3.6\",\"c\":\"Version\",\"dt\":\"2014-09-11T10:10:08-0400\"},"
-				+ "{\"id\":\"31\",\"rk\":\"Typo3\",\"n\":\"1.0\",\"c\":\"Version\",\"dt\":\"2014-09-10T15:38:12-0400\"}]";
+						+ "{\"id\":\"36\",\"rk\":\"Typo3\",\"n\":\"4.1\",\"c\":\"Version\",\"dt\":\"2014-09-11T10:11:40-0400\"}]";
 		
-		HashMap<String, String> expectedMap = new HashMap<String, String>();
-		expectedMap.put("4.0", "2014-09-11T10:11:40-0400");
-		expectedMap.put("3.8", "2014-09-11T10:11:07-0400");
-		expectedMap.put("3.7", "2014-09-11T10:10:37-0400");
-		expectedMap.put("3.6", "2014-09-11T10:10:08-0400");
-		expectedMap.put("1.0", "2014-09-10T15:38:12-0400");
 		
-		Assert.assertEquals(expectedMap, JsonParserForSonarApiResponses.getMapOfAllVersions(testJson));
+		Assert.assertEquals("2014-09-11T10:11:40-0400", JsonParserForSonarApiResponses.getDateOfLastSonarAnalyse("4.0", testJson));
 	}
 	
 	@Test(expected=JSONException.class)
@@ -34,28 +25,22 @@ public class TestJsonParserForSonarApiResponses {
 	{
 		String testJson = "gruetze";
 		
-		JsonParserForSonarApiResponses.getMapOfAllVersions(testJson);
+		JsonParserForSonarApiResponses.getDateOfLastSonarAnalyse("1.0", testJson);
 	}
 	
-	@Test
-	public void getMapOfAllVersions_emptyJson()
+	@Test(expected=NoSuchSonarVersionException.class)
+	public void getMapOfAllVersions_emptyJson() throws NoSuchSonarVersionException
 	{
 		String testJson = "[]";
 		
-		HashMap<String, String> expectedMap = new HashMap<String, String>();
+		try
+		{
+			JsonParserForSonarApiResponses.getDateOfLastSonarAnalyse("1.0", testJson);	
+		}catch(JSONException e)
+		{
+			throw new NoSuchSonarVersionException("No version could be extracted", e);
+		}
 		
-		Assert.assertEquals(expectedMap, JsonParserForSonarApiResponses.getMapOfAllVersions(testJson));
-	}
-	
-	@Test
-	public void getMapOfAllVersions_oneElementOnly()
-	{
-		String testJson = "[{\"id\":\"36\",\"rk\":\"Typo3\",\"n\":\"4.0\",\"c\":\"Version\",\"dt\":\"2014-09-11T10:11:40-0400\"}]";
-		
-		HashMap<String, String> expectedMap = new HashMap<String, String>();
-		expectedMap.put("4.0", "2014-09-11T10:11:40-0400");
-		
-		Assert.assertEquals(expectedMap, JsonParserForSonarApiResponses.getMapOfAllVersions(testJson));
 	}
 	
 	@Test

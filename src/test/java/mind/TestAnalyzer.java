@@ -42,20 +42,20 @@ public class TestAnalyzer {
 	@Test
 	public void getTechnicalDebtRowForRevisionTest_successfull() throws IOException, NoSuchBranchException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException, ConfigurationException
 	{
-		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
-		sonarVersionMap.put("1", "201405");
-		sonarVersionMap.put("0", "201305");
-		
 		List<String> itVersionMap = new ArrayList<String>();
 		itVersionMap.add("1");
 		itVersionMap.add("0");
 		List<String> scmVersionMap = new ArrayList<String>();
 		scmVersionMap.add("1");
 		scmVersionMap.add("0");
+		List<String> sonarVersionMap = new ArrayList<String>();
+		sonarVersionMap.add("1");
+		sonarVersionMap.add("0");
 		
-		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
+		Mockito.doReturn("201405").when(sonarReader).getDateOfLastSonarAnalyse("1");
 		
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("201405", "someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("1", "0", "someClass");
@@ -84,22 +84,22 @@ public class TestAnalyzer {
 	@Test
 	public void getTechnicalDebtRowForRevisionTest_noViolations() throws IOException, NoSuchBranchException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException, ConfigurationException
 	{
-		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
-		sonarVersionMap.put("v1", "201405");
-		sonarVersionMap.put("v0", "201305");
-		
 		List<String> itVersionMap = new ArrayList<String>();
 		itVersionMap.add("v1");
 		itVersionMap.add("v0");
 		List<String> scmVersionMap = new ArrayList<String>();
 		scmVersionMap.add("v1");
 		scmVersionMap.add("v0");
+		List<String> sonarVersionMap = new ArrayList<String>();
+		sonarVersionMap.add("v1");
+		sonarVersionMap.add("v0");
 		
 		
-		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
 		
+		Mockito.doReturn("201405").when(sonarReader).getDateOfLastSonarAnalyse("v1");
 		
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("201405", "someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("v1", "v0", "someClass");
@@ -129,12 +129,11 @@ public class TestAnalyzer {
 		List<String> allRules = new ArrayList<String>();
 		allRules.add("r1");
 		
-		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
-		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","20141001");
-		allVersions.put(version1.getKey(), version1.getValue());
-		
 		List<String> issueTrackerVersions = new ArrayList<String>();
 		issueTrackerVersions.add("v1");
+		
+		List<String> sonarVersions = new ArrayList<String>();
+		sonarVersions.add("v1");
 		
 		List<String> scmVersions = new ArrayList<String>();
 		scmVersions.add("v1");
@@ -142,10 +141,11 @@ public class TestAnalyzer {
 		Mockito.doReturn(scmVersions).when(scmReader).getConfiguredVersions();
 		Mockito.doReturn(issueTrackerVersions).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(allResources).when(sonarReader).getListOfAllResources();
-		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersions).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), "0", "class1");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched("v1", "0", "class1");
 		Mockito.doReturn("someBranch").when(scmReader).getHeadBranch();
+		Mockito.doReturn("20141001").when(sonarReader).getDateOfLastSonarAnalyse("v1");
 		
 		HashMap<String, Integer> violationsPerRuleClass1V1 = new HashMap<String, Integer>();
 		violationsPerRuleClass1V1.put("r1", 1);
@@ -197,11 +197,9 @@ public class TestAnalyzer {
 		allRules.add("r1");
 		allRules.add("r2");
 		
-		LinkedHashMap<String, String> allVersions = new LinkedHashMap<String, String>();
-		Entry<String, String> version1 = new AbstractMap.SimpleEntry<String, String>("v1","20141001");
-		Entry<String, String> version2 = new AbstractMap.SimpleEntry<String, String>("v2","20141002");
-		allVersions.put(version1.getKey(), version1.getValue());
-		allVersions.put(version2.getKey(), version2.getValue());
+		List<String> sonarVersions = new ArrayList<String>();
+		sonarVersions.add("v1");
+		sonarVersions.add("v2");
 		
 		List<String> issueTrackerVersions = new ArrayList<String>();
 		issueTrackerVersions.add("v1");
@@ -213,14 +211,14 @@ public class TestAnalyzer {
 		
 		Mockito.doReturn(scmVersions).when(scmReader).getConfiguredVersions();
 		Mockito.doReturn(issueTrackerVersions).when(issueTrackerReader).getConfiguredVersions();
-		Mockito.doReturn(allVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersions).when(sonarReader).getConfiguredVersions();
 		
 		Mockito.doReturn(allResources).when(sonarReader).getListOfAllResources();
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), "0", "class1");
-		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getKey(), version1.getKey(), "class1");
-		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched(version1.getKey(), "0", "class2");
-		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched(version2.getKey(), version1.getKey(), "class2");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched("v1", "0", "class1");
+		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched("v2", "v1", "class1");
+		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched("v1", "0", "class2");
+		Mockito.doReturn(150).when(scmReader).getNumberOfLOCtouched("v2", "v1", "class2");
 		Mockito.doReturn("someBranch").when(scmReader).getHeadBranch();
 		
 		HashMap<String, Integer> violationsPerRuleClass1V1 = new HashMap<String, Integer>();
@@ -238,6 +236,9 @@ public class TestAnalyzer {
 		HashMap<String, Integer> violationsPerRuleClass2V2 = new HashMap<String, Integer>();
 		violationsPerRuleClass2V2.put("r1", 0);
 		violationsPerRuleClass2V2.put("r2", 7);
+		
+		Mockito.doReturn("20141001").when(sonarReader).getDateOfLastSonarAnalyse("v1");
+		Mockito.doReturn("20141002").when(sonarReader).getDateOfLastSonarAnalyse("v2");
 		
 		Mockito.doReturn(violationsPerRuleClass1V1).when(sonarReader).getNumberOfViolationsPerRule("20141001", "class1");
 		Mockito.doReturn(violationsPerRuleClass1V2).when(sonarReader).getNumberOfViolationsPerRule("20141002", "class1");
@@ -267,7 +268,6 @@ public class TestAnalyzer {
 		commitMessagesAndTouchedFilesForEachRevision.put("this is a bug 10005", touchedFilesRev1);
 		
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
-		
 		
 		Mockito.doReturn(500).when(sonarReader).getSizeOfClass("20141001", "class1");
 		Mockito.doReturn(550).when(sonarReader).getSizeOfClass("20141002", "class1");
@@ -349,18 +349,17 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
-		sonarVersionMap.put("1.0", "201415");
-		sonarVersionMap.put("1.1", "201416");
-		
 		List<String> itVersionMap = new ArrayList<String>();
 		itVersionMap.add("1.0");
 		itVersionMap.add("1.1");
 		List<String> scmVersionMap = new ArrayList<String>();
 		scmVersionMap.add("1.0");
 		scmVersionMap.add("1.1");
+		List<String> sonarVersionMap = new ArrayList<String>();
+		sonarVersionMap.add("1.0");
+		sonarVersionMap.add("1.1");
 		
-		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
 		
@@ -420,15 +419,15 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
-		sonarVersionMap.put("1.0", "201415");
 		List<String> itVersionMap = new ArrayList<String>();
 		itVersionMap.add("1.0");
 		List<String> scmVersionMap = new ArrayList<String>();
 		scmVersionMap.add("1.0");
+		List<String> sonarVersionMap = new ArrayList<String>();
+		sonarVersionMap.add("1.0");
 		
 		
-		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
 		
@@ -475,15 +474,15 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
-		sonarVersionMap.put("1.0", "201415");
 		List<String> itVersionMap = new ArrayList<String>();
 		itVersionMap.add("1.0");
 		List<String> scmVersionMap = new ArrayList<String>();
 		scmVersionMap.add("1.0");
+		List<String> sonarVersionMap = new ArrayList<String>();
+		sonarVersionMap.add("1.0");
 		
 		
-		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
 		
@@ -530,15 +529,15 @@ public class TestAnalyzer {
 		Mockito.doReturn(mapOfBugsRelatedToTheirVersion).when(issueTrackerReader).getMapOfBugsRelatedToTheirVersion();
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		LinkedHashMap<String, String> sonarVersionMap = new LinkedHashMap<String, String>();
-		sonarVersionMap.put("1.0", "201415");
 		List<String> itVersionMap = new ArrayList<String>();
 		itVersionMap.add("1.0");
 		List<String> scmVersionMap = new ArrayList<String>();
 		scmVersionMap.add("1.0");
+		List<String> sonarVersionMap = new ArrayList<String>();
+		sonarVersionMap.add("1.0");
 		
 		
-		Mockito.doReturn(sonarVersionMap).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersionMap).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
 		

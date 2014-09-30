@@ -41,19 +41,18 @@ public class Analyzer {
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
 		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
 		
-		
-		
-		for (String resource : resources) {
-			String previousVersionKey = "0";
-			for(String currentVersionKey : versionDao.getKeySet())
+		String previousVersionKey = "0";
+		for(String currentVersionKey : versionDao.getKeySet())
+		{
+			sonarRunner.runSonar(versionDao.getScmVersion(currentVersionKey));
+			
+			for (String resource : resources)
 			{
-				sonarRunner.runSonar(versionDao.getScmVersion(currentVersionKey));
 				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);
 				table.put(
-				resource + "_" + versionDao.getMainKeyVersion(currentVersionKey),
-				getTechnicalDebtRowForRevision(currentVersionKey, previousVersionKey, resource, numberOfDefectsForThisResourceInThisVersion));
-				previousVersionKey = currentVersionKey;
+				resource + "_" + versionDao.getMainKeyVersion(currentVersionKey), getTechnicalDebtRowForRevision(currentVersionKey, previousVersionKey, resource, numberOfDefectsForThisResourceInThisVersion));
 			}
+			previousVersionKey = currentVersionKey;
 		}
 		return table;
 	}
@@ -61,28 +60,30 @@ public class Analyzer {
 	public HashMap<String, Integer> getTechnicalDebtRowForRevision(
 			String currentVersionKey, String previousVersionKey, String className, int numberDefects) throws IOException, NoSuchBranchException, KeyNotFoundException {
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
-		HashMap<String, Integer> mapOfViolationsPerRule = sonarReader
-				.getNumberOfViolationsPerRule(versionDao.getSonarDateVersion(currentVersionKey), className);
+		
+		String sonarDateOfCurrentVersion = sonarReader.getDateOfLastSonarAnalyse(currentVersionKey);
+		
+		HashMap<String, Integer> mapOfViolationsPerRule = sonarReader.getNumberOfViolationsPerRule(sonarDateOfCurrentVersion, className);
 		Iterator<Map.Entry<String, Integer>> it = mapOfViolationsPerRule.entrySet().iterator();
 
 		while (it.hasNext()) {
-			Map.Entry<String, Integer> pairs = (Map.Entry<String, Integer>) it
-					.next();
+			Map.Entry<String, Integer> pairs = (Map.Entry<String, Integer>) it.next();
 			technicalDebtRow.put(pairs.getKey(), pairs.getValue());
 			it.remove();
 		}
 		
 		try
 		{
-			technicalDebtRow.put("locTouched",
-					scmReader.getNumberOfLOCtouched(versionDao.getScmVersion(currentVersionKey), versionDao.getScmVersion(previousVersionKey), className));
+			int numberOfLOCTouched = scmReader.getNumberOfLOCtouched(versionDao.getScmVersion(currentVersionKey), versionDao.getScmVersion(previousVersionKey), className);
+			technicalDebtRow.put("locTouched", numberOfLOCTouched);
 		}catch(KeyNotFoundException e)
 		{
+			//System.out.println("key not found " + e.getMessage());
 			technicalDebtRow.put("locTouched",0);
 		}
 			
-		technicalDebtRow.put("size",
-				sonarReader.getSizeOfClass(versionDao.getSonarDateVersion(currentVersionKey), className));
+		int sizeOfClass = sonarReader.getSizeOfClass(sonarDateOfCurrentVersion, className);
+		technicalDebtRow.put("size", sizeOfClass);
 		technicalDebtRow.put("numberDefects", numberDefects);
 		return technicalDebtRow;
 	}

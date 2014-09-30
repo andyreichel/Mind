@@ -57,13 +57,13 @@ public class SonarWebApiImpl implements SonarWebApi {
 		return JsonParserForSonarApiResponses.getNumberOfViolationsOfSpecificRuleForResource(numberOfViolationsJSON);
 	}
 
-	public LinkedHashMap<String, String> getMapOfAllVersionsOfProject() throws IOException {
+	public String getDateOfLastSonarAnalyse(String version) throws IOException {
 		String versionsJSON = sendGet(sonarHost + "/api/events?resource=" + project + "&categories=Version");
-		return JsonParserForSonarApiResponses.getMapOfAllVersions(versionsJSON);
+		return JsonParserForSonarApiResponses.getDateOfLastSonarAnalyse(version, versionsJSON);
 	}
 
 	public int getSizeOfResource(String resourceKey, String versionDate) throws IOException {
-		String versionsJSON = sendGet(sonarHost + "/api/timemachine?resource=" + project + "&metrics=ncloc&fromDateTime=" + versionDate + "&toDateTime=" + versionDate + "&resource=" + resourceKey);
+		String versionsJSON = sendGet(sonarHost + "/api/timemachine?metrics=ncloc&fromDateTime=" + versionDate + "&toDateTime=" + versionDate + "&resource=" + resourceKey);
 		return JsonParserForSonarApiResponses.getNloc(versionsJSON);
 	}
 

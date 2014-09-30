@@ -31,12 +31,12 @@ public class TestVersionDAO {
 		scmVersions.add("ascm");
 		List<String> itVersions = new ArrayList<String>();
 		itVersions.add("ait");
-		LinkedHashMap<String, String> sonarVersions = new LinkedHashMap<String, String>();
-		sonarVersions.put("asonar", "2014");
+		List<String> sonarVersions = new ArrayList<String>();
+		sonarVersions.add("asonar");
 		
 		Mockito.doReturn(scmVersions).when(scmReader).getConfiguredVersions();
 		Mockito.doReturn(itVersions).when(itReader).getConfiguredVersions();
-		Mockito.doReturn(sonarVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersions).when(sonarReader).getConfiguredVersions();
 		
 		VersionDAO versionDao = new VersionDAO(scmReader, itReader, sonarReader);
 		Assert.assertEquals("ascm", versionDao.getScmVersion("ait"));
@@ -49,11 +49,11 @@ public class TestVersionDAO {
 	{
 		List<String> scmVersions = new ArrayList<String>();
 		List<String> itVersions = new ArrayList<String>();
-		LinkedHashMap<String, String> sonarVersions = new LinkedHashMap<String, String>();
+		List<String> sonarVersions = new ArrayList<String>();
 		
 		Mockito.doReturn(scmVersions).when(scmReader).getConfiguredVersions();
 		Mockito.doReturn(itVersions).when(itReader).getConfiguredVersions();
-		Mockito.doReturn(sonarVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersions).when(itReader).getConfiguredVersions();
 		
 		VersionDAO versionDao = new VersionDAO(scmReader, itReader, sonarReader);
 		Assert.assertEquals("0", versionDao.getIssueTrackerVersion("a"));
@@ -65,11 +65,11 @@ public class TestVersionDAO {
 		List<String> scmVersions = new ArrayList<String>();
 		scmVersions.add("a");
 		List<String> itVersions = new ArrayList<String>();
-		LinkedHashMap<String, String> sonarVersions = new LinkedHashMap<String, String>();
+		List<String> sonarVersions = new ArrayList<String>();
 		
 		Mockito.doReturn(scmVersions).when(scmReader).getConfiguredVersions();
 		Mockito.doReturn(itVersions).when(itReader).getConfiguredVersions();
-		Mockito.doReturn(sonarVersions).when(sonarReader).getMapOfAllConfiguredVersionsOfProject();
+		Mockito.doReturn(sonarVersions).when(sonarReader).getConfiguredVersions();
 		
 		new VersionDAO(scmReader, itReader, sonarReader);
 	}

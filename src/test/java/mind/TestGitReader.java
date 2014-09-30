@@ -49,7 +49,7 @@ public class TestGitReader {
 		Mockito.doNothing().when(gitConnection).initGit(config);
 		GitReader git = new GitReader(gitConnection, branchComparer);
 		
-		Assert.assertEquals(2, git.getNumberOfLOCtouched("3-6", "3-7", "class1"));
+		Assert.assertEquals(2, git.getNumberOfLOCtouched("3-6", "3-7", "Project:class1"));
 	}
 	
 	@Test
