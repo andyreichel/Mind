@@ -7,6 +7,9 @@ import java.util.Map;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -14,11 +17,18 @@ import org.eclipse.jgit.api.errors.TransportException;
 import com.taskadapter.redmineapi.RedmineException;
 
 public class Main {
+	private static org.apache.log4j.Logger log = Logger.getLogger(Main.class);
+	
 	public static void main(String[] args) throws ConfigurationException, InvalidRemoteException, TransportException, IOException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
+		PropertyConfigurator.configure(System.getProperty("logProperties"));
+		Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.http").setLevel(Level.ERROR);
+		Logger.getLogger("httpclient").setLevel(Level.ERROR);
+		log.debug("test");
 		Configuration config = new PropertiesConfiguration("mind.properties");
 		SonarRunnerApi sonarRunner = new SonarRunnerApiImpl(config);
-//		
 		GitApi api = new GitApiImpl(config);
 
 		SonarWebApi sonar = new SonarWebApiImpl(config);

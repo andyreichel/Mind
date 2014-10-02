@@ -55,7 +55,6 @@ public class TestAnalyzer {
 		Mockito.doReturn(sonarVersionMap).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
-		Mockito.doReturn("201405").when(sonarReader).getDateOfLastSonarAnalyse("1");
 		
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("1", "0", "someClass");
@@ -63,7 +62,7 @@ public class TestAnalyzer {
 		violationsPerRule.put("r1", 1);
 		violationsPerRule.put("r2", 0);
 		
-		Mockito.doReturn(violationsPerRule).when(sonarReader).getNumberOfViolationsPerRule("201405", "someClass");
+		Mockito.doReturn(violationsPerRule).when(sonarReader).getNumberOfViolationsPerRule("someClass");
 		
 		Mockito.doNothing().when(sonarRunner).runSonar("0");
 		Mockito.doNothing().when(sonarRunner).runSonar("1");
@@ -98,8 +97,6 @@ public class TestAnalyzer {
 		Mockito.doReturn(sonarVersionMap).when(sonarReader).getConfiguredVersions();
 		Mockito.doReturn(itVersionMap).when(issueTrackerReader).getConfiguredVersions();
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
-		
-		Mockito.doReturn("201405").when(sonarReader).getDateOfLastSonarAnalyse("v1");
 		
 		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("v1", "v0", "someClass");
@@ -145,12 +142,11 @@ public class TestAnalyzer {
 		Mockito.doReturn(allRules).when(api).getListOfAllRules();
 		Mockito.doReturn(0).when(scmReader).getNumberOfLOCtouched("v1", "0", "class1");
 		Mockito.doReturn("someBranch").when(scmReader).getHeadBranch();
-		Mockito.doReturn("20141001").when(sonarReader).getDateOfLastSonarAnalyse("v1");
 		
 		HashMap<String, Integer> violationsPerRuleClass1V1 = new HashMap<String, Integer>();
 		violationsPerRuleClass1V1.put("r1", 1);
 		
-		Mockito.doReturn(violationsPerRuleClass1V1).when(sonarReader).getNumberOfViolationsPerRule("20141001", "class1");
+		Mockito.doReturn(violationsPerRuleClass1V1).when(sonarReader).getNumberOfViolationsPerRule("class1");
 		
 		HashMap<Integer, String> mapOfBugsRelatedToTheirVersion = new HashMap<Integer, String>();
 		mapOfBugsRelatedToTheirVersion.put(10001, "v1");
@@ -237,13 +233,8 @@ public class TestAnalyzer {
 		violationsPerRuleClass2V2.put("r1", 0);
 		violationsPerRuleClass2V2.put("r2", 7);
 		
-		Mockito.doReturn("20141001").when(sonarReader).getDateOfLastSonarAnalyse("v1");
-		Mockito.doReturn("20141002").when(sonarReader).getDateOfLastSonarAnalyse("v2");
-		
-		Mockito.doReturn(violationsPerRuleClass1V1).when(sonarReader).getNumberOfViolationsPerRule("20141001", "class1");
-		Mockito.doReturn(violationsPerRuleClass1V2).when(sonarReader).getNumberOfViolationsPerRule("20141002", "class1");
-		Mockito.doReturn(violationsPerRuleClass2V1).when(sonarReader).getNumberOfViolationsPerRule("20141001", "class2");
-		Mockito.doReturn(violationsPerRuleClass2V2).when(sonarReader).getNumberOfViolationsPerRule("20141002", "class2");
+		Mockito.when(sonarReader.getNumberOfViolationsPerRule("class1")).thenReturn(violationsPerRuleClass1V1).thenReturn(violationsPerRuleClass1V2);
+		Mockito.when(sonarReader.getNumberOfViolationsPerRule("class2")).thenReturn(violationsPerRuleClass2V1).thenReturn(violationsPerRuleClass2V2);
 		
 		HashMap<Integer, String> mapOfBugsRelatedToTheirVersion = new HashMap<Integer, String>();
 		mapOfBugsRelatedToTheirVersion.put(10001, "v1");

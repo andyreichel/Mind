@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
@@ -22,9 +23,10 @@ public class Analyzer {
 	private SonarReader sonarReader;
 	private IssueTrackerReader issueTrackerReader;
 	private SCMReader scmReader;
-	VersionDAO versionDao;
-	SonarRunnerApi sonarRunner;
-
+	private VersionDAO versionDao;
+	private SonarRunnerApi sonarRunner;
+	private static org.apache.log4j.Logger log = Logger.getLogger(Analyzer.class);
+	
 	public Analyzer(SonarReader sonarReader, IssueTrackerReader issueTrackerReader, SCMReader scmReader, SonarRunnerApi sonarRunner) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException {
 		this.sonarReader = sonarReader;
 		this.issueTrackerReader = issueTrackerReader;
@@ -37,23 +39,32 @@ public class Analyzer {
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		
-		
+		log.debug("start analyze");
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
 		
 		String previousVersionKey = "0";
 		for(String currentVersionKey : versionDao.getKeySet())
 		{
+			log.debug("run analyzing for " + currentVersionKey);
 			sonarRunner.runSonar(versionDao.getScmVersion(currentVersionKey));
+			log.debug("analyzing for " + currentVersionKey + " finished");
 			List<String> resources = sonarReader.getListOfAllResources();
+			log.debug("analyzing for " + currentVersionKey + " finished");
+			
+			log.debug("start getting number of defects of class");
 			HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
+			log.debug("stop getting number of defects of class");
 			
 			for (String resource : resources)
 			{
+				log.debug("start computing row for " + resource);
 				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);
 				table.put(
 				resource + "_" + versionDao.getMainKeyVersion(currentVersionKey), getTechnicalDebtRowForRevision(currentVersionKey, previousVersionKey, resource, numberOfDefectsForThisResourceInThisVersion));
+				log.debug("stop computing row for " + resource);
 			}
 			previousVersionKey = currentVersionKey;
+			log.debug("stop analyze for " + currentVersionKey);
 		}
 		return table;
 	}
@@ -62,9 +73,7 @@ public class Analyzer {
 			String currentVersionKey, String previousVersionKey, String className, int numberDefects) throws IOException, NoSuchBranchException, KeyNotFoundException {
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 		
-		String sonarDateOfCurrentVersion = sonarReader.getDateOfLastSonarAnalyse(currentVersionKey);
-		
-		HashMap<String, Integer> mapOfViolationsPerRule = sonarReader.getNumberOfViolationsPerRule(sonarDateOfCurrentVersion, className);
+		HashMap<String, Integer> mapOfViolationsPerRule = sonarReader.getNumberOfViolationsPerRule(className);
 		Iterator<Map.Entry<String, Integer>> it = mapOfViolationsPerRule.entrySet().iterator();
 
 		while (it.hasNext()) {
@@ -134,6 +143,7 @@ public class Analyzer {
 					{
 						for(String resource : commit.getValue())
 						{
+							log.debug("bugfix in file" + resource);
 							if(mapOfDefectsRelatedToResource.containsKey(bug.getValue()))
 							{
 								HashMap<String, Set<Integer>> resourceToNumberOfDef = mapOfDefectsRelatedToResource.get(bug.getValue());

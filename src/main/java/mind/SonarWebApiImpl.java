@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,23 +19,29 @@ public class SonarWebApiImpl implements SonarWebApi {
 	private String sonarHost; 
 	private String project;
 	private List<String> configuredVersions;
+	private List<String> configuredRepos;
 	
-	public SonarWebApiImpl(Configuration config)
+	public SonarWebApiImpl(Configuration config) throws ConfigurationException
 	{
 		this.sonarHost = config.getString("sonar.host");
 		this.project = config.getString("sonar.project");
 		this.configuredVersions = Arrays.asList(config.getString("sonar.versiontags").split(";"));
+		
+		this.configuredRepos = Arrays.asList(ConfigAccessor.getValue(config, "sonar.rulerepositories").split(";"));
 	}
 	
 	public List<String> getListOfAllRules() throws IOException
 	{
-		//FIXME:ONLYWORKS WITH JAVA SQUID RULE REPOSITORY
-		String json2 = sendGet(sonarHost + "/api/rules/search?repositories=squid");
-		JSONObject rulesObj = new JSONObject(json2);
 		List<String> rulesList = new ArrayList<String>();
-		JSONArray rules = (JSONArray) rulesObj.get("rules");
-		for (int i = 0; i < rules.length(); i++) {
-			rulesList.add(((JSONObject) (rules.get(i))).get("key").toString());
+		for(String repo : configuredRepos)
+		{
+			String json2 = sendGet(sonarHost + "/api/rules/search?repositories=" + repo);
+			JSONObject rulesObj = new JSONObject(json2);
+			
+			JSONArray rules = (JSONArray) rulesObj.get("rules");
+			for (int i = 0; i < rules.length(); i++) {
+				rulesList.add(((JSONObject) (rules.get(i))).get("key").toString());
+			}	
 		}
 		
 		return rulesList;
@@ -52,7 +59,7 @@ public class SonarWebApiImpl implements SonarWebApi {
 		return resourcesList;
 	}
 
-	public int getNumberOfViolationsOfSpecificRuleForResource(String versionDate, String resourceKey, String rule) throws IOException {
+	public int getNumberOfViolationsOfSpecificRuleForResource(String resourceKey, String rule) throws IOException {
 		String numberOfViolationsJSON = sendGet(sonarHost+"/api/issues/search?componentRoots=" + resourceKey + "&rules="+rule);
 		return JsonParserForSonarApiResponses.getNumberOfViolationsOfSpecificRuleForResource(numberOfViolationsJSON);
 	}

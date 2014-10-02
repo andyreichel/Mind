@@ -16,7 +16,7 @@ public class SonarReaderImpl implements SonarReader {
 		this.api = api;
 	}
 	
-	public HashMap<String, Integer> getNumberOfViolationsPerRule(String version, String resourceKey) throws IOException {
+	public HashMap<String, Integer> getNumberOfViolationsPerRule(String resourceKey) throws IOException {
 		List<String> allRules = api.getListOfAllRules();
 		HashMap<String, Integer> numberOfViolationsPerRule = new HashMap<String, Integer>();
 		
@@ -24,7 +24,7 @@ public class SonarReaderImpl implements SonarReader {
 		{
 			try
 			{
-				numberOfViolationsPerRule.put(rule, api.getNumberOfViolationsOfSpecificRuleForResource(version, resourceKey, rule));
+				numberOfViolationsPerRule.put(rule, api.getNumberOfViolationsOfSpecificRuleForResource(resourceKey, rule));
 			}catch(JSONException e)
 			{
 				//FIXME: DO SOMETHING
@@ -51,11 +51,6 @@ public class SonarReaderImpl implements SonarReader {
 
 	public List<String> getListOfAllResources() throws IOException {
 		return api.getListOfAllResources();
-	}
-
-	public String getDateOfLastSonarAnalyse(String version) throws IOException
-	{
-		return api.getDateOfLastSonarAnalyse(version);
 	}
 
 	public List<String> getConfiguredVersions() {

@@ -4,6 +4,7 @@
 	<groupId>Mind</groupId>
 	<artifactId>Mind</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -66,6 +67,12 @@
 						</goals>
 						<configuration>
 							<mainClass>mind.Main</mainClass>
+							<systemProperties>
+								<systemProperty>
+									<key>logProperties</key>
+									<value>${basedir}\src\main\resources\log4j.properties</value>
+								</systemProperty>
+							</systemProperties>
 						</configuration>
 					</execution>
 				</executions>

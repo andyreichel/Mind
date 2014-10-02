@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
 
 public class RedmineReader implements IssueTrackerReader {
-	
-	RedmineApi api;
+	private static org.apache.log4j.Logger log = Logger.getLogger(RedmineReader.class);
+	private RedmineApi api;
 	RedmineReader(RedmineApi api)
 	{
 		this.api = api;
@@ -27,7 +29,10 @@ public class RedmineReader implements IssueTrackerReader {
 				{
 					String specialVersionIdentifier = api.getSpecialVersionIdentifier();
 					if(specialVersionIdentifier != null)
+					{
 						mapOfBugsRelatedToTheirVersion.put(issue.getId(), issue.getCustomField(specialVersionIdentifier));
+						
+					}
 				}else if(issue.getTargetVersion() != null)
 				{
 					mapOfBugsRelatedToTheirVersion.put(issue.getId(), issue.getTargetVersion().getName());

@@ -8,6 +8,7 @@ Lessons learned:
 file-specific base. That means that the data has to be collected after each sonar run.
 - Development of Sonar Java Api will not be continued thats why we should use Web Api
 -Resources set in two different versions differ
+-Sonar Webapi cannot list all rules of a language so we have to specify all rulerepositories in a configfile
 
 Conditions:
 -Versions in Sonar have the same name as the branch in git
@@ -23,5 +24,4 @@ options: Running it as part of continuous integration
 rational: Because the software is used to prioritize the rules over
 a large timespan it is not necessary to run it in each building cycle thats why it is chosen
 to design it as a run-once application.
-
 
