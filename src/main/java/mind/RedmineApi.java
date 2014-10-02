@@ -9,4 +9,6 @@ public interface RedmineApi {
 	List<Issue> getAllIssues() throws RedmineException;
 	String getBugKey() throws RedmineException;
 	List<String> getConfiguredVersions();
+	String getSpecialVersionIdentifier();
+	boolean isSpecialVersionIdentifierSet();
 }

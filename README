@@ -5,12 +5,23 @@ Limitations:
 
 Lessons learned:
 - Sonar Web Api for Timemachine does not provide the historical data in a
-file-specific base
-- Development of Sonar Java Api will continued thats why we should use Web Api
-
+file-specific base. That means that the data has to be collected after each sonar run.
+- Development of Sonar Java Api will not be continued thats why we should use Web Api
+-Resources set in two different versions differ
 
 Conditions:
 -Versions in Sonar have the same name as the branch in git
 
 Tasks:
 Make everything open source.
+
+Key Decisions:
+Question: In what frequency is the software being used
+criteria: execution time
+options: Running it as part of continuous integration
+		Running it once to get the priority of rules
+rational: Because the software is used to prioritize the rules over
+a large timespan it is not necessary to run it in each building cycle thats why it is chosen
+to design it as a run-once application.
+
+

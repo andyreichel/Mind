@@ -53,7 +53,7 @@ public class SonarWebApiImpl implements SonarWebApi {
 	}
 
 	public int getNumberOfViolationsOfSpecificRuleForResource(String versionDate, String resourceKey, String rule) throws IOException {
-		String numberOfViolationsJSON = sendGet(sonarHost + "/api/timemachine?resource=" + project + "&metrics=violations&resource="  + resourceKey + "&fromDateTime=" + versionDate + "&toDateTime=" + versionDate);
+		String numberOfViolationsJSON = sendGet(sonarHost+"/api/issues/search?componentRoots=" + resourceKey + "&rules="+rule);
 		return JsonParserForSonarApiResponses.getNumberOfViolationsOfSpecificRuleForResource(numberOfViolationsJSON);
 	}
 
@@ -62,9 +62,9 @@ public class SonarWebApiImpl implements SonarWebApi {
 		return JsonParserForSonarApiResponses.getDateOfLastSonarAnalyse(version, versionsJSON);
 	}
 
-	public int getSizeOfResource(String resourceKey, String versionDate) throws IOException {
-		String versionsJSON = sendGet(sonarHost + "/api/timemachine?metrics=ncloc&fromDateTime=" + versionDate + "&toDateTime=" + versionDate + "&resource=" + resourceKey);
-		return JsonParserForSonarApiResponses.getNloc(versionsJSON);
+	public int getSizeOfResource(String resourceKey) throws IOException {
+		String sizeJson = sendGet(sonarHost + "/api/resources?resource=" + resourceKey + ";metrics=ncloc");
+		return JsonParserForSonarApiResponses.getNloc(sizeJson);
 	}
 
 	private static String sendGet(String url) throws IOException {

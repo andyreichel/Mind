@@ -1,5 +1,6 @@
 package mind;
 
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +22,6 @@ public class Analyzer {
 	private SonarReader sonarReader;
 	private IssueTrackerReader issueTrackerReader;
 	private SCMReader scmReader;
-	HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = new HashMap<String, HashMap<String,Integer>>();
 	VersionDAO versionDao;
 	SonarRunnerApi sonarRunner;
 
@@ -36,15 +36,16 @@ public class Analyzer {
 	public HashMap<String, HashMap<String, Integer>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
-		List<String> resources = sonarReader.getListOfAllResources();
+		
 		
 		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
-		mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
 		
 		String previousVersionKey = "0";
 		for(String currentVersionKey : versionDao.getKeySet())
 		{
 			sonarRunner.runSonar(versionDao.getScmVersion(currentVersionKey));
+			List<String> resources = sonarReader.getListOfAllResources();
+			HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
 			
 			for (String resource : resources)
 			{
@@ -78,11 +79,10 @@ public class Analyzer {
 			technicalDebtRow.put("locTouched", numberOfLOCTouched);
 		}catch(KeyNotFoundException e)
 		{
-			//System.out.println("key not found " + e.getMessage());
 			technicalDebtRow.put("locTouched",0);
 		}
 			
-		int sizeOfClass = sonarReader.getSizeOfClass(sonarDateOfCurrentVersion, className);
+		int sizeOfClass = sonarReader.getSizeOfClass(className);
 		technicalDebtRow.put("size", sizeOfClass);
 		technicalDebtRow.put("numberDefects", numberDefects);
 		return technicalDebtRow;
@@ -99,7 +99,6 @@ public class Analyzer {
 			HashMap<String, Integer> resourceToNumberOfDefects = new HashMap<String, Integer>();
 			for(Entry<String, Set<Integer>> resourceCount : map.getValue().entrySet())
 			{
-				
 				resourceToNumberOfDefects.put(resourceCount.getKey(), resourceCount.getValue().size());
 				mapOfNumberOfDefectsRelatedToResource.put(map.getKey(), resourceToNumberOfDefects);
 			}

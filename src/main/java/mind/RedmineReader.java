@@ -23,8 +23,15 @@ public class RedmineReader implements IssueTrackerReader {
 		{
 			if(api.getBugKey().equals(issue.getTracker().getName()))
 			{
-				if(issue.getTargetVersion() != null)
-				mapOfBugsRelatedToTheirVersion.put(issue.getId(), issue.getTargetVersion().getName());
+				if(api.isSpecialVersionIdentifierSet())
+				{
+					String specialVersionIdentifier = api.getSpecialVersionIdentifier();
+					if(specialVersionIdentifier != null)
+						mapOfBugsRelatedToTheirVersion.put(issue.getId(), issue.getCustomField(specialVersionIdentifier));
+				}else if(issue.getTargetVersion() != null)
+				{
+					mapOfBugsRelatedToTheirVersion.put(issue.getId(), issue.getTargetVersion().getName());
+				}
 			}
 		}
 		return mapOfBugsRelatedToTheirVersion;

@@ -57,7 +57,7 @@ public class TestAnalyzer {
 		Mockito.doReturn(scmVersionMap).when(scmReader).getConfiguredVersions();
 		Mockito.doReturn("201405").when(sonarReader).getDateOfLastSonarAnalyse("1");
 		
-		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("201405", "someClass");
+		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("1", "0", "someClass");
 		HashMap<String, Integer> violationsPerRule = new HashMap<String, Integer>();
 		violationsPerRule.put("r1", 1);
@@ -101,7 +101,7 @@ public class TestAnalyzer {
 		
 		Mockito.doReturn("201405").when(sonarReader).getDateOfLastSonarAnalyse("v1");
 		
-		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("201405", "someClass");
+		Mockito.doReturn(100).when(sonarReader).getSizeOfClass("someClass");
 		Mockito.doReturn(50).when(scmReader).getNumberOfLOCtouched("v1", "v0", "someClass");
 
 		Mockito.doNothing().when(sonarRunner).runSonar("v1");
@@ -166,7 +166,7 @@ public class TestAnalyzer {
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
 		
-		Mockito.doReturn(500).when(sonarReader).getSizeOfClass("20141001", "class1");
+		Mockito.doReturn(500).when(sonarReader).getSizeOfClass("class1");
 
 		Mockito.doNothing().when(sonarRunner).runSonar("v1");
 		
@@ -269,10 +269,8 @@ public class TestAnalyzer {
 		
 		Mockito.doReturn(commitMessagesAndTouchedFilesForEachRevision).when(scmReader).getCommitMessagesAndTouchedFilesForEachRevision("someBranch");
 		
-		Mockito.doReturn(500).when(sonarReader).getSizeOfClass("20141001", "class1");
-		Mockito.doReturn(550).when(sonarReader).getSizeOfClass("20141002", "class1");
-		Mockito.doReturn(500).when(sonarReader).getSizeOfClass("20141001", "class2");
-		Mockito.doReturn(550).when(sonarReader).getSizeOfClass("20141002", "class2");
+		Mockito.when(sonarReader.getSizeOfClass("class1")).thenReturn(500).thenReturn(550);
+		Mockito.when(sonarReader.getSizeOfClass("class2")).thenReturn(500).thenReturn(550);
 
 		Mockito.doNothing().when(sonarRunner).runSonar("v1");
 		Mockito.doNothing().when(sonarRunner).runSonar("v2");

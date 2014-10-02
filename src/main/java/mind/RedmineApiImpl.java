@@ -29,6 +29,19 @@ public class RedmineApiImpl implements RedmineApi {
 		return config.getString("redmine.bugkey");
 	}
 	
+	public boolean isSpecialVersionIdentifierSet()
+	{
+		if (config.containsKey("redmine.versionIdentifier")) {
+			return !config.getString("redmine.versionIdentifier").isEmpty();	
+		}
+		return false;
+	}
+	
+	public String getSpecialVersionIdentifier()
+	{
+		return config.getString("redmine.versionIdentifier");
+	}
+	
 	public List<String> getConfiguredVersions()
 	{
 		return Arrays.asList(config.getString("redmine.versiontags").split(";"));

@@ -17,23 +17,20 @@ public class JsonParserForSonarApiResponses {
 	
 	public static int getNloc(String json)
 	{
-		return getMetricFromJson(json);
-	}
-	
-	public static int getNumberOfViolationsOfSpecificRuleForResource(String json)
-	{
-		return getMetricFromJson(json);
-	}
-	
-	private static int getMetricFromJson(String json)
-	{
 		JSONArray violationsMetric = new JSONArray(json);
-		JSONArray cells = ((JSONObject)violationsMetric.get(0)).getJSONArray("cells");
+		JSONArray cells = ((JSONObject)violationsMetric.get(0)).getJSONArray("msr");
 		if(cells.length()==0)
 		{
 			throw new JSONException("no entry found.");
 		}
 		JSONObject metric = ((JSONObject)cells.get(0));
-		return ((JSONArray)metric.get("v")).getInt(0);
+		String val = metric.get("val").toString();
+		return (int)Math.floor(Double.valueOf(val));
+	}
+	
+	public static int getNumberOfViolationsOfSpecificRuleForResource(String json)
+	{
+		JSONObject violationsMetric = new JSONObject(json);
+		return ((JSONObject)violationsMetric.get("paging")).getInt("fTotal");
 	}
 }

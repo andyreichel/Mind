@@ -36,10 +36,10 @@ public class SonarReaderImpl implements SonarReader {
 		return numberOfViolationsPerRule;
 	}
 
-	public int getSizeOfClass(String versionDate, String resourceKey) throws IOException {
+	public int getSizeOfClass(String resourceKey) throws IOException {
 		try
 		{
-			return api.getSizeOfResource(resourceKey, versionDate);
+			return api.getSizeOfResource(resourceKey);
 		}catch(JSONException e)
 		{
 			//System.out.println(e.getMessage());
