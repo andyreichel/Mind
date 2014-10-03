@@ -35,12 +35,12 @@ public class Analyzer {
 		this.sonarRunner = sonarRunner;
 	}
 
-	public HashMap<String, HashMap<String, Integer>> getTechnicalDebtTable()
+	public HashMap<String, HashMap<String, HashMap<String, Integer>>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		
 		log.debug("start analyze");
-		HashMap<String, HashMap<String, Integer>> table = new HashMap<String, HashMap<String, Integer>>();
+		HashMap<String, HashMap<String, HashMap<String, Integer>>> table = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
 		
 		String previousVersionKey = "0";
 		for(String currentVersionKey : versionDao.getKeySet())
@@ -48,21 +48,22 @@ public class Analyzer {
 			log.debug("run analyzing for " + currentVersionKey);
 			sonarRunner.runSonar(versionDao.getScmVersion(currentVersionKey));
 			log.debug("analyzing for " + currentVersionKey + " finished");
+			log.debug("start getting all resources");
 			List<String> resources = sonarReader.getListOfAllResources();
-			log.debug("analyzing for " + currentVersionKey + " finished");
+			log.debug("stop getting all resources");
 			
 			log.debug("start getting number of defects of class");
 			HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
 			log.debug("stop getting number of defects of class");
-			
+			HashMap<String, HashMap<String, Integer>> resourceRows = new HashMap<String, HashMap<String,Integer>>();
 			for (String resource : resources)
 			{
 				log.debug("start computing row for " + resource);
-				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);
-				table.put(
-				resource + "_" + versionDao.getMainKeyVersion(currentVersionKey), getTechnicalDebtRowForRevision(currentVersionKey, previousVersionKey, resource, numberOfDefectsForThisResourceInThisVersion));
+				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);			
+				resourceRows.put(resource, getTechnicalDebtRowForRevision(currentVersionKey, previousVersionKey, resource, numberOfDefectsForThisResourceInThisVersion));				
 				log.debug("stop computing row for " + resource);
 			}
+			table.put(currentVersionKey, resourceRows);
 			previousVersionKey = currentVersionKey;
 			log.debug("stop analyze for " + currentVersionKey);
 		}
@@ -73,7 +74,9 @@ public class Analyzer {
 			String currentVersionKey, String previousVersionKey, String className, int numberDefects) throws IOException, NoSuchBranchException, KeyNotFoundException {
 		HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 		
+		log.debug("start get number of violations per rule");
 		HashMap<String, Integer> mapOfViolationsPerRule = sonarReader.getNumberOfViolationsPerRule(className);
+		log.debug("stop get number of violations per rule");
 		Iterator<Map.Entry<String, Integer>> it = mapOfViolationsPerRule.entrySet().iterator();
 
 		while (it.hasNext()) {
@@ -81,7 +84,8 @@ public class Analyzer {
 			technicalDebtRow.put(pairs.getKey(), pairs.getValue());
 			it.remove();
 		}
-		
+
+		log.debug("start get number of loc touched");
 		try
 		{
 			int numberOfLOCTouched = scmReader.getNumberOfLOCtouched(versionDao.getScmVersion(currentVersionKey), versionDao.getScmVersion(previousVersionKey), className);
@@ -90,10 +94,13 @@ public class Analyzer {
 		{
 			technicalDebtRow.put("locTouched",0);
 		}
+		log.debug("stop get number of loc touched");
 			
+		log.debug("start get size of class");
 		int sizeOfClass = sonarReader.getSizeOfClass(className);
 		technicalDebtRow.put("size", sizeOfClass);
 		technicalDebtRow.put("numberDefects", numberDefects);
+		log.debug("stop get size of class");
 		return technicalDebtRow;
 	}
 	

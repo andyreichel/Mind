@@ -14,7 +14,12 @@ Conditions:
 -Versions in Sonar have the same name as the branch in git
 
 Tasks:
-Make everything open source.
+-Make everything open source.
+-diff should compare on line level
+-FILTER LOCTOUCHED=0
+-use spermine
+-COMMENT EVERYTHING
+
 
 Key Decisions:
 Question: In what frequency is the software being used
@@ -25,3 +30,12 @@ rational: Because the software is used to prioritize the rules over
 a large timespan it is not necessary to run it in each building cycle thats why it is chosen
 to design it as a run-once application.
 
+Question: From where to I get the information to what version a bug is related? 
+criteria: reliability of data;well-kept comments in scm and issuetracker
+options: reading it from git; reading it from redmine
+rational: because redmine already has a column that specifies the version where this defect was found it is easy to use it to correlate the version to the bug
+
+
+Variables:
+Number of defects: number of defects is the number of redmine issues that have a version specified. if the issueid is included in a commit message of git, all the affected files in this commit will be related to this bug.
+Size: The size of the file 

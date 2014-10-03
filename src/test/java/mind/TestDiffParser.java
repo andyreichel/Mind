@@ -34,10 +34,10 @@ public class TestDiffParser {
 				"--- a/README" + "\n" +
 				"+++ b/README" + "\n" +
 				"@@ -2 +2 @@" + "\n" +
-				"-die erste zeile" + "\n" +
+				"-the first row" + "\n" +
 				"+" + "\n" +
 				"@@ -4 +4 @@" + "\n" +
-				"-die dritte zeile" + "\n" +
+				"-the third row" + "\n" +
 				"+die dritte zei" + "\n" +
 				"diff --git a/src/SOMEOTHERFILE b/src/SOMEOTHERFILE" + "\n" +
 				"index dd949e0..ab08c41 100644" + "\n" +

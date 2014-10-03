@@ -26,7 +26,6 @@ public class Main {
 		Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.ERROR);
 		Logger.getLogger("org.apache.http").setLevel(Level.ERROR);
 		Logger.getLogger("httpclient").setLevel(Level.ERROR);
-		log.debug("test");
 		Configuration config = new PropertiesConfiguration("mind.properties");
 		SonarRunnerApi sonarRunner = new SonarRunnerApiImpl(config);
 		GitApi api = new GitApiImpl(config);
@@ -37,17 +36,32 @@ public class Main {
 		BranchComparer bc = new BranchComparerImpl(api);
 		SCMReader scmReader = new GitReader(api, bc);
 		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
-		HashMap<String, HashMap<String, Integer>> table =  ana.getTechnicalDebtTable();
-		for(String resource : table.keySet())
+		HashMap<String, HashMap<String, HashMap<String, Integer>>> table =  ana.getTechnicalDebtTable();
+		
+		for(String version : table.keySet())
 		{
-			HashMap<String, Integer> entries = table.get(resource);
-			System.out.print(resource + "\t\t");
-			for(Map.Entry<String, Integer> entry : entries.entrySet())
+			System.out.println(version + "\t\t\t");
+			for(Map.Entry<String, HashMap<String, Integer>> rows : table.get(version).entrySet())
 			{
-				System.out.print(entry.getKey() + ": " + entry.getValue() + "\t\t\t");
+				System.out.print(rows.getKey() + "\t\t\t");
+				for(Map.Entry<String, Integer> data : rows.getValue().entrySet())
+				{
+					System.out.print(data.getKey() + "\t\t\t" + data.getValue() + "\t\t\t");	
+				}
+				System.out.println();
 			}
-			System.out.println("++++++++++++++++");
+			System.out.println();
 		}
+//		for(String resource : table.keySet())
+//		{
+//			HashMap<String, Integer> entries = table.get(resource);
+//			System.out.print(resource + "\t\t");
+//			for(Map.Entry<String, Integer> entry : entries.entrySet())
+//			{
+//				System.out.print(entry.getKey() + ": " + entry.getValue() + "\t\t\t");
+//			}
+//			System.out.println("++++++++++++++++");
+//		}
 	}
 	
 	

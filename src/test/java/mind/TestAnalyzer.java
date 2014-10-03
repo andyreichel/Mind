@@ -168,17 +168,17 @@ public class TestAnalyzer {
 		
 		Analyzer testAna = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		
-		HashMap<String, HashMap<String, Integer>> expectedTable = new HashMap<String, HashMap<String,Integer>>();
+		HashMap<String, HashMap<String, HashMap<String, Integer>>> expectedTable = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
+		HashMap<String, Integer> class1v1_data = new HashMap<String, Integer>();
+		class1v1_data.put("numberDefects", 0);
+		class1v1_data.put("locTouched", 0);
+		class1v1_data.put("size", 500);
+		class1v1_data.put("r1", 1);
+		HashMap<String, HashMap<String, Integer>> class1v1_row = new HashMap<String, HashMap<String,Integer>>();
+		class1v1_row.put("class1", class1v1_data);
+		expectedTable.put("v1", class1v1_row);
 		
-		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
-		class1v1_row.put("numberDefects", 0);
-		class1v1_row.put("locTouched", 0);
-		class1v1_row.put("size", 500);
-		class1v1_row.put("r1", 1);
-		
-		expectedTable.put("class1_v1", class1v1_row);
-		
-		HashMap<String, HashMap<String, Integer>> actualTable = testAna.getTechnicalDebtTable();
+		HashMap<String, HashMap<String, HashMap<String, Integer>>> actualTable = testAna.getTechnicalDebtTable();
 		Assert.assertEquals(expectedTable, actualTable);
 	}
 	
@@ -268,7 +268,6 @@ public class TestAnalyzer {
 		
 		Analyzer testAna = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		
-		HashMap<String, HashMap<String, Integer>> expectedTable = new HashMap<String, HashMap<String,Integer>>();
 		
 		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
 		class1v1_row.put("numberDefects", 1);
@@ -298,12 +297,18 @@ public class TestAnalyzer {
 		class2v2_row.put("r1", 0);
 		class2v2_row.put("r2", 7);
 		
-		expectedTable.put("class1_v1", class1v1_row);
-		expectedTable.put("class1_v2", class1v2_row);
-		expectedTable.put("class2_v1", class2v1_row);
-		expectedTable.put("class2_v2", class2v2_row);
+		HashMap<String, HashMap<String, Integer>> v1rows = new HashMap<String, HashMap<String,Integer>>();
+		HashMap<String, HashMap<String, Integer>> v2rows = new HashMap<String, HashMap<String,Integer>>();
+		v1rows.put("class1", class1v1_row);
+		v1rows.put("class2", class2v1_row);
+		v2rows.put("class1", class1v2_row);
+		v2rows.put("class2", class2v2_row);
 		
-		HashMap<String, HashMap<String, Integer>> actualTable = testAna.getTechnicalDebtTable();
+		HashMap<String, HashMap<String, HashMap<String, Integer>>> expectedTable = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
+		expectedTable.put("v1", v1rows);
+		expectedTable.put("v2", v2rows);
+		
+		HashMap<String, HashMap<String, HashMap<String, Integer>>> actualTable = testAna.getTechnicalDebtTable();
 		Assert.assertEquals(expectedTable, actualTable);
 	}
 	
