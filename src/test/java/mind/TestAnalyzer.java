@@ -93,7 +93,7 @@ public class TestAnalyzer {
 		HashMap<String, HashMap<String, HashMap<String, Integer>>> expectedTable = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
 		HashMap<String, Integer> class1v1_data = new HashMap<String, Integer>();
 		class1v1_data.put("numberDefects", 0);
-		class1v1_data.put("locTouched", 500);
+		class1v1_data.put("locTouched", null);
 		class1v1_data.put("size", 0);
 		class1v1_data.put("r1", 0);
 		HashMap<String, HashMap<String, Integer>> class1v1_row = new HashMap<String, HashMap<String,Integer>>();
@@ -232,7 +232,7 @@ public class TestAnalyzer {
 		
 		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
 		class1v1_row.put("numberDefects", 1);
-		class1v1_row.put("locTouched", 500);
+		class1v1_row.put("locTouched", null);
 		class1v1_row.put("size", 0);
 		class1v1_row.put("r1", 0);
 		class1v1_row.put("r2", 0);
@@ -254,7 +254,7 @@ public class TestAnalyzer {
 		
 		HashMap<String, Integer> class2v1_row = new HashMap<String, Integer>();
 		class2v1_row.put("numberDefects", 3);
-		class2v1_row.put("locTouched", 500);
+		class2v1_row.put("locTouched", null);
 		class2v1_row.put("size", 0);
 		class2v1_row.put("r1", 0);
 		class2v1_row.put("r2", 0);
@@ -276,7 +276,7 @@ public class TestAnalyzer {
 		
 		HashMap<String, Integer> class3v3_row = new HashMap<String, Integer>();
 		class3v3_row.put("numberDefects", 0);
-		class3v3_row.put("locTouched", 200);
+		class3v3_row.put("locTouched", null);
 		class3v3_row.put("size", 0);
 		class3v3_row.put("r1", 0);
 		class3v3_row.put("r2", 0);

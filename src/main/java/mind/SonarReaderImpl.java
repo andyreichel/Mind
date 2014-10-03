@@ -11,14 +11,16 @@ import org.json.JSONException;
 
 public class SonarReaderImpl implements SonarReader {
 	private SonarWebApi api;
-	public SonarReaderImpl(SonarWebApi api)
+	List<String> allRules;
+	
+	public SonarReaderImpl(SonarWebApi api) throws IOException
 	{
 		this.api = api;
+		allRules = api.getListOfAllRules();
 	}
 	
 	public HashMap<String, Integer> getNumberOfViolationsPerRule(String resourceKey) throws IOException {
 		//FIXME: PULL OUT AND JUST MAKE IT ONE TIME 
-		List<String> allRules = api.getListOfAllRules();
 		HashMap<String, Integer> numberOfViolationsPerRule = new HashMap<String, Integer>();
 		
 		for(String rule : allRules)
@@ -39,7 +41,6 @@ public class SonarReaderImpl implements SonarReader {
 	
 	public HashMap<String, Integer> getNumberOfViolationsPerRuleEverythingZero() throws IOException
 	{
-		List<String> allRules = api.getListOfAllRules();
 		HashMap<String, Integer> numberOfViolationsPerRule = new HashMap<String, Integer>();
 		
 		for(String rule : allRules)

@@ -64,15 +64,14 @@ public class Analyzer {
 			for (String resource : resources)
 			{
 				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);
-				
 				HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 				
-				int numberOfLOCTouched;
+				Integer numberOfLOCTouched;
 				int sizeOfClass = sonarReader.getSizeOfClass(resource);
 				Iterator<Map.Entry<String, Integer>> it;
 				if(previousVersionKey.equals("0") || !violationsOfResourcePerVersion.get(previousVersionKey).containsKey(resource))
 				{
-					numberOfLOCTouched = sizeOfClass;
+					numberOfLOCTouched = null;
 					technicalDebtRow.put("size", 0);
 					violationsOfResource.put(resource, sonarReader.getNumberOfViolationsPerRuleEverythingZero());
 					it = violationsOfResource.get(resource).entrySet().iterator();
