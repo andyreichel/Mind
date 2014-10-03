@@ -2,7 +2,7 @@ sonar.host=http://localhost:9000
 sonar.project=Typo3
 
 git.name=andyreichel
-git.password=Cann0nball!
+git.password=
 git.url=git://git.typo3.org/Packages/TYPO3.CMS.git
 
 git.workingdir=c:\\temp\\working\\typo3

@@ -10,4 +10,5 @@ public interface SonarReader {
 	public int getSizeOfClass(String resourceKey) throws IOException;
 	public List<String >getListOfAllResources() throws IOException;
 	public List<String> getConfiguredVersions();
+	public HashMap<String, Integer> getNumberOfViolationsPerRuleEverythingZero() throws IOException;
 }

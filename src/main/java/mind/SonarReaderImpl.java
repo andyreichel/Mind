@@ -17,6 +17,7 @@ public class SonarReaderImpl implements SonarReader {
 	}
 	
 	public HashMap<String, Integer> getNumberOfViolationsPerRule(String resourceKey) throws IOException {
+		//FIXME: PULL OUT AND JUST MAKE IT ONE TIME 
 		List<String> allRules = api.getListOfAllRules();
 		HashMap<String, Integer> numberOfViolationsPerRule = new HashMap<String, Integer>();
 		
@@ -31,6 +32,19 @@ public class SonarReaderImpl implements SonarReader {
 				//System.out.println(e.getMessage());
 				//System.out.println("Version: " + version + " ResourceKey: " + resourceKey + " Rule: " + rule + " not found");
 			}
+		}
+		
+		return numberOfViolationsPerRule;
+	}
+	
+	public HashMap<String, Integer> getNumberOfViolationsPerRuleEverythingZero() throws IOException
+	{
+		List<String> allRules = api.getListOfAllRules();
+		HashMap<String, Integer> numberOfViolationsPerRule = new HashMap<String, Integer>();
+		
+		for(String rule : allRules)
+		{
+			numberOfViolationsPerRule.put(rule, 0);
 		}
 		
 		return numberOfViolationsPerRule;
