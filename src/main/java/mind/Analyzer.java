@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,11 +40,11 @@ public class Analyzer {
 		this.sonarRunner = sonarRunner;
 	}
 
-	public HashMap<String, HashMap<String, HashMap<String, Integer>>> getTechnicalDebtTable()
+	public LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		
-		HashMap<String, HashMap<String, HashMap<String, Integer>>> table = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
+		LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> table = new LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>>();
 		
 		String previousVersionKey = "0";
 		HashMap<String, HashMap<String, Integer>> sizeOfResourcePerVersion = new HashMap<String, HashMap<String,Integer>>();
@@ -90,10 +91,8 @@ public class Analyzer {
 				
 				technicalDebtRow.put("numberDefects", numberOfDefectsForThisResourceInThisVersion);
 				technicalDebtRow.put("locTouched", numberOfLOCTouched);
-				
 
 				resourceRows.put(resource, technicalDebtRow);
-				
 				sizeOfResources.put(resource, sizeOfClass);
 				violationsOfResource.put(resource, sonarReader.getNumberOfViolationsPerRule(resource));
 				

@@ -38,6 +38,8 @@ public class Main {
 		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		HashMap<String, HashMap<String, HashMap<String, Integer>>> table =  ana.getTechnicalDebtTable();
 		
+		TableFilter.filterTable(table);
+		
 		for(String version : table.keySet())
 		{
 			System.out.println(version + "\t\t\t");

@@ -12,6 +12,7 @@ file-specific base. That means that the data has to be collected after each sona
 
 Conditions:
 -Versions in Sonar have the same name as the branch in git
+-it is assumed that the versions have direct successors 
 
 Tasks:
 -Make everything open source.
@@ -39,3 +40,9 @@ rational: because redmine already has a column that specifies the version where 
 Variables:
 Number of defects: number of defects is the number of redmine issues that have a version specified. if the issueid is included in a commit message of git, all the affected files in this commit will be related to this bug.
 Size: The size of the file 
+locTouched: Number of lines touched between two versions of the same file. between time 0 and first version this figur is not defined.
+numberdefects: number of defects that are related to the class. related means in a git revision a bug was fixed.
+
+HOW TO FIND A REFERENCE PROJECT:
+The reference project was found by looking for open source projects that are using redmine and then it has to be checked if its in github and after that it is checked if the data
+is given (git commit messages with reference to redmine issues) then it is checked if the sourcecode is in a language that is provided by sonar.

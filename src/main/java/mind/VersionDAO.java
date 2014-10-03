@@ -34,7 +34,7 @@ public class VersionDAO {
 		LinkedHashMap<String, HashMap<String, String>> versionDao = new LinkedHashMap<String, HashMap<String, String>>();
 		for(int i = 0; i < issueTrackerVersions.size(); i++)
 		{
-			HashMap<String, String> versionMap = new HashMap<String, String>();
+			LinkedHashMap<String, String> versionMap = new LinkedHashMap<String, String>();
 			versionMap.put("SCM", scmVersions.get(i));
 			versionMap.put("IT", issueTrackerVersions.get(i));
 			versionMap.put("SONAR", sonarVersions.get(i));
