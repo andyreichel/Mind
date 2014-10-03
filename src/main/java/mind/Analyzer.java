@@ -150,16 +150,14 @@ public class Analyzer {
 
 		HashMap<String, List<String>> commitMessagesAndTouchedResourcesForEachRev = scmReader
 				.getCommitMessagesAndTouchedFilesForEachRevision(branch);
-		HashMap<Integer, String> bugIssueIdList = issueTrackerReader
-				.getMapOfBugsRelatedToTheirVersion();
+		HashMap<Integer, String> bugIssueIdList = issueTrackerReader.getMapOfBugsRelatedToTheirVersion();
 		for (Entry<String, List<String>> commit : commitMessagesAndTouchedResourcesForEachRev
 				.entrySet()) {
 			for (Entry<Integer, String> bug : bugIssueIdList.entrySet()) {
 				if (commit.getKey().contains(bug.getKey().toString())) {
 					for (String resource : commit.getValue()) {
 						log.debug("bugfix in file" + resource);
-						if (mapOfDefectsRelatedToResource.containsKey(bug
-								.getValue())) {
+						if (mapOfDefectsRelatedToResource.containsKey(bug.getValue())) {
 							HashMap<String, Set<Integer>> resourceToNumberOfDef = mapOfDefectsRelatedToResource
 									.get(bug.getValue());
 
