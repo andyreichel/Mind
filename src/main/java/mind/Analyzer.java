@@ -19,6 +19,14 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 import com.taskadapter.redmineapi.RedmineException;
 
+
+/**
+ * This class is using a IssueTrackerReader a SCMReader and a SonarReader and
+ * creates a table with the violations, number loc, number loc Touched and number defects per class per version (example)
+ * Version1={class1={rule1Violations=5;numberDefects=2;size=500;numberLOCTouched=200}}
+ * Version2={class1={rule1Violations=2;numberDefects=0;size=550;numberLOCTouched=150}}
+ *
+ */
 public class Analyzer {
 	private SonarReader sonarReader;
 	private IssueTrackerReader issueTrackerReader;
@@ -28,6 +36,16 @@ public class Analyzer {
 	private static org.apache.log4j.Logger log = Logger
 			.getLogger(Analyzer.class);
 
+	/**
+	 * Initializes the Analyzer and validates the software versions of the different tools 
+	 * @param sonarReader
+	 * @param issueTrackerReader
+	 * @param scmReader
+	 * @param sonarRunner
+	 * @throws IOException
+	 * @throws ConfiguredVersionNotExistInSonarException
+	 * @throws UnequalNumberOfVersionsException
+	 */
 	public Analyzer(SonarReader sonarReader,
 			IssueTrackerReader issueTrackerReader, SCMReader scmReader,
 			SonarRunnerApi sonarRunner) throws IOException,
@@ -40,6 +58,20 @@ public class Analyzer {
 		this.sonarRunner = sonarRunner;
 	}
 
+	/**
+	 * Main algorithm to generate the table utilizing the given apis
+	 * @return
+	 * @throws ConfigurationException
+	 * @throws IOException
+	 * @throws InvalidRemoteException
+	 * @throws TransportException
+	 * @throws GitAPIException
+	 * @throws RedmineException
+	 * @throws VersionIdentifierConflictException
+	 * @throws ConfiguredVersionNotExistInSonarException
+	 * @throws UnequalNumberOfVersionsException
+	 * @throws KeyNotFoundException
+	 */
 	public LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
@@ -105,7 +137,23 @@ public class Analyzer {
 		return table;
 	}
 
-	// FIXME: TO COMPLICATED AND VERY VERY SLOW
+	/**
+	 * Returns a map of number of defects related to one resource for example
+	 * {Version1={class1=5;class2=3},
+	 *  Version2={class1=3;class2=4}}
+	 *  The information is pulled from the issue tracker. It is assumed that in the issue is documented to which version this defect was injected.
+	 *  The issue number will than be searched in the git revisions. If the issue number is found all affected files will be regarded as files 
+	 *  of this defect and hence the defect number for this class will be increased.
+	 * @param resources
+	 * @param branch
+	 * @return
+	 * @throws NoHeadException
+	 * @throws IOException
+	 * @throws GitAPIException
+	 * @throws RedmineException
+	 * @throws VersionIdentifierConflictException
+	 * @throws KeyNotFoundException
+	 */
 	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(
 			List<String> resources, String branch) throws NoHeadException,
 			IOException, GitAPIException, RedmineException,
@@ -129,6 +177,20 @@ public class Analyzer {
 		return mapOfNumberOfDefectsRelatedToResource;
 	}
 
+	/**
+	 * Returns a map of defects related to one resource for example
+	 * {Version1={class1={issueid=1000, issueid=10001};class2={issueid=1000, issueid=10001}},
+	 *  Version2={class1={issueid=1003, issueid=10002}}}
+	 * @param resources
+	 * @param branch
+	 * @return
+	 * @throws NoHeadException
+	 * @throws IOException
+	 * @throws GitAPIException
+	 * @throws RedmineException
+	 * @throws VersionIdentifierConflictException
+	 * @throws KeyNotFoundException
+	 */
 	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRelatedToResource(
 			List<String> resources, String branch) throws NoHeadException,
 			IOException, GitAPIException, RedmineException,
