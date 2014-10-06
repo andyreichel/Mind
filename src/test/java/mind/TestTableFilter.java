@@ -120,6 +120,15 @@ public class TestTableFilter {
 		
 		TableFilter.filterTable(toBeFilteredTable);
 		Assert.assertEquals(expectedTable, toBeFilteredTable);
+	}
+	
+	@Test
+	public void test_filterTable_emptyTable()
+	{
+		LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> toBeFilteredTable = new LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>>();
+		LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> expectedTable = new LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>>();
 		
+		TableFilter.filterTable(toBeFilteredTable);
+		Assert.assertEquals(expectedTable, toBeFilteredTable);
 	}
 }

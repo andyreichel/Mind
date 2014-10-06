@@ -8,6 +8,9 @@ import java.util.Map;
 public class TableFilter {
 	public static void filterTable(HashMap<String, HashMap<String, HashMap<String, Integer>>> table)
 	{
+		if(table.isEmpty())
+			return;
+		
 		String key = table.keySet().iterator().next();
 		table.remove(key);
 		HashMap<String, List<String>> rememberDeletionMap = new HashMap<String, List<String>>();
