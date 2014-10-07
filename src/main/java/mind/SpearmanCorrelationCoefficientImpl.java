@@ -1,60 +1,59 @@
 package mind;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang.ArrayUtils;
+
 import rcaller.RCaller;
 import rcaller.RCode;
+import rcaller.exception.ParseException;
 
 public class SpearmanCorrelationCoefficientImpl implements SpearmanCorrelationCoefficient{
-
-	public double[] getCoefficient(double[] column1, double[] column2) {
-        /*
-         * Creating RCaller
-         */
+	private String RscriptExecutablePath;
+	
+	SpearmanCorrelationCoefficientImpl(Configuration config)
+	{
+		RscriptExecutablePath = config.getString("R.RscriptExecutablePath");
+		
+	}
+	
+	public Double getCoefficient(Double[] column1, Double[] column2) throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException {
+        if(column1.length != column2.length)
+        {
+        	throw new LenghtOfDoubleArraysDifferException("column 1 has lenght: " + column1 + "\n"
+        												+ "column 2 has lenght: " + column2);
+        }
+		
         RCaller caller = new RCaller();
         RCode code = new RCode();
         /*
          * Full path of the Rscript. Rscript is an executable file shipped with R.
          * It is something like C:\\Program File\\R\\bin.... in Windows
          */
-        caller.setRscriptExecutable("C:\\Program Files\\R\\R-3.1.0\\bin\\Rscript.exe");
+        caller.setRscriptExecutable(RscriptExecutablePath);
 
-
-//        code.addDoubleArray("x", data);
-
-        /*
-         * Adding R Code
-         */
         
-		  String RScript = "n = c(2, 3, 5)\n"+
-		 "s = c(10,20,3)\n"+
-		 "cor.s=cor(n,s, use=\"pairwise.complete.obs\", method=\"spearman\")";
-		 code.addRCode("n = c(2, 3, 5)");
-		 code.addRCode("s = c(10,20,3)");
-		 code.addRCode("cor.s=cor(n,s, use=\"pairwise.complete.obs\", method=\"spearman\")");
+        code.addDoubleArray("x", ArrayUtils.toPrimitive(column1));
+        code.addDoubleArray("y", ArrayUtils.toPrimitive(column2));
 
-		 /*
-		  * We want to handle the list 'my.all'
-		  */
+        
+		 String RScript = "cor.s=cor(x,y, use=\"pairwise.complete.obs\", method=\"spearman\")";
+		 code.addRCode(RScript);
+
 		 caller.setRCode(code);
 		 caller.runAndReturnResult("cor.s");
 		 
-		 double[] results;
-
-		 /*
-		  * Retrieving the 'mean' element of list 'my.all'
-		  */
-		 results = caller.getParser().getAsDoubleArray("cor.s");
-		 System.out.println("Mean is " + results[0]);
-
-
-		 /*
-		  * Now we are retrieving the standardized form of vector x
-		  */
-		 System.out.println("Standardized x is ");
-		 
-		 for (int i = 0; i < results.length; i++) {
-		   System.out.print(results[i] + ", ");
+		 double[] result;
+		 try{
+		 result = caller.getParser().getAsDoubleArray("cor.s");
+		 }catch(ParseException pe)
+		 {
+			 throw new RankCouldNotBeCalculatedException("Spearman correlation coefficient could not be calculated with given values.\n" + pe.getMessage());
 		 }
-		return null;
+			 
+		 
+		 
+		 return result[0];
+		 
 	}
 
 }

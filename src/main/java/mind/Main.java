@@ -29,7 +29,7 @@ public class Main {
 
 	public static void main(String[] args) throws ConfigurationException,
 			InvalidRemoteException, TransportException, IOException,
-			GitAPIException, RedmineException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, VersionIdentifierConflictException, KeyNotFoundException{
+			GitAPIException, RedmineException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, VersionIdentifierConflictException, KeyNotFoundException, LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException{
 		 PropertyConfigurator.configure(System.getProperty("logProperties"));
 		 Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.ERROR);
 		 Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.ERROR);
@@ -49,48 +49,27 @@ public class Main {
 		 Analyzer ana = new Analyzer(sonarReader, issueTrackerReader,
 		 scmReader, sonarRunner);
 		 TableDAO table = ana.getTechnicalDebtTable();
-		 
 		
 		 table.filterTable();
 		
 		 LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> t = table.getTable();
-		 for(String version : t.keySet())
-		 {
-		 System.out.println(version + "\t\t\t");
-		 for(Map.Entry<String, HashMap<String, Integer>> rows :	 t.get(version).entrySet())
-		 {
-		 System.out.print(rows.getKey() + "\t\t\t");
-		 for(Map.Entry<String, Integer> data : rows.getValue().entrySet())
-		 {
-		 System.out.print(data.getKey() + "\t\t\t" + data.getValue() +
-		 "\t\t\t");
-		 }
-		 System.out.println();
-		 }
-		 System.out.println();
-		 }
-		
 		
 		 Set<String> allRules = table.getAllRulesInTable();
 		 Double[] defectInjectionFrequencyColumn = table.getDefectInjectionFrequencyColumnForRule();
-		 List<Double[]> violationDencityColumns = new ArrayList<Double[]>();
+		 List<Double> ranks= new ArrayList<Double>();
+		 SpearmanCorrelationCoefficient spearman = new SpearmanCorrelationCoefficientImpl(config);
 		 for(String rule : allRules)
 		 {
-			 violationDencityColumns.add(table.getViolationDensityDencityColumnForRule(rule));
-		 }
-		 System.out.println("defectinj");
-		 for(Double d : defectInjectionFrequencyColumn)
-		 {
-			 System.out.println(d);
-		 }
-		 System.out.println("viol");
-		 for(Double[] d : violationDencityColumns)
-		 {
-			 for(Double v : d)
+			 Double coeff;
+			 try
 			 {
-				 System.out.println(v);
+				 coeff = spearman.getCoefficient(defectInjectionFrequencyColumn, table.getViolationDensityDencityColumnForRule(rule));	 
+			 }catch(RankCouldNotBeCalculatedException re)
+			 {
+				 coeff = null;
 			 }
+			 
+			 ranks.add(coeff);
 		 }
-		 
 	}
 }

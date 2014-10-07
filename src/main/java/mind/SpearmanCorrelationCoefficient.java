@@ -1,6 +1,6 @@
 package mind;
 
 public interface SpearmanCorrelationCoefficient {
-	double[] getCoefficient(double[] column1, double[] column2);
+	Double getCoefficient(Double[] column1, Double[] column2) throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException;
 }
 

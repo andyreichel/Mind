@@ -1,0 +1,21 @@
+sonar.host=http://localhost:9000
+sonar.project=Mind
+
+git.name=andyreichel
+git.password=
+git.url=https://git.fc-md.umd.edu/mind/mind.git
+
+git.workingdir=c:\\temp\\working\\mind
+
+redmine.bugkey=Bug
+redmine.host=https://redmine.fc-md.umd.edu/projects/mind
+redmine.apiaccesskey=67070486a7599d3999a4282fddd0a8e9bde75ecb
+redmine.projectkey=typo3cms-core
+
+git.versiontags=1.0-stable;1.1-stable
+redmine.versiontags=1.0;1.1
+sonar.versiontags=1.0;1.1
+sonar.rulerepositories=findbugs;squid
+
+sonar.sonarQubeConfig=C:\\Users\\TechDebt\\sonarqube-4.4\\sonarqube-4.4\\conf\\sonar.properties
+R.RscriptExecutablePath=C:\\Program Files\\R\\R-3.1.0\\bin\\Rscript.exe
