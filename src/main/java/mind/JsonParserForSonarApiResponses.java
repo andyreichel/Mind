@@ -1,7 +1,5 @@
 package mind;
 
-import java.util.LinkedHashMap;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

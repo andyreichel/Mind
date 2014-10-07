@@ -7,7 +7,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -84,8 +83,6 @@ public class SonarWebApiImpl implements SonarWebApi {
 		// add request header
 		String USER_AGENT = "Mozilla/32.0";
 		con.setRequestProperty("User-Agent", USER_AGENT);
-
-		int responseCode = con.getResponseCode();
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(
 				con.getInputStream()));

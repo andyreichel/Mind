@@ -5,7 +5,18 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 
+/**
+ * Parser that reads the output of a diff and tries to extract interesting information from it
+ * 
+ *
+ */
 public class DiffParser {
+	/**
+	 * Function that returns a map of number of changes in a diff.
+	 * @param output must be in the format of a diff
+	 * @return A map like class1=5;class2=1;class3=0
+	 * @throws IOException
+	 */
 	public static HashMap<String, Integer> getMapOfChangesPerResourceFromDiffOutput(String output) throws IOException
 	{
 		BufferedReader bufReader = new BufferedReader(new StringReader(output));

@@ -1,6 +1,5 @@
 package mind;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
 
 public class RedmineReader implements IssueTrackerReader {
-	private static org.apache.log4j.Logger log = Logger.getLogger(RedmineReader.class);
 	private RedmineApi api;
 	RedmineReader(RedmineApi api)
 	{

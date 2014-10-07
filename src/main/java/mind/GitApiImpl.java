@@ -18,10 +18,8 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -45,9 +43,17 @@ public class GitApiImpl implements GitApi {
 		initGit(config);
 	}
 	
+	/**
+	 * sets up gitapi to actually access the git repository. The configuration is passed as a parameter
+	 * @param config
+	 * @throws IOException
+	 * @throws InvalidRemoteException
+	 * @throws TransportException
+	 * @throws GitAPIException
+	 */
 	protected void initGit(Configuration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException
 	{
-		//FIXME: COMMENT ME 
+		//this line is needed in order to speed up the git cloning of large files 
 		WindowCacheConfig wcc = new WindowCacheConfig();
 		
 		wcc.setPackedGitLimit(Integer.MAX_VALUE);
@@ -70,6 +76,9 @@ public class GitApiImpl implements GitApi {
 
 	}
 	
+	/**
+	 * clones a branch to the configured working dir and sets it as current repository
+	 */
 	public void cloneBranch(String branch) throws IOException, InvalidRemoteException, TransportException, GitAPIException
 	{
 		File branchDir = new File(workingDir + "\\" + branch);
@@ -116,7 +125,6 @@ public class GitApiImpl implements GitApi {
 		 HashMap<String, List<String>> commitMessagesAndFiles = new HashMap<String,List<String>>();
 		 while (i.hasNext()) {
 		     commit = walk.parseCommit( i.next() );
-		     HashMap<String, List<String>> messageAndFiles = new HashMap<String, List<String>>();
 		     commitMessagesAndFiles.put(commit.getFullMessage(), getFilesInCommit(repo, commit));
 		 }
 		 walk.dispose();

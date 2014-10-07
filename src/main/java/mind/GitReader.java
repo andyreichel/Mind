@@ -9,6 +9,11 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.TransportException;
 
+/**
+ * Class that provides methods to read information from git and interprets them
+ * 
+ *
+ */
 public class GitReader implements SCMReader {
 	BranchComparer branchComparer;
 	GitApi gitApi;

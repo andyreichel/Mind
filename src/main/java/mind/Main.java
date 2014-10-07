@@ -2,11 +2,7 @@ package mind;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
@@ -19,13 +15,14 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 
-import rcaller.RCaller;
-import rcaller.RCode;
-
 import com.taskadapter.redmineapi.RedmineException;
 
+
+/**
+ * In this class the differnt classes are plugged in together and the rank is generated for all of the rules. 
+ *
+ */
 public class Main {
-	private static org.apache.log4j.Logger log = Logger.getLogger(Main.class);
 
 	public static void main(String[] args) throws ConfigurationException,
 			InvalidRemoteException, TransportException, IOException,
@@ -51,8 +48,6 @@ public class Main {
 		 TableDAO table = ana.getTechnicalDebtTable();
 		
 		 table.filterTable();
-		
-		 LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> t = table.getTable();
 		
 		 Set<String> allRules = table.getAllRulesInTable();
 		 Double[] defectInjectionFrequencyColumn = table.getDefectInjectionFrequencyColumnForRule();

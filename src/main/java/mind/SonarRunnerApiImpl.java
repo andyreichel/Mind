@@ -1,12 +1,10 @@
 package mind;
 import java.util.Iterator;
-import java.util.Properties;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.sonar.runner.api.ForkedRunner;
-import org.sonar.runner.api.EmbeddedRunner;
 import org.sonar.runner.api.Runner;
 
 public class SonarRunnerApiImpl implements SonarRunnerApi {
