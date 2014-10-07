@@ -9,6 +9,7 @@ file-specific base. That means that the data has to be collected after each sona
 - Development of Sonar Java Api will not be continued thats why we should use Web Api
 -Resources set in two different versions differ
 -Sonar Webapi cannot list all rules of a language so we have to specify all rulerepositories in a configfile
+-Renjin does not provide Calculation of rank
 
 Conditions:
 -Versions in Sonar have the same name as the branch in git
@@ -17,8 +18,8 @@ Conditions:
 Tasks:
 -Make everything open source.
 -diff should compare on line level
--FILTER LOCTOUCHED=0
--use spermine
+-FILTER LOCTOUCHED=0 done
+-use spaerman
 -COMMENT EVERYTHING
 
 
@@ -35,6 +36,13 @@ Question: From where to I get the information to what version a bug is related?
 criteria: reliability of data;well-kept comments in scm and issuetracker
 options: reading it from git; reading it from redmine
 rational: because redmine already has a column that specifies the version where this defect was found it is easy to use it to correlate the version to the bug
+
+Question: What framework to use for calculating the spearman rank?
+criteria: pluginablility with java; Simplicity
+options: R with RServe; R with Renjin; R with RCaller; Apache Muhaud
+rational: RServe is client server based and a overcill. Renjin is a reimplementation of R in Java but does not provide rank at this time. Apache Muhaud is 
+very easy to understand and would do the job but it is not in R and we need R because of the enhancementness. RCaller is a simple scriptapi that connects java with the RScript.execution
+So we chose RCaller
 
 
 Variables:

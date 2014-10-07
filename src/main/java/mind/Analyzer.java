@@ -72,7 +72,7 @@ public class Analyzer {
 	 * @throws UnequalNumberOfVersionsException
 	 * @throws KeyNotFoundException
 	 */
-	public LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> getTechnicalDebtTable()
+	public TableDAO getTechnicalDebtTable()
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		
@@ -134,7 +134,7 @@ public class Analyzer {
 			table.put(currentVersionKey, resourceRows);
 			previousVersionKey = currentVersionKey;
 		}
-		return table;
+		return new TableDAO(table);
 	}
 
 	/**

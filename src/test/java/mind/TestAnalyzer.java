@@ -100,8 +100,8 @@ public class TestAnalyzer {
 		class1v1_row.put("class1", class1v1_data);
 		expectedTable.put("v1", class1v1_row);
 		
-		HashMap<String, HashMap<String, HashMap<String, Integer>>> actualTable = testAna.getTechnicalDebtTable();
-		Assert.assertEquals(expectedTable, actualTable);
+		TableDAO actualTable = testAna.getTechnicalDebtTable();
+		Assert.assertEquals(expectedTable, actualTable.getTable());
 	}
 	
 	@Test 
@@ -298,8 +298,8 @@ public class TestAnalyzer {
 		expectedTable.put("v2", v2rows);
 		expectedTable.put("v3", v3rows);
 		
-		HashMap<String, HashMap<String, HashMap<String, Integer>>> actualTable = testAna.getTechnicalDebtTable();
-		Assert.assertEquals(expectedTable, actualTable);
+		TableDAO actualTable = testAna.getTechnicalDebtTable();
+		Assert.assertEquals(expectedTable, actualTable.getTable());
 	}
 	
 	@Test
