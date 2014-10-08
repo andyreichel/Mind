@@ -1,9 +1,16 @@
-package mind;
+package dao;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import exceptions.ConfiguredVersionNotExistInSonarException;
+import exceptions.KeyNotFoundException;
+import exceptions.UnequalNumberOfVersionsException;
+import externalinterfaces.IssueTrackerReader;
+import externalinterfaces.SCMReader;
+import externalinterfaces.SonarReader;
 
 public class VersionDAO {
 	private List<String> scmVersions;

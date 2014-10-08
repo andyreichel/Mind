@@ -1,4 +1,4 @@
-package mind;
+package exceptions;
 
 public class UnequalNumberOfVersionsException extends Exception {
 	private static final long serialVersionUID = 1L;

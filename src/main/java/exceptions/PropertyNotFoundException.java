@@ -1,4 +1,4 @@
-package mind;
+package exceptions;
 
 import java.io.IOException;
 

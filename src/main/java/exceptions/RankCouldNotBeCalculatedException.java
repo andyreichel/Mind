@@ -1,4 +1,4 @@
-package mind;
+package exceptions;
 
 public class RankCouldNotBeCalculatedException extends Exception{
 	/**

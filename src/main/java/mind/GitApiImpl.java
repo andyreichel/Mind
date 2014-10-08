@@ -30,6 +30,9 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
+import exceptions.NoSuchBranchException;
+import externalinterfaces.GitApi;
+
 public class GitApiImpl implements GitApi {
 	private Repository repo; 
 	private CredentialsProvider cp;

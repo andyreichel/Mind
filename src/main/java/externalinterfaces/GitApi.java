@@ -1,4 +1,4 @@
-package mind;
+package externalinterfaces;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,6 +9,8 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.Repository;
+
+import exceptions.NoSuchBranchException;
 
 /**
  * Classes that implement this interface are able to communicate with a git repository and reads information from it 

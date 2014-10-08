@@ -7,6 +7,8 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 
+import utils.ConfigAccessor;
+
 public class TestConfigAccessor {
 	@Test
 	public void getValueTest_successfull() throws ConfigurationException

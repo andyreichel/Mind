@@ -7,6 +7,9 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.sonar.runner.api.ForkedRunner;
 import org.sonar.runner.api.Runner;
 
+import utils.ConfigAccessor;
+import externalinterfaces.SonarRunnerApi;
+
 public class SonarRunnerApiImpl implements SonarRunnerApi {
 	Configuration config;
 	

@@ -9,6 +9,9 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dao.TableDAO;
+import exceptions.PropertyNotFoundException;
+
 
 public class TestTableDAO {
 	@Test

@@ -19,6 +19,17 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 import com.taskadapter.redmineapi.RedmineException;
 
+import dao.TableDAO;
+import dao.VersionDAO;
+import exceptions.ConfiguredVersionNotExistInSonarException;
+import exceptions.KeyNotFoundException;
+import exceptions.UnequalNumberOfVersionsException;
+import exceptions.VersionIdentifierConflictException;
+import externalinterfaces.IssueTrackerReader;
+import externalinterfaces.SCMReader;
+import externalinterfaces.SonarReader;
+import externalinterfaces.SonarRunnerApi;
+
 
 /**
  * This class is using a IssueTrackerReader a SCMReader and a SonarReader and

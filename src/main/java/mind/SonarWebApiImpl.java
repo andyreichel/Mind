@@ -14,6 +14,10 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import utils.ConfigAccessor;
+import utils.JsonParserForSonarApiResponses;
+import externalinterfaces.SonarWebApi;
+
 public class SonarWebApiImpl implements SonarWebApi {
 	private String sonarHost; 
 	private String project;

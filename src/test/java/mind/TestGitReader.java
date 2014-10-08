@@ -16,6 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import externalinterfaces.BranchComparer;
+import externalinterfaces.IssueTrackerReader;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TestGitReader {
 	@Mock

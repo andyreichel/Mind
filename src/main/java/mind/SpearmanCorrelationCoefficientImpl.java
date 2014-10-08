@@ -3,6 +3,9 @@ package mind;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.ArrayUtils;
 
+import exceptions.LenghtOfDoubleArraysDifferException;
+import exceptions.RankCouldNotBeCalculatedException;
+import externalinterfaces.SpearmanCorrelationCoefficient;
 import rcaller.RCaller;
 import rcaller.RCode;
 import rcaller.exception.ParseException;

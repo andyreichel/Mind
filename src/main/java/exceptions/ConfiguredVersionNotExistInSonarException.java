@@ -1,4 +1,4 @@
-package mind;
+package exceptions;
 
 /**
  * Exception that is thrown if a sonar.versionTags in the mind.properties file is not findable in the 

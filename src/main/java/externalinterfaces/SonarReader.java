@@ -1,4 +1,4 @@
-package mind;
+package externalinterfaces;
 
 import java.io.IOException;
 import java.util.HashMap;

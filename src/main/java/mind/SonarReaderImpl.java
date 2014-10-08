@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.json.JSONException;
 
+import externalinterfaces.SonarReader;
+import externalinterfaces.SonarWebApi;
+
 
 public class SonarReaderImpl implements SonarReader {
 	private SonarWebApi api;

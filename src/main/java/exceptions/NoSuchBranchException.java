@@ -1,4 +1,4 @@
-package mind;
+package exceptions;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 

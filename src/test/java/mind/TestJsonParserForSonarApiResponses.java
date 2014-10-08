@@ -9,6 +9,9 @@ import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import utils.JsonParserForSonarApiResponses;
+import exceptions.NoSuchSonarVersionException;
+
 public class TestJsonParserForSonarApiResponses {
 	@Test
 	public void getDateOfLastSonarAnalyse_successFull()

@@ -12,6 +12,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import dao.VersionDAO;
+import exceptions.ConfiguredVersionNotExistInSonarException;
+import exceptions.KeyNotFoundException;
+import exceptions.UnequalNumberOfVersionsException;
+import externalinterfaces.IssueTrackerReader;
+import externalinterfaces.SCMReader;
+import externalinterfaces.SonarReader;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestVersionDAO {

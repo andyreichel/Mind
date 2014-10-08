@@ -1,7 +1,9 @@
-package mind;
+package externalinterfaces;
 
 import java.io.IOException;
 import java.util.HashMap;
+
+import exceptions.NoSuchBranchException;
 
 /**
  * Classes that implement this interface compare two files of different branches and get a Map as return value of this format:

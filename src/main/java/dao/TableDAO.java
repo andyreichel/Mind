@@ -1,4 +1,4 @@
-package mind;
+package dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import exceptions.PropertyNotFoundException;
 
 public class TableDAO {
 	LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> table;

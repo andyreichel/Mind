@@ -1,4 +1,4 @@
-package mind;
+package externalinterfaces;
 
 import org.apache.commons.configuration.ConfigurationException;
 

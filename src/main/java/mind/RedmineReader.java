@@ -8,6 +8,9 @@ import org.apache.log4j.Logger;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
 
+import externalinterfaces.IssueTrackerReader;
+import externalinterfaces.RedmineApi;
+
 public class RedmineReader implements IssueTrackerReader {
 	private RedmineApi api;
 	RedmineReader(RedmineApi api)

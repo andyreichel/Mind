@@ -22,6 +22,17 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.taskadapter.redmineapi.RedmineException;
 
+import dao.TableDAO;
+import exceptions.ConfiguredVersionNotExistInSonarException;
+import exceptions.KeyNotFoundException;
+import exceptions.UnequalNumberOfVersionsException;
+import exceptions.VersionIdentifierConflictException;
+import externalinterfaces.IssueTrackerReader;
+import externalinterfaces.SCMReader;
+import externalinterfaces.SonarReader;
+import externalinterfaces.SonarRunnerApi;
+import externalinterfaces.SonarWebApi;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TestAnalyzer {
 	@Mock

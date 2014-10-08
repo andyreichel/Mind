@@ -17,6 +17,22 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 import com.taskadapter.redmineapi.RedmineException;
 
+import dao.TableDAO;
+import exceptions.ConfiguredVersionNotExistInSonarException;
+import exceptions.KeyNotFoundException;
+import exceptions.LenghtOfDoubleArraysDifferException;
+import exceptions.RankCouldNotBeCalculatedException;
+import exceptions.UnequalNumberOfVersionsException;
+import exceptions.VersionIdentifierConflictException;
+import externalinterfaces.BranchComparer;
+import externalinterfaces.GitApi;
+import externalinterfaces.IssueTrackerReader;
+import externalinterfaces.SCMReader;
+import externalinterfaces.SonarReader;
+import externalinterfaces.SonarRunnerApi;
+import externalinterfaces.SonarWebApi;
+import externalinterfaces.SpearmanCorrelationCoefficient;
+
 
 /**
  * In this class the differnt classes are plugged in together and the rank is generated for all of the rules. 

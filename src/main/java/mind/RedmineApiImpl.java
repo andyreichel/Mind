@@ -9,6 +9,8 @@ import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
 
+import externalinterfaces.RedmineApi;
+
 public class RedmineApiImpl implements RedmineApi {
 	Configuration config;
 	public RedmineApiImpl(Configuration config)

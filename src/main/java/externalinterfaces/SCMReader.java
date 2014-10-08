@@ -1,4 +1,4 @@
-package mind;
+package externalinterfaces;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+
+import exceptions.NoSuchBranchException;
 
 /**
  * Classes that implement this interface provide methods to access a SCM such as Git or SVN

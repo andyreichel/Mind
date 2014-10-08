@@ -1,4 +1,4 @@
-package mind;
+package exceptions;
 
 public class LenghtOfDoubleArraysDifferException extends Exception{
 	private static final long serialVersionUID = 1L;

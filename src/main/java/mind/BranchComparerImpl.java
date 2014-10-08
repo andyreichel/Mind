@@ -20,6 +20,11 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
+import utils.DiffParser;
+import exceptions.NoSuchBranchException;
+import externalinterfaces.BranchComparer;
+import externalinterfaces.GitApi;
+
 public class BranchComparerImpl implements BranchComparer {
 	GitApi gitApi;
 	

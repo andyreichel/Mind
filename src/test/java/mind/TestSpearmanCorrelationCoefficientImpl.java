@@ -6,6 +6,10 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 
+import exceptions.LenghtOfDoubleArraysDifferException;
+import exceptions.RankCouldNotBeCalculatedException;
+import externalinterfaces.SpearmanCorrelationCoefficient;
+
 public class TestSpearmanCorrelationCoefficientImpl {
 	@Test
 	public void test_getCoefficient_success() throws ConfigurationException, LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException

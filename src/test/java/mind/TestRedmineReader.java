@@ -18,6 +18,8 @@ import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.Version;
 
+import externalinterfaces.RedmineApi;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TestRedmineReader {
 	@Mock
