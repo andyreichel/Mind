@@ -65,10 +65,10 @@ public class StatisticGeneratorImplTest {
 		TableDAO table = new TableDAO(tableMap);
 		
 		
-		List<Double> expectedRankList = new ArrayList<Double>();
-		expectedRankList.add(1.4);
-		expectedRankList.add(2.0);
-		expectedRankList.add(null);
+		HashMap<String, Double> expectedRankList = new HashMap<String, Double>();
+		expectedRankList.put("r1", 1.4);
+		expectedRankList.put("r2", 2.0);
+		expectedRankList.put("r3", null);
 		
 		Double[] defectInj = new Double[]{1.0/13.0, 3.0/8.0, 1.0};
 		Double[] r1 = new Double[]{5.0/5.0, 4.0/2.0, 0.0};

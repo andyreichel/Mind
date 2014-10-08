@@ -9,11 +9,14 @@ import java.util.List;
 
 import org.json.JSONException;
 
+import com.google.inject.Inject;
+
 
 public class SonarReaderImpl implements SonarReader {
 	private SonarWebApi api;
 	List<String> allRules;
 	
+	@Inject
 	public SonarReaderImpl(SonarWebApi api) throws IOException
 	{
 		this.api = api;
@@ -21,7 +24,6 @@ public class SonarReaderImpl implements SonarReader {
 	}
 	
 	public HashMap<String, Integer> getNumberOfViolationsPerRule(String resourceKey) throws IOException {
-		//FIXME: PULL OUT AND JUST MAKE IT ONE TIME 
 		HashMap<String, Integer> numberOfViolationsPerRule = new HashMap<String, Integer>();
 		
 		for(String rule : allRules)

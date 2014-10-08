@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +35,7 @@ public class VersionDAOTest {
 	SonarReader sonarReader;
 	
 	@Test
-	public void test_getVersionDao_sameNumberOfVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
+	public void test_getVersionDao_sameNumberOfVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException, ConfigurationException
 	{
 		List<String> scmVersions = new ArrayList<String>();
 		scmVersions.add("ascm");
@@ -54,7 +55,7 @@ public class VersionDAOTest {
 	}
 	
 	@Test(expected=KeyNotFoundException.class)
-	public void test_getVersionDao_noVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
+	public void test_getVersionDao_noVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException, ConfigurationException
 	{
 		List<String> scmVersions = new ArrayList<String>();
 		List<String> itVersions = new ArrayList<String>();
@@ -69,7 +70,7 @@ public class VersionDAOTest {
 	}
 	
 	@Test(expected=UnequalNumberOfVersionsException.class)
-	public void test_getVersionDao_unequalNumberOfVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException
+	public void test_getVersionDao_unequalNumberOfVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
 	{
 		List<String> scmVersions = new ArrayList<String>();
 		scmVersions.add("a");

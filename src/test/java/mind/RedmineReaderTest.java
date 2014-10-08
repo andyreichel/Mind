@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +27,7 @@ public class RedmineReaderTest {
 	RedmineApi redmineApi;
 	
 	@Test
-	public void test_getMapOfBugsRelatedToTheirVersion_threeBugs() throws RedmineException
+	public void test_getMapOfBugsRelatedToTheirVersion_threeBugs() throws RedmineException, ConfigurationException
 	{
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");
@@ -65,7 +66,7 @@ public class RedmineReaderTest {
 	}
 	
 	@Test
-	public void test_getMapOfBugsRelatedToTheirVersion_oneBug_twoNormalIssues() throws RedmineException
+	public void test_getMapOfBugsRelatedToTheirVersion_oneBug_twoNormalIssues() throws RedmineException, ConfigurationException
 	{
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");
@@ -103,7 +104,7 @@ public class RedmineReaderTest {
 	}
 	
 	@Test
-	public void test_getMapOfBugsRelatedToTheirVersion_oneBug_noTargetVersionGiven() throws RedmineException
+	public void test_getMapOfBugsRelatedToTheirVersion_oneBug_noTargetVersionGiven() throws RedmineException, ConfigurationException
 	{
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");
@@ -133,7 +134,7 @@ public class RedmineReaderTest {
 	}
 	
 	@Test
-	public void test_getMapOfBugsRelatedToTheirVersion_specialVersionIdentifierSet() throws RedmineException
+	public void test_getMapOfBugsRelatedToTheirVersion_specialVersionIdentifierSet() throws RedmineException, ConfigurationException
 	{
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");

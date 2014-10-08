@@ -13,6 +13,8 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.TransportException;
 
+import com.google.inject.Inject;
+
 import exceptions.NoSuchBranchException;
 
 /**
@@ -24,6 +26,7 @@ public class GitReader implements SCMReader {
 	BranchComparer branchComparer;
 	GitApi gitApi;
 	
+	@Inject
 	public GitReader(GitApi gitApi, BranchComparer branchComparer) throws IOException,
 			InvalidRemoteException, TransportException, GitAPIException {
 		this.branchComparer = branchComparer;

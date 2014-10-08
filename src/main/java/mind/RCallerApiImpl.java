@@ -1,23 +1,27 @@
 package mind;
 
+import interfaces.MindConfiguration;
 import interfaces.RCallerApi;
 
-import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.ArrayUtils;
 
 import rcaller.RCaller;
 import rcaller.RCode;
 import rcaller.exception.ParseException;
+
+import com.google.inject.Inject;
+
 import exceptions.LenghtOfDoubleArraysDifferException;
 import exceptions.RankCouldNotBeCalculatedException;
 
 public class RCallerApiImpl implements RCallerApi {
 	private String RscriptExecutablePath;
 	
-	RCallerApiImpl(Configuration config)
+	@Inject
+	RCallerApiImpl(MindConfiguration config) throws ConfigurationException
 	{
-		RscriptExecutablePath = config.getString("R.RscriptExecutablePath");
-		
+		RscriptExecutablePath = config.getRscriptExecutablePath();
 	}
 	
 	public Double getSpearmanCoefficient(Double[] column1, Double[] column2) throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException {

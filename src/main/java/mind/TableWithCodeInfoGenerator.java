@@ -22,6 +22,7 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.TransportException;
 
+import com.google.inject.Inject;
 import com.taskadapter.redmineapi.RedmineException;
 
 import dao.TableDAO;
@@ -57,12 +58,14 @@ public class TableWithCodeInfoGenerator {
 	 * @throws IOException
 	 * @throws ConfiguredVersionNotExistInSonarException
 	 * @throws UnequalNumberOfVersionsException
+	 * @throws ConfigurationException 
 	 */
+	@Inject
 	public TableWithCodeInfoGenerator(SonarReader sonarReader,
 			IssueTrackerReader issueTrackerReader, SCMReader scmReader,
 			SonarRunnerApi sonarRunner) throws IOException,
 			ConfiguredVersionNotExistInSonarException,
-			UnequalNumberOfVersionsException {
+			UnequalNumberOfVersionsException, ConfigurationException {
 		this.sonarReader = sonarReader;
 		this.issueTrackerReader = issueTrackerReader;
 		this.scmReader = scmReader;
@@ -165,11 +168,12 @@ public class TableWithCodeInfoGenerator {
 	 * @throws RedmineException
 	 * @throws VersionIdentifierConflictException
 	 * @throws KeyNotFoundException
+	 * @throws ConfigurationException 
 	 */
 	public HashMap<String, HashMap<String, Integer>> getMapOfNumberOfDefectsRelatedToResource(
 			List<String> resources, String branch) throws NoHeadException,
 			IOException, GitAPIException, RedmineException,
-			VersionIdentifierConflictException, KeyNotFoundException {
+			VersionIdentifierConflictException, KeyNotFoundException, ConfigurationException {
 		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = getMapOfDefectsRelatedToResource(
 				resources, branch);
 		HashMap<String, HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToResource = new HashMap<String, HashMap<String, Integer>>();
@@ -202,11 +206,12 @@ public class TableWithCodeInfoGenerator {
 	 * @throws RedmineException
 	 * @throws VersionIdentifierConflictException
 	 * @throws KeyNotFoundException
+	 * @throws ConfigurationException 
 	 */
 	private HashMap<String, HashMap<String, Set<Integer>>> getMapOfDefectsRelatedToResource(
 			List<String> resources, String branch) throws NoHeadException,
 			IOException, GitAPIException, RedmineException,
-			VersionIdentifierConflictException, KeyNotFoundException {
+			VersionIdentifierConflictException, KeyNotFoundException, ConfigurationException {
 		HashMap<String, HashMap<String, Set<Integer>>> mapOfDefectsRelatedToResource = new HashMap<String, HashMap<String, Set<Integer>>>();
 
 		for (String version : versionDao.getKeySet()) {

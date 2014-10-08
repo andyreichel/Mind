@@ -1,4 +1,5 @@
 package mind;
+import interfaces.MindConfiguration;
 import interfaces.SonarRunnerApi;
 
 import java.util.Iterator;
@@ -9,21 +10,22 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.sonar.runner.api.ForkedRunner;
 import org.sonar.runner.api.Runner;
 
-import utils.ConfigAccessor;
+import com.google.inject.Inject;
 
 public class SonarRunnerApiImpl implements SonarRunnerApi {
-	Configuration config;
+	MindConfiguration config;
 	
-	public SonarRunnerApiImpl(Configuration config) throws ConfigurationException
+	@Inject
+	public SonarRunnerApiImpl(MindConfiguration config) throws ConfigurationException
 	{
 		this.config = config;
 	}
 	
 	public void runSonar(String version) throws ConfigurationException {
 		Runner<?> runner = ForkedRunner.create();
-		String projectBaseDir = ConfigAccessor.getValue(config, "git.workingdir")+ "\\" + version;
-		String sonarRunnerConfigPath = ConfigAccessor.getValue(config, "git.workingdir") + "\\" + version + "\\sonar-project.properties";
-		String sonarQubeConfigPath = ConfigAccessor.getValue(config, "sonar.sonarQubeConfig");
+		String projectBaseDir = config.getGitWorkingDir() + "\\" + version;
+		String sonarRunnerConfigPath = projectBaseDir + "\\sonar-project.properties";
+		String sonarQubeConfigPath = config.getSonarQubeConfig();
 		
 		Configuration sonarRunnerConfig = new PropertiesConfiguration(sonarRunnerConfigPath);
 		Configuration sonarQubeConfig = new PropertiesConfiguration(sonarQubeConfigPath);

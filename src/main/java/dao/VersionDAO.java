@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
 import exceptions.UnequalNumberOfVersionsException;
@@ -19,7 +21,7 @@ public class VersionDAO {
 	private List<String> sonarVersions;
 	private LinkedHashMap<String, HashMap<String, String>> versionDao;
 	
-	public VersionDAO(SCMReader scmReader, IssueTrackerReader itReader, SonarReader sonarReader) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException
+	public VersionDAO(SCMReader scmReader, IssueTrackerReader itReader, SonarReader sonarReader) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
 	{
 		scmVersions = scmReader.getConfiguredVersions();
 		issueTrackerVersions = itReader.getConfiguredVersions();

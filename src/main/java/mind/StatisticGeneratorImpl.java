@@ -3,9 +3,10 @@ package mind;
 import interfaces.RCallerApi;
 import interfaces.StatisticGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Set;
+
+import com.google.inject.Inject;
 
 import dao.TableDAO;
 import exceptions.LenghtOfDoubleArraysDifferException;
@@ -15,16 +16,17 @@ import exceptions.RankCouldNotBeCalculatedException;
 public class StatisticGeneratorImpl implements StatisticGenerator {
 	RCallerApi rcaller;
 	
+	@Inject
 	StatisticGeneratorImpl(RCallerApi rcaller)
 	{
 		this.rcaller = rcaller;
 	}
 	
-	public List<Double> getSpearmanCoefficientForAllRulesInTable(TableDAO table) throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException
+	public HashMap<String, Double> getSpearmanCoefficientForAllRulesInTable(TableDAO table) throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException
 	{
 		Set<String> allRules = table.getAllRulesInTable();
 		Double[] defectInjectionFrequencyColumn = table.getDefectInjectionFrequencyColumnForRule();
-		List<Double> ranks= new ArrayList<Double>();
+		HashMap<String, Double> ranks= new HashMap<String,Double>();
 		 for(String rule : allRules)
 		 {
 			 Double coeff;
@@ -35,7 +37,7 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 			 {
 				 coeff = null;
 			 }
-			 ranks.add(coeff);
+			 ranks.put(rule, coeff);
 		 }
 		 return ranks;
 	}

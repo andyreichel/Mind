@@ -1,16 +1,16 @@
 package mind;
 
 import interfaces.GitApi;
+import interfaces.MindConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -32,6 +32,8 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
+import com.google.inject.Inject;
+
 import exceptions.NoSuchBranchException;
 
 public class GitApiImpl implements GitApi {
@@ -42,9 +44,11 @@ public class GitApiImpl implements GitApi {
 	List<String> configuredVersions;
 	String project;
 	
-	public GitApiImpl(Configuration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException
+	@Inject
+	public GitApiImpl(MindConfiguration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
 	{
 		initGit(config);
+		setRepository(getHeadBranch());
 	}
 	
 	/**
@@ -54,8 +58,9 @@ public class GitApiImpl implements GitApi {
 	 * @throws InvalidRemoteException
 	 * @throws TransportException
 	 * @throws GitAPIException
+	 * @throws ConfigurationException 
 	 */
-	protected void initGit(Configuration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException
+	protected void initGit(MindConfiguration config) throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
 	{
 		//this line is needed in order to speed up the git cloning of large files 
 		WindowCacheConfig wcc = new WindowCacheConfig();
@@ -65,18 +70,18 @@ public class GitApiImpl implements GitApi {
 		wcc.setDeltaBaseCacheLimit(Integer.MAX_VALUE);
 		wcc.install();
 		
-		String gitName = config.getString("git.name");
-		String gitPw = config.getString("git.password");
-		gitUrl = config.getString("git.url");
-		workingDir = config.getString("git.workingdir");
-		configuredVersions = Arrays.asList(config.getString("git.versiontags").split(";"));
-		project = config.getString("sonar.project");
+		String gitName = config.getGitName();
+		String gitPw = config.getGitPassword();
+		gitUrl = config.getGitUrl();
+		workingDir = config.getGitWorkingDir();
+		configuredVersions = config.getGitVersionTags();
+		project = config.getSonarProject();
 
 		cp = new UsernamePasswordCredentialsProvider(gitName, gitPw);
 
 		File localPath = File.createTempFile("TestGitRepository", "");
 		localPath.delete();
-
+		
 
 	}
 	

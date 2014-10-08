@@ -21,8 +21,7 @@ public class RCallerApiTest {
 		
 		Double expectedRank = 0.8;
 		
-		Configuration config = new PropertiesConfiguration("mind.properties");
-		
+		MindConfigurationImpl config = new MindConfigurationImpl();
 		RCallerApi rcaller = new RCallerApiImpl(config);
 		Assert.assertEquals(expectedRank, rcaller.getSpearmanCoefficient(defectInjFrequency, violationDensity), 0.0000001);
 	}
@@ -35,7 +34,7 @@ public class RCallerApiTest {
 		
 		Double expectedRank = 0.8;
 		
-		Configuration config = new PropertiesConfiguration("mind.properties");
+		MindConfigurationImpl config = new MindConfigurationImpl();
 		RCallerApi rcaller = new RCallerApiImpl(config);
 		Assert.assertEquals(expectedRank, rcaller.getSpearmanCoefficient(defectInjFrequency, violationDensity), 0.0000001);
 	}
@@ -48,7 +47,7 @@ public class RCallerApiTest {
 		
 		Double expectedRank = 0.8;
 		
-		Configuration config = new PropertiesConfiguration("mind.properties");
+		MindConfigurationImpl config = new MindConfigurationImpl();
 		RCallerApi rcaller = new RCallerApiImpl(config);
 		Assert.assertEquals(expectedRank, rcaller.getSpearmanCoefficient(defectInjFrequency, violationDensity), 0.0000001);
 	}

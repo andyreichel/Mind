@@ -24,11 +24,15 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 import utils.DiffParser;
+
+import com.google.inject.Inject;
+
 import exceptions.NoSuchBranchException;
 
 public class BranchComparerImpl implements BranchComparer {
 	GitApi gitApi;
 	
+	@Inject
 	public BranchComparerImpl(GitApi gitApi)
 	{
 		this.gitApi = gitApi;

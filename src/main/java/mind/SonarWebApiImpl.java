@@ -1,5 +1,6 @@
 package mind;
 
+import interfaces.MindConfiguration;
 import interfaces.SonarWebApi;
 
 import java.io.BufferedReader;
@@ -8,16 +9,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import utils.ConfigAccessor;
 import utils.JsonParserForSonarApiResponses;
+
+import com.google.inject.Inject;
 
 public class SonarWebApiImpl implements SonarWebApi {
 	private String sonarHost; 
@@ -25,13 +25,13 @@ public class SonarWebApiImpl implements SonarWebApi {
 	private List<String> configuredVersions;
 	private List<String> configuredRepos;
 	
-	public SonarWebApiImpl(Configuration config) throws ConfigurationException
+	@Inject
+	public SonarWebApiImpl(MindConfiguration config) throws ConfigurationException
 	{
-		this.sonarHost = config.getString("sonar.host");
-		this.project = config.getString("sonar.project");
-		this.configuredVersions = Arrays.asList(config.getString("sonar.versiontags").split(";"));
-		
-		this.configuredRepos = Arrays.asList(ConfigAccessor.getValue(config, "sonar.rulerepositories").split(";"));
+		this.sonarHost = config.getSonarHost();
+		this.project = config.getSonarProject();
+		this.configuredVersions = config.getSonarVersionTags();
+		this.configuredRepos = config.getSonarRuleRepositories();
 	}
 	
 	public List<String> getListOfAllRules() throws IOException
