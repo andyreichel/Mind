@@ -1,4 +1,4 @@
-package mind;
+package utils;
 
 
 import org.apache.commons.configuration.Configuration;

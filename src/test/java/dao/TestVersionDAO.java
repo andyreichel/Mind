@@ -1,4 +1,4 @@
-package mind;
+package dao;
 
 import java.io.IOException;
 import java.util.ArrayList;

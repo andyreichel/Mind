@@ -1,4 +1,4 @@
-package mind;
+package utils;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
