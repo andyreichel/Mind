@@ -1,4 +1,6 @@
 package mind;
+import interfaces.SonarRunnerApi;
+
 import java.util.Iterator;
 
 import org.apache.commons.configuration.Configuration;
@@ -8,7 +10,6 @@ import org.sonar.runner.api.ForkedRunner;
 import org.sonar.runner.api.Runner;
 
 import utils.ConfigAccessor;
-import externalinterfaces.SonarRunnerApi;
 
 public class SonarRunnerApiImpl implements SonarRunnerApi {
 	Configuration config;

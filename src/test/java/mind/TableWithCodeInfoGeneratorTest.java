@@ -1,5 +1,11 @@
 package mind;
 
+import interfaces.IssueTrackerReader;
+import interfaces.SCMReader;
+import interfaces.SonarReader;
+import interfaces.SonarRunnerApi;
+import interfaces.SonarWebApi;
+
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -27,11 +33,6 @@ import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
 import exceptions.UnequalNumberOfVersionsException;
 import exceptions.VersionIdentifierConflictException;
-import externalinterfaces.IssueTrackerReader;
-import externalinterfaces.SCMReader;
-import externalinterfaces.SonarReader;
-import externalinterfaces.SonarRunnerApi;
-import externalinterfaces.SonarWebApi;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TableWithCodeInfoGeneratorTest {

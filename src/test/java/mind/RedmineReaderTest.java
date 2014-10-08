@@ -1,5 +1,7 @@
 package mind;
 
+import interfaces.RedmineApi;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +19,6 @@ import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.Version;
-
-import externalinterfaces.RedmineApi;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RedmineReaderTest {

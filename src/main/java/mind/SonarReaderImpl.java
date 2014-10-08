@@ -1,13 +1,13 @@
 package mind;
 
+import interfaces.SonarReader;
+import interfaces.SonarWebApi;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
-
-import externalinterfaces.SonarReader;
-import externalinterfaces.SonarWebApi;
 
 
 public class SonarReaderImpl implements SonarReader {

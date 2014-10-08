@@ -1,5 +1,7 @@
 package mind;
 
+import interfaces.GitApi;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +33,6 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import exceptions.NoSuchBranchException;
-import externalinterfaces.GitApi;
 
 public class GitApiImpl implements GitApi {
 	private Repository repo; 

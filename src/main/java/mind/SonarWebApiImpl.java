@@ -1,5 +1,7 @@
 package mind;
 
+import interfaces.SonarWebApi;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,7 +18,6 @@ import org.json.JSONObject;
 
 import utils.ConfigAccessor;
 import utils.JsonParserForSonarApiResponses;
-import externalinterfaces.SonarWebApi;
 
 public class SonarWebApiImpl implements SonarWebApi {
 	private String sonarHost; 

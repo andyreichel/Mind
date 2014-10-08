@@ -1,5 +1,7 @@
 package mind;
 
+import interfaces.RedmineApi;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,8 +10,6 @@ import org.apache.commons.configuration.Configuration;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
-
-import externalinterfaces.RedmineApi;
 
 public class RedmineApiImpl implements RedmineApi {
 	Configuration config;

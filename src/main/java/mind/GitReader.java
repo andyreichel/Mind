@@ -1,5 +1,9 @@
 package mind;
 
+import interfaces.BranchComparer;
+import interfaces.GitApi;
+import interfaces.SCMReader;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -10,9 +14,6 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.TransportException;
 
 import exceptions.NoSuchBranchException;
-import externalinterfaces.BranchComparer;
-import externalinterfaces.GitApi;
-import externalinterfaces.SCMReader;
 
 /**
  * Class that provides methods to read information from git and interprets them

@@ -1,5 +1,8 @@
 package mind;
 
+import interfaces.RCallerApi;
+import interfaces.StatisticGenerator;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -8,9 +11,8 @@ import org.junit.Test;
 
 import exceptions.LenghtOfDoubleArraysDifferException;
 import exceptions.RankCouldNotBeCalculatedException;
-import externalinterfaces.SpearmanCorrelationCoefficient;
 
-public class SpearmanCorrelationCoefficientImplTest {
+public class RCallerApiTest {
 	@Test
 	public void test_getCoefficient_success() throws ConfigurationException, LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException
 	{
@@ -20,8 +22,9 @@ public class SpearmanCorrelationCoefficientImplTest {
 		Double expectedRank = 0.8;
 		
 		Configuration config = new PropertiesConfiguration("mind.properties");
-		SpearmanCorrelationCoefficient spearman = new SpearmanCorrelationCoefficientImpl(config);
-		Assert.assertEquals(expectedRank, spearman.getCoefficient(defectInjFrequency, violationDensity), 0.0000001);
+		
+		RCallerApi rcaller = new RCallerApiImpl(config);
+		Assert.assertEquals(expectedRank, rcaller.getSpearmanCoefficient(defectInjFrequency, violationDensity), 0.0000001);
 	}
 	
 	@Test(expected=RankCouldNotBeCalculatedException.class)
@@ -33,8 +36,8 @@ public class SpearmanCorrelationCoefficientImplTest {
 		Double expectedRank = 0.8;
 		
 		Configuration config = new PropertiesConfiguration("mind.properties");
-		SpearmanCorrelationCoefficient spearman = new SpearmanCorrelationCoefficientImpl(config);
-		Assert.assertEquals(expectedRank, spearman.getCoefficient(defectInjFrequency, violationDensity), 0.0000001);
+		RCallerApi rcaller = new RCallerApiImpl(config);
+		Assert.assertEquals(expectedRank, rcaller.getSpearmanCoefficient(defectInjFrequency, violationDensity), 0.0000001);
 	}
 	
 	@Test(expected=LenghtOfDoubleArraysDifferException.class)
@@ -46,7 +49,7 @@ public class SpearmanCorrelationCoefficientImplTest {
 		Double expectedRank = 0.8;
 		
 		Configuration config = new PropertiesConfiguration("mind.properties");
-		SpearmanCorrelationCoefficient spearman = new SpearmanCorrelationCoefficientImpl(config);
-		Assert.assertEquals(expectedRank, spearman.getCoefficient(defectInjFrequency, violationDensity), 0.0000001);
+		RCallerApi rcaller = new RCallerApiImpl(config);
+		Assert.assertEquals(expectedRank, rcaller.getSpearmanCoefficient(defectInjFrequency, violationDensity), 0.0000001);
 	}
 }

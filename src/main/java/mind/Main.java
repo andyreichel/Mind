@@ -1,9 +1,16 @@
 package mind;
 
+import interfaces.BranchComparer;
+import interfaces.GitApi;
+import interfaces.IssueTrackerReader;
+import interfaces.RCallerApi;
+import interfaces.SCMReader;
+import interfaces.SonarReader;
+import interfaces.SonarRunnerApi;
+import interfaces.SonarWebApi;
+import interfaces.StatisticGenerator;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -24,14 +31,6 @@ import exceptions.LenghtOfDoubleArraysDifferException;
 import exceptions.RankCouldNotBeCalculatedException;
 import exceptions.UnequalNumberOfVersionsException;
 import exceptions.VersionIdentifierConflictException;
-import externalinterfaces.BranchComparer;
-import externalinterfaces.GitApi;
-import externalinterfaces.IssueTrackerReader;
-import externalinterfaces.SCMReader;
-import externalinterfaces.SonarReader;
-import externalinterfaces.SonarRunnerApi;
-import externalinterfaces.SonarWebApi;
-import externalinterfaces.SpearmanCorrelationCoefficient;
 
 
 /**
@@ -64,22 +63,9 @@ public class Main {
 		 TableDAO table = ana.getTableWithCodeInfoForEveryClassInEveryRelease();
 		 table.filterTable();
 		
-		 Set<String> allRules = table.getAllRulesInTable();
-		 Double[] defectInjectionFrequencyColumn = table.getDefectInjectionFrequencyColumnForRule();
-		 List<Double> ranks= new ArrayList<Double>();
-		 SpearmanCorrelationCoefficient spearman = new SpearmanCorrelationCoefficientImpl(config);
-		 for(String rule : allRules)
-		 {
-			 Double coeff;
-			 try
-			 {
-				 coeff = spearman.getCoefficient(defectInjectionFrequencyColumn, table.getViolationDensityDencityColumnForRule(rule));	 
-			 }catch(RankCouldNotBeCalculatedException re)
-			 {
-				 coeff = null;
-			 }
-			 
-			 ranks.add(coeff);
-		 }
+		 RCallerApi rcaller = new RCallerApiImpl(config); 
+		 StatisticGenerator statisticGenerator = new StatisticGeneratorImpl(rcaller);
+		 statisticGenerator.getSpearmanCoefficientForAllRulesInTable(table);
+		 
 	}
 }

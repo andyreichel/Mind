@@ -1,4 +1,4 @@
-package externalinterfaces;
+package interfaces;
 
 import java.util.List;
 

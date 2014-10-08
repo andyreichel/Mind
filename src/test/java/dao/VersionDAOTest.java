@@ -1,5 +1,9 @@
 package dao;
 
+import interfaces.IssueTrackerReader;
+import interfaces.SCMReader;
+import interfaces.SonarReader;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -16,9 +20,6 @@ import dao.VersionDAO;
 import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
 import exceptions.UnequalNumberOfVersionsException;
-import externalinterfaces.IssueTrackerReader;
-import externalinterfaces.SCMReader;
-import externalinterfaces.SonarReader;
 
 
 @RunWith(MockitoJUnitRunner.class)

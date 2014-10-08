@@ -1,5 +1,8 @@
 package mind;
 
+import interfaces.BranchComparer;
+import interfaces.GitApi;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,8 +25,6 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 import utils.DiffParser;
 import exceptions.NoSuchBranchException;
-import externalinterfaces.BranchComparer;
-import externalinterfaces.GitApi;
 
 public class BranchComparerImpl implements BranchComparer {
 	GitApi gitApi;

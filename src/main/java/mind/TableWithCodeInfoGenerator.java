@@ -1,5 +1,10 @@
 package mind;
 
+import interfaces.IssueTrackerReader;
+import interfaces.SCMReader;
+import interfaces.SonarReader;
+import interfaces.SonarRunnerApi;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,10 +30,6 @@ import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
 import exceptions.UnequalNumberOfVersionsException;
 import exceptions.VersionIdentifierConflictException;
-import externalinterfaces.IssueTrackerReader;
-import externalinterfaces.SCMReader;
-import externalinterfaces.SonarReader;
-import externalinterfaces.SonarRunnerApi;
 
 
 /**

@@ -1,5 +1,8 @@
 package mind;
 
+import interfaces.BranchComparer;
+import interfaces.IssueTrackerReader;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -15,9 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import externalinterfaces.BranchComparer;
-import externalinterfaces.IssueTrackerReader;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GitReaderTest {

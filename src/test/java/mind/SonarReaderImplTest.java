@@ -1,5 +1,7 @@
 package mind;
 
+import interfaces.SonarWebApi;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +15,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import exceptions.ResourceNotFoundException;
-import externalinterfaces.SonarWebApi;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SonarReaderImplTest {
