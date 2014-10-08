@@ -47,7 +47,11 @@ public class Main {
 		 
 		 TableDAO table = tableGenerator.getTableWithCodeInfoForEveryClassInEveryRelease();
 		 table.filterTable();		 
+		 //statisticGenerator.generateStatistics(table);
 		 HashMap<String, Double> ranks = statisticGenerator.getSpearmanCoefficientForAllRulesInTable(table);
+		 statisticGenerator.getAverageViolationsForAllRulesInTable(table);
+		// statisticGenerator.getPValueAllRulesInTable(table);
+		 
 		 for(String rule: ranks.keySet())
 		 {
 			 System.out.println("rule: " + rule + " value: " + ranks.get(rule));

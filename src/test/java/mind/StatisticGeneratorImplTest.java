@@ -15,6 +15,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import testutils.TestUtils;
+
+import com.google.common.collect.ImmutableMap;
+
+import dao.ResourceInfoRow;
 import dao.TableDAO;
 import exceptions.LenghtOfDoubleArraysDifferException;
 import exceptions.PropertyNotFoundException;
@@ -26,40 +31,21 @@ public class StatisticGeneratorImplTest {
 	RCallerApi rcaller;
 	
 	@Test
-	public void getSpearmanCoefficientForAllRulesInTable_success() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException
+	public void test_getSpearmanCoefficientForAllRulesInTable_success() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException
 	{
-		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
-		class1v1_row.put("numberDefects", 1);
-		class1v1_row.put("locTouched", 13);
-		class1v1_row.put("size", 5);
-		class1v1_row.put("r1", 5);
-		class1v1_row.put("r2", 2);
-		class1v1_row.put("r3", 0);
+		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2, "r3", 0));
+		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8, "r3", 0));
 		
-		HashMap<String, Integer> class2v1_row = new HashMap<String, Integer>();
-		class2v1_row.put("numberDefects", 3);
-		class2v1_row.put("locTouched", 8);
-		class2v1_row.put("size", 2);
-		class2v1_row.put("r1", 4);
-		class2v1_row.put("r2", 8);
-		class2v1_row.put("r3", 0);
-		
-		HashMap<String, Integer> class1v2_row = new HashMap<String, Integer>();
-		class1v2_row.put("numberDefects", 1);
-		class1v2_row.put("locTouched", 1);
-		class1v2_row.put("size", 3);
-		class1v2_row.put("r1", 0);
-		class1v2_row.put("r2", 2);
-		class1v2_row.put("r3", 0);
+		ResourceInfoRow class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 1, 3, ImmutableMap.of("r1", 0, "r2", 2, "r3", 0));
 		
 		
-		HashMap<String, HashMap<String, Integer>> v1rows = new HashMap<String, HashMap<String,Integer>>();
-		v1rows.put("class1", class1v1_row);
-		v1rows.put("class2", class2v1_row);
-		HashMap<String, HashMap<String, Integer>> v2rows = new HashMap<String, HashMap<String,Integer>>();
-		v2rows.put("class1", class1v2_row);
+		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		v1rows.add(class1v1_row);
+		v1rows.add(class2v1_row);
+		List<ResourceInfoRow> v2rows = new ArrayList<ResourceInfoRow>();
+		v2rows.add(class1v2_row);
 		
-		LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> tableMap = new LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>>();
+		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
 		tableMap.put("v1", v1rows);
 		tableMap.put("v2", v2rows);
 		TableDAO table = new TableDAO(tableMap);
@@ -82,4 +68,107 @@ public class StatisticGeneratorImplTest {
 		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
 		Assert.assertEquals(expectedRankList, stat.getSpearmanCoefficientForAllRulesInTable(table));
 	}
+	
+	@Test
+	public void test_getAverageViolationsForAllRulesInTable_success() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException
+	{
+		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
+		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
+		
+		
+		
+		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		v1rows.add(class1v1_row);
+		v1rows.add(class2v1_row);
+		
+		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		tableMap.put("v1", v1rows);
+		
+		TableDAO table = new TableDAO(tableMap);
+		
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		
+		HashMap<String, Double> expectedAverageViolationsMap = new HashMap<String, Double>();
+		expectedAverageViolationsMap.put("r1", 1.0);
+		
+		Assert.assertEquals(expectedAverageViolationsMap, stat.getAverageViolationsForAllRulesInTable(table));
+		
+	}
+	
+	@Test
+	public void test_getViolationDensityDencityColumnForRule_success() throws PropertyNotFoundException
+	{
+		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));
+		
+		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		v1rows.add(class1v1row);
+		v1rows.add(class2v1row);
+		
+		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		toBeFilteredTable.put("v1", v1rows);
+		
+		TableDAO table = new TableDAO(toBeFilteredTable);
+		
+		
+		Double[] expectedViolationsDensityColumn = new Double[]{1.0, 2.0};
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		stat.setTableDAO(table);
+		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityDencityColumnForRule("r1"));
+	}
+	
+	@Test
+	public void test_getViolationDensityDencityColumnForRule_emptyTable() throws PropertyNotFoundException
+	{
+		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		
+		TableDAO table = new TableDAO(toBeFilteredTable);
+		
+		Double[] expectedViolationsDensityColumn = new Double[]{};
+		
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		stat.setTableDAO(table);
+		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityDencityColumnForRule("r1"));
+	}
+	
+	@Test(expected=PropertyNotFoundException.class)
+	public void test_getViolationDensityDencityColumnForRule_doesNotContainRule() throws PropertyNotFoundException
+	{
+		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));	
+		
+		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		v1rows.add(class1v1row);
+		v1rows.add(class2v1row);
+		
+		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		toBeFilteredTable.put("v1", v1rows);
+		
+		TableDAO table = new TableDAO(toBeFilteredTable);
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		stat.setTableDAO(table);
+		stat.getViolationDensityDencityColumnForRule("r4");
+	}
+	
+	@Test
+	public void test_getDefectInjectionFrequencyColumnForRule_success() throws PropertyNotFoundException
+	{
+		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8));
+		
+		List<ResourceInfoRow> v1Rows = new ArrayList<ResourceInfoRow>();
+		v1Rows.add(class1v1row);
+		v1Rows.add(class2v1row);
+		
+		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		toBeFilteredTable.put("v1", v1Rows);
+		
+		TableDAO table = new TableDAO(toBeFilteredTable);
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		stat.setTableDAO(table);
+		Double[] expectedDefectInjectionFrequencyColumn = new Double[]{1.0/13.0, 3.0/8.0};
+		
+		Assert.assertArrayEquals(expectedDefectInjectionFrequencyColumn, stat.getDefectInjectionFrequencyColumn());
+	}
+
 }

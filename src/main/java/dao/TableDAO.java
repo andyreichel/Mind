@@ -1,23 +1,21 @@
 package dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import exceptions.PropertyNotFoundException;
-
 public class TableDAO {
-	LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> table;
-	public TableDAO(LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> table)
+	LinkedHashMap<String, List<ResourceInfoRow>> table;
+	public TableDAO(LinkedHashMap<String, List<ResourceInfoRow>> table)
 	{
 		this.table = table;
 	}
 	
-	public LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> getTable()
+	public LinkedHashMap<String, List<ResourceInfoRow>> getTable()
 	{
 		return table;
 	}
@@ -33,11 +31,11 @@ public class TableDAO {
 		for(String version : table.keySet())
 		{
 			List<String> listOfdeleteTargetResources = new ArrayList<String>();
-			for(Map.Entry<String, HashMap<String, Integer>> resourceMap : table.get(version).entrySet())
+			for(ResourceInfoRow resourceMap : table.get(version))
 			{
 				if(isResourceRowRelevant(resourceMap))
 				{
-					listOfdeleteTargetResources.add(resourceMap.getKey());
+					listOfdeleteTargetResources.add(resourceMap.getResourceName());
 				}
 			}
 			rememberDeletionMap.put(version, listOfdeleteTargetResources);
@@ -51,23 +49,15 @@ public class TableDAO {
 		}
 	}
 	
-	private boolean isResourceRowRelevant(Map.Entry<String, HashMap<String, Integer>> resourceRow)
+	private boolean isResourceRowRelevant(ResourceInfoRow resourceRow)
 	{
-		return resourceRow.getValue().get("locTouched")==null || resourceRow.getValue().get("locTouched") == 0 || resourceRow.getValue().get("size")==0;
+		return resourceRow.getLocTouched()==null || resourceRow.getLocTouched() == 0 || resourceRow.getSize()==0;
 	}
-	
-	public Double[] getViolationDensityDencityColumnForRule(String rule) throws PropertyNotFoundException
-	{
-		return calculateQuotientBetweenTwoVariablesOfTableRow(rule, "size");
-	}
-	
-	public Double[] getDefectInjectionFrequencyColumnForRule() throws PropertyNotFoundException
-	{
-		return calculateQuotientBetweenTwoVariablesOfTableRow("numberDefects", "locTouched");
-	}
+
 	
 	public Set<String> getAllRulesInTable()
 	{
+		
 		if (table.size() == 0) {
 			return new HashSet<String>();
 		}
@@ -76,9 +66,8 @@ public class TableDAO {
 		if(table.get(firstVersion).size() == 0)
 			return new HashSet<String>();
 		
-		String firstResource = table.get(firstVersion).keySet().iterator().next();
 		
-		Set<String> rowContent = table.get(firstVersion).get(firstResource).keySet();
+		Set<String> rowContent = table.get(firstVersion).get(0).getAllRuleKeys();
 		Set<String> allRules = new HashSet<String>();
 		for(String key : rowContent)
 		{
@@ -91,25 +80,15 @@ public class TableDAO {
 		return allRules;
 	}
 	
-	private Double[] calculateQuotientBetweenTwoVariablesOfTableRow(String var1, String var2) throws PropertyNotFoundException
+	public Set<String> getVersions()
 	{
-		List<Double> defectInjectionFrequencyColumn = new ArrayList<Double>();
-		for(String version : table.keySet())
-		{
-			for(HashMap<String, Integer> valueMapForResource : table.get(version).values())
-			{
-				if(!valueMapForResource.containsKey(var1))
-					throw new PropertyNotFoundException(var1 + " could not be found in table.");
-				double var1Value = valueMapForResource.get(var1);
-				
-				if(!valueMapForResource.containsKey(var2))
-					throw new PropertyNotFoundException(var2 + " could not be found in table.");
-				double var2Value = valueMapForResource.get(var2);
-				defectInjectionFrequencyColumn.add(var1Value/var2Value);
-			}
-		}
-		Double[] array = new Double[defectInjectionFrequencyColumn.size()];
-		for(int i = 0; i < defectInjectionFrequencyColumn.size(); i++) array[i] = defectInjectionFrequencyColumn.get(i);
-		return array;
+		return table.keySet();
 	}
+	
+	public List<ResourceInfoRow> getResourceInfoRowsForVersion(String version)
+	{
+		return table.get(version);
+	}
+	
+	
 }

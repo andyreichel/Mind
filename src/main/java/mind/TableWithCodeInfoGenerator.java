@@ -6,6 +6,7 @@ import interfaces.SonarReader;
 import interfaces.SonarRunnerApi;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 import com.google.inject.Inject;
 import com.taskadapter.redmineapi.RedmineException;
 
+import dao.ResourceInfoRow;
 import dao.TableDAO;
 import dao.VersionDAO;
 import exceptions.ConfiguredVersionNotExistInSonarException;
@@ -91,7 +93,7 @@ public class TableWithCodeInfoGenerator {
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		
-		LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>> table = new LinkedHashMap<String, HashMap<String, HashMap<String, Integer>>>();
+		LinkedHashMap<String, List<ResourceInfoRow>> table = new LinkedHashMap<String,  List<ResourceInfoRow>>();
 		
 		String previousVersionKey = "0";
 		HashMap<String, HashMap<String, Integer>> sizeOfResourcePerVersion = new HashMap<String, HashMap<String,Integer>>();
@@ -104,15 +106,15 @@ public class TableWithCodeInfoGenerator {
 			List<String> resources = sonarReader.getListOfAllResources();
 			
 			HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
-			HashMap<String, HashMap<String, Integer>> resourceRows = new HashMap<String, HashMap<String,Integer>>();
+			List<ResourceInfoRow> resourceRows = new ArrayList<ResourceInfoRow>();
 			HashMap<String, Integer> sizeOfResources = new HashMap<String, Integer>();
 			HashMap<String, HashMap<String, Integer>> violationsOfResource = new HashMap<String, HashMap<String, Integer>>();
 			
 			
 			for (String resource : resources)
 			{
+				ResourceInfoRow newRow = new ResourceInfoRow(resource);
 				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);
-				HashMap<String, Integer> technicalDebtRow = new HashMap<String, Integer>();
 				
 				Integer numberOfLOCTouched;
 				int sizeOfClass = sonarReader.getSizeOfClass(resource);
@@ -120,26 +122,22 @@ public class TableWithCodeInfoGenerator {
 				if(previousVersionKey.equals("0") || !violationsOfResourcePerVersion.get(previousVersionKey).containsKey(resource))
 				{
 					numberOfLOCTouched = null;
-					technicalDebtRow.put("size", 0);
+					newRow.setSize(0);
 					violationsOfResource.put(resource, sonarReader.getNumberOfViolationsPerRuleEverythingZero());
 					it = violationsOfResource.get(resource).entrySet().iterator();
 				}else
 				{
 					numberOfLOCTouched = scmReader.getNumberOfLOCtouched(versionDao.getScmVersion(currentVersionKey), versionDao.getScmVersion(previousVersionKey), resource);
-					technicalDebtRow.put("size", sizeOfResourcePerVersion.get(previousVersionKey).get(resource));
+					newRow.setLocTouched(sizeOfResourcePerVersion.get(previousVersionKey).get(resource));
 					it = violationsOfResourcePerVersion.get(previousVersionKey).get(resource).entrySet().iterator();
 
 				}
-		 		while (it.hasNext()) {
-		 			Map.Entry<String, Integer> pairs = (Map.Entry<String, Integer>) it.next();
-				 			technicalDebtRow.put(pairs.getKey(), pairs.getValue());
-				 			it.remove();
-				 }
+		 		newRow.setViolationsPerRule(violationsOfResourcePerVersion.get(previousVersionKey).get(resource));
 				
-				technicalDebtRow.put("numberDefects", numberOfDefectsForThisResourceInThisVersion);
-				technicalDebtRow.put("locTouched", numberOfLOCTouched);
+				newRow.setNumberOfDefects(numberOfDefectsForThisResourceInThisVersion);
+				newRow.setLocTouched(numberOfLOCTouched);
 
-				resourceRows.put(resource, technicalDebtRow);
+				resourceRows.add(newRow);
 				sizeOfResources.put(resource, sizeOfClass);
 				violationsOfResource.put(resource, sonarReader.getNumberOfViolationsPerRule(resource));
 				
