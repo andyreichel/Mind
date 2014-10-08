@@ -20,7 +20,7 @@ import externalinterfaces.BranchComparer;
 import externalinterfaces.IssueTrackerReader;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestGitReader {
+public class GitReaderTest {
 	@Mock
 	BranchComparer branchComparer;
 	
@@ -31,7 +31,7 @@ public class TestGitReader {
 	GitApiImpl gitConnection;
 	
 	@Test
-	public void getNumberOfLOCtouchedTest_noLineTouched() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
+	public void test_getNumberOfLOCtouched_noLineTouched() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
 	{
 		HashMap<String, Integer> mapWithNumberOfChangesPerResource = new HashMap<String, Integer>();
 		Mockito.doReturn(mapWithNumberOfChangesPerResource).when(branchComparer).getMapWithNumberOfChangesPerResource("3-6", "3-7");
@@ -43,7 +43,7 @@ public class TestGitReader {
 	}
 	
 	@Test
-	public void getNumberOfLOCtouchedTest_2violations() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
+	public void test_getNumberOfLOCtouched_2violations() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
 	{
 		HashMap<String, Integer> mapWithNumberOfChangesPerResource = new HashMap<String, Integer>();
 		mapWithNumberOfChangesPerResource.put("class1", 2);
@@ -56,7 +56,7 @@ public class TestGitReader {
 	}
 	
 	@Test
-	public void getNumberOfLOCtouchedTest_resourceNotFound() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
+	public void test_getNumberOfLOCtouched_resourceNotFound() throws IOException, InvalidRemoteException, TransportException, GitAPIException, ConfigurationException
 	{
 		HashMap<String, Integer> mapWithNumberOfChangesPerResource = new HashMap<String, Integer>();
 		mapWithNumberOfChangesPerResource.put("blabla", 2);

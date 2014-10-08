@@ -16,13 +16,13 @@ import exceptions.ResourceNotFoundException;
 import externalinterfaces.SonarWebApi;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestSonarReaderImpl {
+public class SonarReaderImplTest {
 
 	@Mock
 	SonarWebApi api;
 	
 	@Test
-	public void getNumberOfViolationsPerRuleTest() throws IOException
+	public void test_getNumberOfViolationsPerRule_success() throws IOException
 	{
 		List<String> rules = new ArrayList<String>();
 		rules.add("r1");
@@ -47,7 +47,7 @@ public class TestSonarReaderImpl {
 	}
 	
 	@Test
-	public void getNumberOfViolationsPerRuleTest_noViolations() throws IOException
+	public void test_getNumberOfViolationsPerRule_noViolations() throws IOException
 	{
 		
 		List<String> rules = new ArrayList<String>();
@@ -71,7 +71,7 @@ public class TestSonarReaderImpl {
 	}
 	
 	@Test(expected=ResourceNotFoundException.class)
-	public void getNumberOfViolationsPerRuleTest_noSuchResource() throws IOException
+	public void test_getNumberOfViolationsPerRule_noSuchResource() throws IOException
 	{
 		
 		List<String> rules = new ArrayList<String>();

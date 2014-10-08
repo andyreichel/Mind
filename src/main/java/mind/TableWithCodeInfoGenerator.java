@@ -38,14 +38,14 @@ import externalinterfaces.SonarRunnerApi;
  * Version2={class1={rule1Violations=2;numberDefects=0;size=550;numberLOCTouched=150}}
  *
  */
-public class Analyzer {
+public class TableWithCodeInfoGenerator {
 	private SonarReader sonarReader;
 	private IssueTrackerReader issueTrackerReader;
 	private SCMReader scmReader;
 	private VersionDAO versionDao;
 	private SonarRunnerApi sonarRunner;
 	private static org.apache.log4j.Logger log = Logger
-			.getLogger(Analyzer.class);
+			.getLogger(TableWithCodeInfoGenerator.class);
 
 	/**
 	 * Initializes the Analyzer and validates the software versions of the different tools 
@@ -57,7 +57,7 @@ public class Analyzer {
 	 * @throws ConfiguredVersionNotExistInSonarException
 	 * @throws UnequalNumberOfVersionsException
 	 */
-	public Analyzer(SonarReader sonarReader,
+	public TableWithCodeInfoGenerator(SonarReader sonarReader,
 			IssueTrackerReader issueTrackerReader, SCMReader scmReader,
 			SonarRunnerApi sonarRunner) throws IOException,
 			ConfiguredVersionNotExistInSonarException,
@@ -83,7 +83,7 @@ public class Analyzer {
 	 * @throws UnequalNumberOfVersionsException
 	 * @throws KeyNotFoundException
 	 */
-	public TableDAO getTechnicalDebtTable()
+	public TableDAO getTableWithCodeInfoForEveryClassInEveryRelease()
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		

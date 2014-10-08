@@ -21,12 +21,12 @@ import com.taskadapter.redmineapi.bean.Version;
 import externalinterfaces.RedmineApi;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestRedmineReader {
+public class RedmineReaderTest {
 	@Mock
 	RedmineApi redmineApi;
 	
 	@Test
-	public void getMapOfBugsRelatedToTheirVersion_threeBugs() throws RedmineException
+	public void test_getMapOfBugsRelatedToTheirVersion_threeBugs() throws RedmineException
 	{
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");
@@ -65,7 +65,7 @@ public class TestRedmineReader {
 	}
 	
 	@Test
-	public void getMapOfBugsRelatedToTheirVersion_oneBug_twoNormalIssues() throws RedmineException
+	public void test_getMapOfBugsRelatedToTheirVersion_oneBug_twoNormalIssues() throws RedmineException
 	{
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");
@@ -103,7 +103,7 @@ public class TestRedmineReader {
 	}
 	
 	@Test
-	public void getMapOfBugsRelatedToTheirVersion_oneBug_noTargetVersionGiven() throws RedmineException
+	public void test_getMapOfBugsRelatedToTheirVersion_oneBug_noTargetVersionGiven() throws RedmineException
 	{
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");
@@ -133,7 +133,7 @@ public class TestRedmineReader {
 	}
 	
 	@Test
-	public void getMapOfBugsRelatedToTheirVersion_specialVersionIdentifierSet() throws RedmineException
+	public void test_getMapOfBugsRelatedToTheirVersion_specialVersionIdentifierSet() throws RedmineException
 	{
 		Issue bug1 = new Issue();
 		Tracker bugTracker = new Tracker(1, "Bug");

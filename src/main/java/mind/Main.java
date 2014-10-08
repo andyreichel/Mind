@@ -48,8 +48,7 @@ public class Main {
 		 Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.ERROR);
 		 Logger.getLogger("org.apache.http").setLevel(Level.ERROR);
 		 Logger.getLogger("httpclient").setLevel(Level.ERROR);
-		 Configuration config = new
-		 PropertiesConfiguration("mind.properties");
+		 Configuration config = new	 PropertiesConfiguration("mind.properties");
 		 SonarRunnerApi sonarRunner = new SonarRunnerApiImpl(config);
 		 GitApi api = new GitApiImpl(config);
 		
@@ -59,10 +58,10 @@ public class Main {
 		 RedmineApiImpl(config));
 		 BranchComparer bc = new BranchComparerImpl(api);
 		 SCMReader scmReader = new GitReader(api, bc);
-		 Analyzer ana = new Analyzer(sonarReader, issueTrackerReader,
+		 TableWithCodeInfoGenerator ana = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader,
 		 scmReader, sonarRunner);
-		 TableDAO table = ana.getTechnicalDebtTable();
-		
+		 
+		 TableDAO table = ana.getTableWithCodeInfoForEveryClassInEveryRelease();
 		 table.filterTable();
 		
 		 Set<String> allRules = table.getAllRulesInTable();

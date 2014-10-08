@@ -9,9 +9,9 @@ import org.junit.Test;
 import utils.DiffParser;
 
 
-public class TestDiffParser {
+public class DiffParserTest {
 	@Test
-	public void getMapOfChangesPerResourceFromDiffOutputTest_oneEntry() throws IOException
+	public void test_getMapOfChangesPerResourceFromDiffOutput_oneEntry() throws IOException
 	{
 		String diffOutput = "--- a/README" + "\n" +
 							"+++ b/README"  + "\n" +
@@ -28,7 +28,7 @@ public class TestDiffParser {
 	}
 	
 	@Test
-	public void getMapOfChangesPerResourceFromDiffOutputTest_twoEntry() throws IOException
+	public void test_getMapOfChangesPerResourceFromDiffOutput_twoEntry() throws IOException
 	{
 		String diffOutput = 
 				"diff --git a/README b/README" + "\n" +
@@ -62,7 +62,7 @@ public class TestDiffParser {
 	
 	
 	@Test
-	public void getMapOfChangesPerResourceFromDiffOutputTest_renamed() throws IOException
+	public void test_getMapOfChangesPerResourceFromDiffOutput_renamed() throws IOException
 	{
 		String diffOutput = "--- /dev/null" + "\n" +
 		"+++ b/src/RENAMED" + "\n" +
@@ -94,7 +94,7 @@ public class TestDiffParser {
 	}
 		
 	@Test
-	public void getMapOfChangesPerResourceFromDiffOutputTest_noOutput() throws IOException
+	public void test_getMapOfChangesPerResourceFromDiffOutput_noOutput() throws IOException
 	{
 		String diffOutput = "";
 

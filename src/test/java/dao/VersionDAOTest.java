@@ -22,7 +22,7 @@ import externalinterfaces.SonarReader;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestVersionDAO {
+public class VersionDAOTest {
 	@Mock
 	SCMReader scmReader;
 	
@@ -33,7 +33,7 @@ public class TestVersionDAO {
 	SonarReader sonarReader;
 	
 	@Test
-	public void getVersionDaoTest_sameNumberOfVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
+	public void test_getVersionDao_sameNumberOfVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
 		List<String> scmVersions = new ArrayList<String>();
 		scmVersions.add("ascm");
@@ -53,7 +53,7 @@ public class TestVersionDAO {
 	}
 	
 	@Test(expected=KeyNotFoundException.class)
-	public void getVersionDaoTest_noVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
+	public void test_getVersionDao_noVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
 		List<String> scmVersions = new ArrayList<String>();
 		List<String> itVersions = new ArrayList<String>();
@@ -68,7 +68,7 @@ public class TestVersionDAO {
 	}
 	
 	@Test(expected=UnequalNumberOfVersionsException.class)
-	public void getVersionDaoTest_unequalNumberOfVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException
+	public void test_getVersionDao_unequalNumberOfVersions( ) throws IOException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException
 	{
 		List<String> scmVersions = new ArrayList<String>();
 		scmVersions.add("a");

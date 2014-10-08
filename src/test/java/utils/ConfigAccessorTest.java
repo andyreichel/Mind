@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import utils.ConfigAccessor;
 
-public class TestConfigAccessor {
+public class ConfigAccessorTest {
 	@Test
-	public void getValueTest_successfull() throws ConfigurationException
+	public void test_getValue_successfull() throws ConfigurationException
 	{
 		Configuration config =  new PropertiesConfiguration();
 		config.setProperty("a", "b");
@@ -20,7 +20,7 @@ public class TestConfigAccessor {
 	}
 	
 	@Test(expected=ConfigurationException.class)
-	public void getValueTest_valueNotThere() throws ConfigurationException
+	public void test_getValue_valueNotThere() throws ConfigurationException
 	{
 		Configuration config =  new PropertiesConfiguration();
 		

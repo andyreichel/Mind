@@ -35,7 +35,7 @@ public class TableDAO {
 			List<String> listOfdeleteTargetResources = new ArrayList<String>();
 			for(Map.Entry<String, HashMap<String, Integer>> resourceMap : table.get(version).entrySet())
 			{
-				if(resourceMap.getValue().get("locTouched")==null || resourceMap.getValue().get("locTouched") == 0 || resourceMap.getValue().get("size")==0)
+				if(isResourceRowRelevant(resourceMap))
 				{
 					listOfdeleteTargetResources.add(resourceMap.getKey());
 				}
@@ -49,6 +49,11 @@ public class TableDAO {
 				table.get(version).remove(resource);
 			}
 		}
+	}
+	
+	private boolean isResourceRowRelevant(Map.Entry<String, HashMap<String, Integer>> resourceRow)
+	{
+		return resourceRow.getValue().get("locTouched")==null || resourceRow.getValue().get("locTouched") == 0 || resourceRow.getValue().get("size")==0;
 	}
 	
 	public Double[] getViolationDensityDencityColumnForRule(String rule) throws PropertyNotFoundException

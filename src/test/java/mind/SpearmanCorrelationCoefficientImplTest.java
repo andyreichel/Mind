@@ -10,7 +10,7 @@ import exceptions.LenghtOfDoubleArraysDifferException;
 import exceptions.RankCouldNotBeCalculatedException;
 import externalinterfaces.SpearmanCorrelationCoefficient;
 
-public class TestSpearmanCorrelationCoefficientImpl {
+public class SpearmanCorrelationCoefficientImplTest {
 	@Test
 	public void test_getCoefficient_success() throws ConfigurationException, LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException
 	{

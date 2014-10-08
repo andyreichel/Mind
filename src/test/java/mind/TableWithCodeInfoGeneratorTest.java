@@ -34,7 +34,7 @@ import externalinterfaces.SonarRunnerApi;
 import externalinterfaces.SonarWebApi;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestAnalyzer {
+public class TableWithCodeInfoGeneratorTest {
 	@Mock
 	IssueTrackerReader issueTrackerReader;
 	
@@ -51,7 +51,7 @@ public class TestAnalyzer {
 	SonarRunnerApi sonarRunner;
 	
 	@Test 
-	public void getTechnicalDebtTableTest_resourcesFromCommitAreNotTheSameAsInSonar() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
+	public void test_getTableWithCodeInfoForEveryClassInEveryRelease_resourcesFromCommitAreNotTheSameAsInSonar() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
 		List<String> allResources = new ArrayList<String>();
 		allResources.add("class1");
@@ -99,7 +99,7 @@ public class TestAnalyzer {
 
 		Mockito.doNothing().when(sonarRunner).runSonar("v1");
 		
-		Analyzer testAna = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
+		TableWithCodeInfoGenerator testAna = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		
 		HashMap<String, HashMap<String, HashMap<String, Integer>>> expectedTable = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
 		HashMap<String, Integer> class1v1_data = new HashMap<String, Integer>();
@@ -111,12 +111,12 @@ public class TestAnalyzer {
 		class1v1_row.put("class1", class1v1_data);
 		expectedTable.put("v1", class1v1_row);
 		
-		TableDAO actualTable = testAna.getTechnicalDebtTable();
+		TableDAO actualTable = testAna.getTableWithCodeInfoForEveryClassInEveryRelease();
 		Assert.assertEquals(expectedTable, actualTable.getTable());
 	}
 	
 	@Test 
-	public void getTechnicalDebtTableTest() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
+	public void test_getTableWithCodeInfoForEveryClassInEveryRelease() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
 		List<String> allResourcesV1 = new ArrayList<String>();
 		allResourcesV1.add("class1");
@@ -238,7 +238,7 @@ public class TestAnalyzer {
 		Mockito.doNothing().when(sonarRunner).runSonar("v2");
 		Mockito.doNothing().when(sonarRunner).runSonar("v3");
 		
-		Analyzer testAna = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
+		TableWithCodeInfoGenerator testAna = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		
 		
 		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
@@ -309,12 +309,12 @@ public class TestAnalyzer {
 		expectedTable.put("v2", v2rows);
 		expectedTable.put("v3", v3rows);
 		
-		TableDAO actualTable = testAna.getTechnicalDebtTable();
+		TableDAO actualTable = testAna.getTableWithCodeInfoForEveryClassInEveryRelease();
 		Assert.assertEquals(expectedTable, actualTable.getTable());
 	}
 	
 	@Test
-	public void getMapOfNumberOfDefectsRelatedToResourceTest_successfull() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
+	public void test_getMapOfNumberOfDefectsRelatedToResource_successfull() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
 	{
 		List<String> resources = new ArrayList<String>();
 		resources.add("project:path/file1");
@@ -378,12 +378,12 @@ public class TestAnalyzer {
 		Mockito.doNothing().when(sonarRunner).runSonar("1.0");
 		Mockito.doNothing().when(sonarRunner).runSonar("1.1");
 		
-		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
+		TableWithCodeInfoGenerator ana = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(resources, "someBranch"));
 	}
 	
 	@Test
-	public void getMapOfNumberOfDefectsRelatedToResourceTest_referenceOfBugInMultipleMessages() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
+	public void test_getMapOfNumberOfDefectsRelatedToResource_referenceOfBugInMultipleMessages() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
 	{
 		List<String> resources = new ArrayList<String>();
 		resources.add("project:path/file1");
@@ -437,12 +437,12 @@ public class TestAnalyzer {
 		
 		Mockito.doNothing().when(sonarRunner).runSonar("1.0");
 		
-		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
+		TableWithCodeInfoGenerator ana = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(resources, "someBranch"));
 	}
 	
 	@Test
-	public void getMapOfNumberOfDefectsRelatedToResourceTest_VersionOfRedmineAndSonarAreNotEqual() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
+	public void test_getMapOfNumberOfDefectsRelatedToResource_VersionOfRedmineAndSonarAreNotEqual() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
 	{
 		List<String> resources = new ArrayList<String>();
 		resources.add("project:path/file1");
@@ -492,12 +492,12 @@ public class TestAnalyzer {
 		
 		Mockito.doNothing().when(sonarRunner).runSonar("1.0");
 		
-		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
+		TableWithCodeInfoGenerator ana = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(resources, "someBranch"));
 	}
 	
 	@Test
-	public void getMapOfNumberOfDefectsRelatedToResourceTest_bugVersionDoesNotMatchAnalyzedFiles() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
+	public void test_getMapOfNumberOfDefectsRelatedToResource_bugVersionDoesNotMatchAnalyzedFiles() throws RedmineException, NoHeadException, IOException, GitAPIException, VersionIdentifierConflictException, KeyNotFoundException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, ConfigurationException
 	{
 		List<String> resources = new ArrayList<String>();
 		resources.add("project:path/file1");
@@ -547,7 +547,7 @@ public class TestAnalyzer {
 		
 		Mockito.doNothing().when(sonarRunner).runSonar("1.0");
 		
-		Analyzer ana = new Analyzer(sonarReader, issueTrackerReader, scmReader, sonarRunner);
+		TableWithCodeInfoGenerator ana = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		Assert.assertEquals(expectedMapOfNumberOfDefectsRelatedToResource, ana.getMapOfNumberOfDefectsRelatedToResource(resources, "someBranch"));
 	}
 	

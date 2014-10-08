@@ -13,7 +13,7 @@ import dao.TableDAO;
 import exceptions.PropertyNotFoundException;
 
 
-public class TestTableDAO {
+public class TableDAOTest {
 	@Test
 	public void test_filterTable_successfull()
 	{
