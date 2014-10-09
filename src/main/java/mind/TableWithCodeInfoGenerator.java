@@ -94,11 +94,9 @@ public class TableWithCodeInfoGenerator {
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		
 		LinkedHashMap<String, List<ResourceInfoRow>> table = new LinkedHashMap<String,  List<ResourceInfoRow>>();
-		
-		String previousVersionKey = "0";
 		HashMap<String, HashMap<String, Integer>> sizeOfResourcePerVersion = new HashMap<String, HashMap<String,Integer>>();
 		HashMap<String, HashMap<String, HashMap<String, Integer>>> violationsOfResourcePerVersion = new HashMap<String, HashMap<String,HashMap<String,Integer>>>();
-		
+		String previousVersionKey = "0";
 		
 		for(String currentVersionKey : versionDao.getKeySet())
 		{

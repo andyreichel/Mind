@@ -9,8 +9,8 @@ import exceptions.PropertyNotFoundException;
 
 public interface StatisticGenerator  {
 	public  HashMap<String, Double> getSpearmanCoefficientForAllRulesInTable() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException;
-	public HashMap<String, Double> getAverageViolationsForAllRulesInTable(TableDAO table) throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException;
-	public Double[] getDefectInjectionFrequencyColumn() throws PropertyNotFoundException;
-	public Double[] getViolationDensityDencityColumnForRule(String rule) throws PropertyNotFoundException;
+	public HashMap<String, Double> getAverageViolationsForAllRulesInTable() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException;
+	public Double[] getDefectInjectionFrequencyColumn() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException;
+	public Double[] getViolationDensityColumnForRule(String rule) throws PropertyNotFoundException, NoTableSetForCalculatingStatsException;
 	public void setTableDAO(TableDAO table);
 }

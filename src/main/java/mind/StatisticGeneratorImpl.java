@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 
 import dao.ResourceInfoRow;
 import dao.TableDAO;
+import exceptions.AverageCouldNotBeCalculatedException;
 import exceptions.LenghtOfDoubleArraysDifferException;
 import exceptions.NoTableSetForCalculatingStatsException;
 import exceptions.PropertyNotFoundException;
@@ -48,7 +49,7 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 			 Double coeff;
 			 try
 			 {
-				 coeff = rcaller.getSpearmanCoefficient(defectInjectionFrequencyColumn, getViolationDensityDencityColumnForRule(rule));	 
+				 coeff = rcaller.getSpearmanCoefficient(defectInjectionFrequencyColumn, getViolationDensityColumnForRule(rule));	 
 			 }catch(RankCouldNotBeCalculatedException re)
 			 {
 				 coeff = null;
@@ -58,21 +59,53 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		 return ranks;
 	}
 
-	public HashMap<String, Double> getAverageViolationsForAllRulesInTable(
-			TableDAO table) throws PropertyNotFoundException,
-			LenghtOfDoubleArraysDifferException {
+	public HashMap<String, Double> getAverageViolationsForAllRulesInTable() throws PropertyNotFoundException,LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException {
+		if(table == null)
+			throw new NoTableSetForCalculatingStatsException("Please set a table");
 		
-		return null;
+		Double[] defInjFreq = getDefectInjectionFrequencyColumn();
+		HashMap<String, Double> averageViolationsForAllRules = new HashMap<String, Double>();
+		for(String rule : table.getAllRulesInTable())
+		{
+			Double[] violationDensity = getViolationDensityColumnForRule(rule);
+			
+			Double[] coefficientsBetweenDefInjAndViolationDens = new Double[violationDensity.length];
+			boolean violationIsZero = false;
+			for(int i = 0; i < violationDensity.length; i++)
+			{
+				if(violationDensity[i].equals(0.0))
+				{
+					violationIsZero = true;
+				}
+				coefficientsBetweenDefInjAndViolationDens[i] = defInjFreq[i]/violationDensity[i];
+			}
+			
+			try
+			{
+				if(violationIsZero==true)
+				{
+					averageViolationsForAllRules.put(rule, null);
+				}else
+				{
+					averageViolationsForAllRules.put(rule, rcaller.getMeanOfVector(coefficientsBetweenDefInjAndViolationDens));
+				}
+			}catch(AverageCouldNotBeCalculatedException ae)
+			{
+				averageViolationsForAllRules.put(rule, null);
+			}
+			
+		}
+		return averageViolationsForAllRules;
 	}
 
 
-	public Double[] getViolationDensityDencityColumnForRule(String rule) throws PropertyNotFoundException
+	public Double[] getViolationDensityColumnForRule(String rule) throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
 	{
+		if(table == null)
+			throw new NoTableSetForCalculatingStatsException("Please set a table");
 		List<Double> defectInjectionFrequencyColumn = new ArrayList<Double>();
 		for(String version : table.getVersions())
 		{
-			
-			
 			for(ResourceInfoRow resourceRow : table.getResourceInfoRowsForVersion(version))
 			{
 				double numberOfViolationsOfRule = resourceRow.getNumberOfViolationsForRule(rule);
@@ -86,8 +119,10 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 
 	}
 	
-	public Double[] getDefectInjectionFrequencyColumn() throws PropertyNotFoundException
+	public Double[] getDefectInjectionFrequencyColumn() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
 	{
+		if(table == null)
+			throw new NoTableSetForCalculatingStatsException("Please set a table");
 		List<Double> defectInjectionFrequencyColumn = new ArrayList<Double>();
 		for(String version : table.getVersions())
 		{

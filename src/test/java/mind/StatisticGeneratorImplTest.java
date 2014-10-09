@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import com.google.common.collect.ImmutableMap;
 
 import dao.ResourceInfoRow;
 import dao.TableDAO;
+import exceptions.AverageCouldNotBeCalculatedException;
 import exceptions.LenghtOfDoubleArraysDifferException;
 import exceptions.NoTableSetForCalculatingStatsException;
 import exceptions.PropertyNotFoundException;
@@ -79,33 +81,87 @@ public class StatisticGeneratorImplTest {
 	}
 	
 	@Test
-	public void test_getAverageViolationsForAllRulesInTable_success() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException
+	public void test_getAverageViolationsForAllRulesInTable_success() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException, NoTableSetForCalculatingStatsException, AverageCouldNotBeCalculatedException
 	{
-//		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
-//		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
-//		
-//		
-//		
-//		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
-//		v1rows.add(class1v1_row);
-//		v1rows.add(class2v1_row);
-//		
-//		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
-//		tableMap.put("v1", v1rows);
-//		
-//		TableDAO table = new TableDAO(tableMap);
-//		
-//		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
-//		
-//		HashMap<String, Double> expectedAverageViolationsMap = new HashMap<String, Double>();
-//		expectedAverageViolationsMap.put("r1", 1.0);
-//		
-//		Assert.assertEquals(expectedAverageViolationsMap, stat.getAverageViolationsForAllRulesInTable(table));
-//		
+		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
+		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
+		
+		
+		
+		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		v1rows.add(class1v1_row);
+		v1rows.add(class2v1_row);
+		
+		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		tableMap.put("v1", v1rows);
+		
+		TableDAO table = new TableDAO(tableMap);
+		
+		Mockito.when(rcaller.getMeanOfVector(Mockito.any(Double[].class))).thenReturn(1.0).thenReturn(1.0).thenReturn(2.0);
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		
+		HashMap<String, Double> expectedAverageViolationsMap = new HashMap<String, Double>();
+		expectedAverageViolationsMap.put("r1", 1.0);
+		expectedAverageViolationsMap.put("r2", 1.0);
+		expectedAverageViolationsMap.put("r3", 2.0);
+		
+		stat.setTableDAO(table);
+		Assert.assertEquals(expectedAverageViolationsMap, stat.getAverageViolationsForAllRulesInTable());
+	}
+
+	
+	@Test
+	public void test_getAverageViolationsForAllRulesInTable_rThrowsCalculationException() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException, NoTableSetForCalculatingStatsException, ConfigurationException, AverageCouldNotBeCalculatedException
+	{
+		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
+		
+		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		v1rows.add(class1v1_row);
+		
+		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		tableMap.put("v1", v1rows);
+		
+		TableDAO table = new TableDAO(tableMap);
+		
+		Mockito.when(rcaller.getMeanOfVector(Mockito.any(Double[].class))).thenReturn(1.0).thenThrow(AverageCouldNotBeCalculatedException.class).thenReturn(2.0);
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		
+		HashMap<String, Double> expectedAverageViolationsMap = new HashMap<String, Double>();
+		expectedAverageViolationsMap.put("r1", 1.0);
+		expectedAverageViolationsMap.put("r2", null);
+		expectedAverageViolationsMap.put("r3", 2.0);
+
+		stat.setTableDAO(table);
+		Assert.assertEquals(expectedAverageViolationsMap, stat.getAverageViolationsForAllRulesInTable());
 	}
 	
 	@Test
-	public void test_getViolationDensityDencityColumnForRule_success() throws PropertyNotFoundException
+	public void test_getAverageViolationsForAllRulesInTable_ruleHasZeroViolations() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException, NoTableSetForCalculatingStatsException, ConfigurationException, AverageCouldNotBeCalculatedException
+	{
+		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 1, "r3", 0));
+		
+		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		v1rows.add(class1v1_row);
+		
+		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		tableMap.put("v1", v1rows);
+		
+		TableDAO table = new TableDAO(tableMap);
+		
+		Mockito.when(rcaller.getMeanOfVector(Mockito.any(Double[].class))).thenReturn(1.0).thenReturn(1.0).thenReturn(2.0);
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		
+		HashMap<String, Double> expectedAverageViolationsMap = new HashMap<String, Double>();
+		expectedAverageViolationsMap.put("r1", null);
+		expectedAverageViolationsMap.put("r2", 1.0);
+		expectedAverageViolationsMap.put("r3", null);
+
+		stat.setTableDAO(table);
+		Assert.assertEquals(expectedAverageViolationsMap, stat.getAverageViolationsForAllRulesInTable());
+	}
+	
+	@Test
+	public void test_getViolationDensityDencityColumnForRule_success() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
 	{
 		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
 		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));
@@ -123,11 +179,11 @@ public class StatisticGeneratorImplTest {
 		Double[] expectedViolationsDensityColumn = new Double[]{1.0, 2.0};
 		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
 		stat.setTableDAO(table);
-		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityDencityColumnForRule("r1"));
+		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityColumnForRule("r1"));
 	}
 	
 	@Test
-	public void test_getViolationDensityDencityColumnForRule_emptyTable() throws PropertyNotFoundException
+	public void test_getViolationDensityDencityColumnForRule_emptyTable() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
 	{
 		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
 		
@@ -137,11 +193,11 @@ public class StatisticGeneratorImplTest {
 		
 		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
 		stat.setTableDAO(table);
-		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityDencityColumnForRule("r1"));
+		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityColumnForRule("r1"));
 	}
 	
 	@Test(expected=PropertyNotFoundException.class)
-	public void test_getViolationDensityDencityColumnForRule_doesNotContainRule() throws PropertyNotFoundException
+	public void test_getViolationDensityDencityColumnForRule_doesNotContainRule() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
 	{
 		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
 		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));	
@@ -156,11 +212,11 @@ public class StatisticGeneratorImplTest {
 		TableDAO table = new TableDAO(toBeFilteredTable);
 		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
 		stat.setTableDAO(table);
-		stat.getViolationDensityDencityColumnForRule("r4");
+		stat.getViolationDensityColumnForRule("r4");
 	}
 	
 	@Test
-	public void test_getDefectInjectionFrequencyColumnForRule_success() throws PropertyNotFoundException
+	public void test_getDefectInjectionFrequencyColumnForRule_success() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
 	{
 		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
 		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8));

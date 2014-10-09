@@ -49,15 +49,12 @@ public class Main {
 		 TableDAO table = tableGenerator.getTableWithCodeInfoForEveryClassInEveryRelease();
 		 table.filterTable();
 		 statisticGenerator.setTableDAO(table);
-		 //statisticGenerator.generateStatistics(table);
 		 HashMap<String, Double> ranks = statisticGenerator.getSpearmanCoefficientForAllRulesInTable();
-		 statisticGenerator.getAverageViolationsForAllRulesInTable(table);
-		// statisticGenerator.getPValueAllRulesInTable(table);
+		 HashMap<String, Double> average =  statisticGenerator.getAverageViolationsForAllRulesInTable();
 		 
 		 for(String rule: ranks.keySet())
 		 {
-			 System.out.println("rule: " + rule + " value: " + ranks.get(rule));
-			 
+			 System.out.println("rule: " + rule + " rank: " + ranks.get(rule) + " avg: " + average.get(rule));
 		 }
 		 
 	}
