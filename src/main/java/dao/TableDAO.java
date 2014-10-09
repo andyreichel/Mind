@@ -1,7 +1,6 @@
 package dao;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -27,22 +26,22 @@ public class TableDAO {
 		
 		String key = table.keySet().iterator().next();
 		table.remove(key);
-		HashMap<String, List<String>> rememberDeletionMap = new HashMap<String, List<String>>();
+		HashMap<String, List<ResourceInfoRow>> rememberDeletionMap = new HashMap<String, List<ResourceInfoRow>>();
 		for(String version : table.keySet())
 		{
-			List<String> listOfdeleteTargetResources = new ArrayList<String>();
+			List<ResourceInfoRow> listOfdeleteTargetResources = new ArrayList<ResourceInfoRow>();
 			for(ResourceInfoRow resourceMap : table.get(version))
 			{
-				if(isResourceRowRelevant(resourceMap))
+				if(!isResourceRowRelevant(resourceMap))
 				{
-					listOfdeleteTargetResources.add(resourceMap.getResourceName());
+					listOfdeleteTargetResources.add(resourceMap);
 				}
 			}
 			rememberDeletionMap.put(version, listOfdeleteTargetResources);
 		}
 		for(String version : rememberDeletionMap.keySet())
 		{
-			for(String resource : rememberDeletionMap.get(version))
+			for(ResourceInfoRow resource : rememberDeletionMap.get(version))
 			{
 				table.get(version).remove(resource);
 			}
@@ -51,7 +50,7 @@ public class TableDAO {
 	
 	private boolean isResourceRowRelevant(ResourceInfoRow resourceRow)
 	{
-		return resourceRow.getLocTouched()==null || resourceRow.getLocTouched() == 0 || resourceRow.getSize()==0;
+		return !(resourceRow.getLocTouched()==null || resourceRow.getLocTouched() == 0 || resourceRow.getSize()==0);
 	}
 
 	
@@ -90,5 +89,43 @@ public class TableDAO {
 		return table.get(version);
 	}
 	
+	@Override
+	public String toString() 
+	{
+		StringBuilder tableString =  new StringBuilder();
+		tableString.append("########### TABLE ###########\n");
+		for(String version : table.keySet())
+		{
+			tableString.append(version);
+			tableString.append("\n");
+			for(ResourceInfoRow row : table.get(version))
+			{
+				tableString.append(row.toString());
+				tableString.append("\n");
+			}
+		}
+		
+		return tableString.toString();
+	}
 	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj == this)
+			return true;
+		
+		if(!(obj instanceof TableDAO))
+			return false;
+		
+		TableDAO object = (TableDAO) obj;
+		
+		return object.table.equals(table);
+	}
+	
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + table.hashCode();
+		return result;
+		}
+
 }

@@ -55,14 +55,16 @@ public class TableDAOTest {
 		expectedV2rows.add(expectedClass2v2_row);
 		
 		List<ResourceInfoRow> expectedV3rows = new ArrayList<ResourceInfoRow>();
-		expectedV2rows.add(expectedClass2v3_row);
+		expectedV3rows.add(expectedClass2v3_row);
 		
 		expectedTable.put("v2", expectedV2rows);
 		expectedTable.put("v3", expectedV3rows);
 		
-		TableDAO table = new TableDAO(toBeFilteredTable);
-		table.filterTable();
-		Assert.assertEquals(expectedTable, toBeFilteredTable);
+		TableDAO tableDAO = new TableDAO(toBeFilteredTable);
+		tableDAO.filterTable();
+		
+		TableDAO expectedTableDAO = new TableDAO(expectedTable);
+		Assert.assertEquals(expectedTableDAO, tableDAO);
 	}
 	
 	@Test
@@ -122,6 +124,92 @@ public class TableDAOTest {
 		Assert.assertEquals(expectedAllRulesList, table.getAllRulesInTable());
 	}
 	
-
+	@Test
+	public void test_equals_twoEmptyTables()
+	{
+		LinkedHashMap<String, List<ResourceInfoRow>> tableOne = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRow>> tableTwo = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		
+		Assert.assertEquals(tableOne, tableTwo);
+	}
 	
+	@Test
+	public void test_equals_twoSameTables()
+	{
+		LinkedHashMap<String, List<ResourceInfoRow>> tableOne = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRow>> tableTwo = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		
+		ResourceInfoRow t1class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRow t1class1v2row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 3));
+		ResourceInfoRow t1class2v1row = TestUtils.getResourceInfoRow("class2", 1, 13, 5, ImmutableMap.of("r1",7, "r2", 2));
+		ResourceInfoRow t2class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRow t2class1v2row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 3));
+		ResourceInfoRow t2class2v1row = TestUtils.getResourceInfoRow("class2", 1, 13, 5, ImmutableMap.of("r1",7, "r2", 2));
+		
+		
+		List<ResourceInfoRow> t1v1Rows = new ArrayList<ResourceInfoRow>();
+		t1v1Rows.add(t1class1v1row);
+		t1v1Rows.add(t1class2v1row);
+		List<ResourceInfoRow> t1v2Rows = new ArrayList<ResourceInfoRow>();
+		t1v2Rows.add(t1class1v2row);
+		List<ResourceInfoRow> t2v1Rows = new ArrayList<ResourceInfoRow>();
+		t2v1Rows.add(t2class1v1row);
+		t2v1Rows.add(t2class2v1row);
+		List<ResourceInfoRow> t2v2Rows = new ArrayList<ResourceInfoRow>();
+		t2v2Rows.add(t2class1v2row);
+		tableOne.put("v1", t1v1Rows);
+		tableTwo.put("v1", t2v1Rows);
+		tableOne.put("v2", t1v2Rows);
+		tableTwo.put("v2", t2v2Rows);
+		
+		TableDAO tableOneDAO = new TableDAO(tableOne);
+		TableDAO tableTwoDAO = new TableDAO(tableTwo);
+		Assert.assertEquals(tableOneDAO, tableTwoDAO);
+	}
+	
+	@Test
+	public void test_equals_twoNotEqualTables()
+	{
+		LinkedHashMap<String, List<ResourceInfoRow>> tableOne = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRow>> tableTwo = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		
+		ResourceInfoRow t1class1v1row = TestUtils.getResourceInfoRow("class2", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRow t2class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
+		
+		List<ResourceInfoRow> t1v1Rows = new ArrayList<ResourceInfoRow>();
+		t1v1Rows.add(t1class1v1row);
+		List<ResourceInfoRow> t2v1Rows = new ArrayList<ResourceInfoRow>();
+		t2v1Rows.add(t2class1v1row);
+		
+		tableOne.put("v1", t1v1Rows);
+		tableTwo.put("v1", t2v1Rows);
+		
+		TableDAO tableOneDAO = new TableDAO(tableOne);
+		TableDAO tableTwoDAO = new TableDAO(tableTwo);
+		
+		Assert.assertNotEquals(tableOneDAO, tableTwoDAO);
+	}
+	
+	@Test
+	public void test_equals_twoNotEqualTables_violationsNotEqual()
+	{
+		LinkedHashMap<String, List<ResourceInfoRow>> tableOne = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRow>> tableTwo = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		
+		ResourceInfoRow t1class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",7, "r2", 2));
+		ResourceInfoRow t2class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 4));
+		
+		List<ResourceInfoRow> t1v1Rows = new ArrayList<ResourceInfoRow>();
+		t1v1Rows.add(t1class1v1row);
+		List<ResourceInfoRow> t2v1Rows = new ArrayList<ResourceInfoRow>();
+		t2v1Rows.add(t2class1v1row);
+		
+		tableOne.put("v1", t1v1Rows);
+		tableTwo.put("v1", t2v1Rows);
+		
+		TableDAO tableOneDAO = new TableDAO(tableOne);
+		TableDAO tableTwoDAO = new TableDAO(tableTwo);
+		
+		Assert.assertNotEquals(tableOneDAO, tableTwoDAO);
+	}
 }

@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import dao.ResourceInfoRow;
 import dao.TableDAO;
 import exceptions.LenghtOfDoubleArraysDifferException;
+import exceptions.NoTableSetForCalculatingStatsException;
 import exceptions.PropertyNotFoundException;
 import exceptions.RankCouldNotBeCalculatedException;
 
@@ -33,8 +34,12 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		this.table = table;
 	}
 	
-	public HashMap<String, Double> getSpearmanCoefficientForAllRulesInTable(TableDAO table) throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException
+	public HashMap<String, Double> getSpearmanCoefficientForAllRulesInTable() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException
 	{
+		if(table == null)
+		{
+			throw new NoTableSetForCalculatingStatsException("Please set a table");
+		}
 		Set<String> allRules = table.getAllRulesInTable();
 		Double[] defectInjectionFrequencyColumn = getDefectInjectionFrequencyColumn();
 		HashMap<String, Double> ranks= new HashMap<String,Double>();
@@ -66,6 +71,8 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		List<Double> defectInjectionFrequencyColumn = new ArrayList<Double>();
 		for(String version : table.getVersions())
 		{
+			
+			
 			for(ResourceInfoRow resourceRow : table.getResourceInfoRowsForVersion(version))
 			{
 				double numberOfViolationsOfRule = resourceRow.getNumberOfViolationsForRule(rule);

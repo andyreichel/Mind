@@ -7,12 +7,10 @@ import interfaces.SonarRunnerApi;
 import interfaces.SonarWebApi;
 
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -26,8 +24,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import testutils.TestUtils;
+
+import com.google.common.collect.ImmutableMap;
 import com.taskadapter.redmineapi.RedmineException;
 
+import dao.ResourceInfoRow;
 import dao.TableDAO;
 import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
@@ -102,23 +104,22 @@ public class TableWithCodeInfoGeneratorTest {
 		
 		TableWithCodeInfoGenerator testAna = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		
-		HashMap<String, HashMap<String, HashMap<String, Integer>>> expectedTable = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
-		HashMap<String, Integer> class1v1_data = new HashMap<String, Integer>();
-		class1v1_data.put("numberDefects", 0);
-		class1v1_data.put("locTouched", null);
-		class1v1_data.put("size", 0);
-		class1v1_data.put("r1", 0);
-		HashMap<String, HashMap<String, Integer>> class1v1_row = new HashMap<String, HashMap<String,Integer>>();
-		class1v1_row.put("class1", class1v1_data);
-		expectedTable.put("v1", class1v1_row);
+		LinkedHashMap<String, List<ResourceInfoRow>> expectedTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		ResourceInfoRow class1v1_data = TestUtils.getResourceInfoRow("class1", 0, null, 0, ImmutableMap.of("r1",0));
+		List<ResourceInfoRow> v1Rows = new ArrayList<ResourceInfoRow>();
+		v1Rows.add(class1v1_data);
+		expectedTable.put("v1", v1Rows);
 		
-		TableDAO actualTable = testAna.getTableWithCodeInfoForEveryClassInEveryRelease();
-		Assert.assertEquals(expectedTable, actualTable.getTable());
+		
+		TableDAO actualTableDAO = testAna.getTableWithCodeInfoForEveryClassInEveryRelease();
+		TableDAO expectedTableDAO = new TableDAO(expectedTable);
+		Assert.assertEquals(expectedTableDAO, actualTableDAO);
 	}
 	
 	@Test 
 	public void test_getTableWithCodeInfoForEveryClassInEveryRelease() throws IOException, ConfigurationException, InvalidRemoteException, TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException
 	{
+		
 		List<String> allResourcesV1 = new ArrayList<String>();
 		allResourcesV1.add("class1");
 		allResourcesV1.add("class2");
@@ -241,77 +242,35 @@ public class TableWithCodeInfoGeneratorTest {
 		
 		TableWithCodeInfoGenerator testAna = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		
+		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
+		ResourceInfoRow class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 150, 500, ImmutableMap.of("r1", 1, "r2", 0));
+		ResourceInfoRow class1v3_row = TestUtils.getResourceInfoRow("class1", 1, 50, 550, ImmutableMap.of("r1", 5, "r2", 7));
+		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 3, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
+		ResourceInfoRow class2v2_row = TestUtils.getResourceInfoRow("class2", 2, 150, 500, ImmutableMap.of("r1", 13, "r2", 9));
+		ResourceInfoRow class2v3_row = TestUtils.getResourceInfoRow("class2", 2, 25, 550, ImmutableMap.of("r1", 0, "r2", 7));
+		ResourceInfoRow class3v3_row = TestUtils.getResourceInfoRow("class3", 0, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
+	
+		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRow> v2rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRow> v3rows = new ArrayList<ResourceInfoRow>();
 		
-		HashMap<String, Integer> class1v1_row = new HashMap<String, Integer>();
-		class1v1_row.put("numberDefects", 1);
-		class1v1_row.put("locTouched", null);
-		class1v1_row.put("size", 0);
-		class1v1_row.put("r1", 0);
-		class1v1_row.put("r2", 0);
+		v1rows.add(class1v1_row);
+		v1rows.add(class2v1_row);
+		v2rows.add(class1v2_row);
+		v2rows.add(class2v2_row);
+		v3rows.add(class1v3_row);
+		v3rows.add(class2v3_row);
+		v3rows.add(class3v3_row);
 		
-		
-		HashMap<String, Integer> class1v2_row = new HashMap<String, Integer>();
-		class1v2_row.put("numberDefects", 1);
-		class1v2_row.put("locTouched", 150);
-		class1v2_row.put("size", 500);
-		class1v2_row.put("r1", 1);
-		class1v2_row.put("r2", 0);
-		
-		HashMap<String, Integer> class1v3_row = new HashMap<String, Integer>();
-		class1v3_row.put("numberDefects", 1);
-		class1v3_row.put("locTouched", 50);
-		class1v3_row.put("size", 550);
-		class1v3_row.put("r1", 5);
-		class1v3_row.put("r2", 7);
-		
-		HashMap<String, Integer> class2v1_row = new HashMap<String, Integer>();
-		class2v1_row.put("numberDefects", 3);
-		class2v1_row.put("locTouched", null);
-		class2v1_row.put("size", 0);
-		class2v1_row.put("r1", 0);
-		class2v1_row.put("r2", 0);
-
-
-		HashMap<String, Integer> class2v2_row = new HashMap<String, Integer>();
-		class2v2_row.put("numberDefects", 2);
-		class2v2_row.put("locTouched", 150);
-		class2v2_row.put("size", 500);
-		class2v2_row.put("r1", 13);
-		class2v2_row.put("r2", 9);
-		
-		HashMap<String, Integer> class2v3_row = new HashMap<String, Integer>();
-		class2v3_row.put("numberDefects", 2);
-		class2v3_row.put("locTouched", 25);
-		class2v3_row.put("size", 550);
-		class2v3_row.put("r1", 0);
-		class2v3_row.put("r2", 7);
-		
-		HashMap<String, Integer> class3v3_row = new HashMap<String, Integer>();
-		class3v3_row.put("numberDefects", 0);
-		class3v3_row.put("locTouched", null);
-		class3v3_row.put("size", 0);
-		class3v3_row.put("r1", 0);
-		class3v3_row.put("r2", 0);
-		
-		
-		HashMap<String, HashMap<String, Integer>> v1rows = new HashMap<String, HashMap<String,Integer>>();
-		HashMap<String, HashMap<String, Integer>> v2rows = new HashMap<String, HashMap<String,Integer>>();
-		HashMap<String, HashMap<String, Integer>> v3rows = new HashMap<String, HashMap<String,Integer>>();
-		v1rows.put("class1", class1v1_row);
-		v1rows.put("class2", class2v1_row);
-		v2rows.put("class1", class1v2_row);
-		v2rows.put("class2", class2v2_row);
-		v3rows.put("class1", class1v3_row);
-		v3rows.put("class2", class2v3_row);
-		v3rows.put("class3", class3v3_row);
-		
-		HashMap<String, HashMap<String, HashMap<String, Integer>>> expectedTable = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
+		LinkedHashMap<String, List<ResourceInfoRow>> expectedTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
 		expectedTable.put("v1", v1rows);
 		expectedTable.put("v2", v2rows);
 		expectedTable.put("v3", v3rows);
 		
+		TableDAO expectedTableDao = new TableDAO(expectedTable);
+		
 		TableDAO actualTable = testAna.getTableWithCodeInfoForEveryClassInEveryRelease();
-		Assert.assertEquals(expectedTable, actualTable.getTable());
+		Assert.assertEquals(expectedTableDao, actualTable);
 	}
 	
 	@Test

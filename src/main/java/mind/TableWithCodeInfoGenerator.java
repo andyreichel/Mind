@@ -118,21 +118,18 @@ public class TableWithCodeInfoGenerator {
 				
 				Integer numberOfLOCTouched;
 				int sizeOfClass = sonarReader.getSizeOfClass(resource);
-				Iterator<Map.Entry<String, Integer>> it;
 				if(previousVersionKey.equals("0") || !violationsOfResourcePerVersion.get(previousVersionKey).containsKey(resource))
 				{
 					numberOfLOCTouched = null;
 					newRow.setSize(0);
-					violationsOfResource.put(resource, sonarReader.getNumberOfViolationsPerRuleEverythingZero());
-					it = violationsOfResource.get(resource).entrySet().iterator();
+					newRow.setViolationsPerRule(sonarReader.getNumberOfViolationsPerRuleEverythingZero());
 				}else
 				{
 					numberOfLOCTouched = scmReader.getNumberOfLOCtouched(versionDao.getScmVersion(currentVersionKey), versionDao.getScmVersion(previousVersionKey), resource);
 					newRow.setLocTouched(sizeOfResourcePerVersion.get(previousVersionKey).get(resource));
-					it = violationsOfResourcePerVersion.get(previousVersionKey).get(resource).entrySet().iterator();
-
+					newRow.setViolationsPerRule(violationsOfResourcePerVersion.get(previousVersionKey).get(resource));
+					newRow.setSize(sizeOfResourcePerVersion.get(previousVersionKey).get(resource));
 				}
-		 		newRow.setViolationsPerRule(violationsOfResourcePerVersion.get(previousVersionKey).get(resource));
 				
 				newRow.setNumberOfDefects(numberOfDefectsForThisResourceInThisVersion);
 				newRow.setLocTouched(numberOfLOCTouched);

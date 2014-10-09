@@ -69,8 +69,59 @@ public class ResourceInfoRow {
 		return violationsPerRule.get(rule);
 	}
 	
-	public boolean isEqual()
+	public HashMap<String, Integer> getViolationsMap()
 	{
-		return true;
+		return violationsPerRule;
+	}
+	
+	public boolean equals(Object obj)
+	{
+		if(obj == this)
+			return true;
+		
+		if(!(obj instanceof ResourceInfoRow))
+			return false;
+		
+		ResourceInfoRow object = (ResourceInfoRow) obj;
+		
+		return 	areObjectsEqual(this.numberDefects, object.getNumberDefects()) &&
+				areObjectsEqual(this.locTouched, object.getLocTouched()) &&
+				areObjectsEqual(this.size, object.getSize()) &&
+				areObjectsEqual(this.resourceName, object.getResourceName()) &&
+				areObjectsEqual(this.violationsPerRule, object.getViolationsMap());
+		
+	}
+	
+	private boolean areObjectsEqual(Object one, Object two)
+	{
+		if(one!=null)
+		{
+			return one.equals(two);
+		}else return two==null;
+	}
+	
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + size ;
+		result = 31 * result + locTouched;
+		result = 31 * result + numberDefects;
+		result = 31 * result + resourceName.hashCode();
+		result = 31 * result + violationsPerRule.hashCode();
+		return result;
+		}
+	
+	public String toString()
+	{
+		StringBuilder rowString = new StringBuilder();
+		rowString.append(resourceName);
+		rowString.append("\n");
+		rowString.append("Lines of code touched: " + locTouched);
+		rowString.append("\tnumber of defects: " + numberDefects);
+		rowString.append("\tsize of resource: " + size);
+		for(String rule : violationsPerRule.keySet())
+		{
+			rowString.append("\t\t" + rule+ ": " + violationsPerRule.get(rule));	
+		}
+		return rowString.toString();
 	}
 }

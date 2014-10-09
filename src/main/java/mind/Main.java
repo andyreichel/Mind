@@ -21,6 +21,7 @@ import dao.TableDAO;
 import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
 import exceptions.LenghtOfDoubleArraysDifferException;
+import exceptions.NoTableSetForCalculatingStatsException;
 import exceptions.RankCouldNotBeCalculatedException;
 import exceptions.UnequalNumberOfVersionsException;
 import exceptions.VersionIdentifierConflictException;
@@ -34,7 +35,7 @@ public class Main {
 
 	public static void main(String[] args) throws ConfigurationException,
 			InvalidRemoteException, TransportException, IOException,
-			GitAPIException, RedmineException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, VersionIdentifierConflictException, KeyNotFoundException, LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException{
+			GitAPIException, RedmineException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, VersionIdentifierConflictException, KeyNotFoundException, LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, NoTableSetForCalculatingStatsException{
 		 PropertyConfigurator.configure(System.getProperty("logProperties"));
 		 Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.ERROR);
 		 Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.ERROR);
@@ -48,7 +49,7 @@ public class Main {
 		 TableDAO table = tableGenerator.getTableWithCodeInfoForEveryClassInEveryRelease();
 		 table.filterTable();		 
 		 //statisticGenerator.generateStatistics(table);
-		 HashMap<String, Double> ranks = statisticGenerator.getSpearmanCoefficientForAllRulesInTable(table);
+		 HashMap<String, Double> ranks = statisticGenerator.getSpearmanCoefficientForAllRulesInTable();
 		 statisticGenerator.getAverageViolationsForAllRulesInTable(table);
 		// statisticGenerator.getPValueAllRulesInTable(table);
 		 
