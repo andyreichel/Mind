@@ -47,7 +47,8 @@ public class Main {
 		 StatisticGenerator statisticGenerator = injector.getInstance(StatisticGenerator.class);
 		 
 		 TableDAO table = tableGenerator.getTableWithCodeInfoForEveryClassInEveryRelease();
-		 table.filterTable();		 
+		 table.filterTable();
+		 statisticGenerator.setTableDAO(table);
 		 //statisticGenerator.generateStatistics(table);
 		 HashMap<String, Double> ranks = statisticGenerator.getSpearmanCoefficientForAllRulesInTable();
 		 statisticGenerator.getAverageViolationsForAllRulesInTable(table);
