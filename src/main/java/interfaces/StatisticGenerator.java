@@ -5,6 +5,7 @@ import java.util.HashMap;
 import dao.TableDAO;
 import exceptions.LenghtOfDoubleArraysDifferException;
 import exceptions.NoTableSetForCalculatingStatsException;
+import exceptions.PValueCouldNotBeCalculatedException;
 import exceptions.PropertyNotFoundException;
 
 public interface StatisticGenerator  {
@@ -13,4 +14,5 @@ public interface StatisticGenerator  {
 	public Double[] getDefectInjectionFrequencyColumn() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException;
 	public Double[] getViolationDensityColumnForRule(String rule) throws PropertyNotFoundException, NoTableSetForCalculatingStatsException;
 	public void setTableDAO(TableDAO table);
+	public Double getPvalue() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException, PValueCouldNotBeCalculatedException;
 }

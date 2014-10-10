@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import exceptions.AverageCouldNotBeCalculatedException;
 import exceptions.LenghtOfDoubleArraysDifferException;
+import exceptions.PValueCouldNotBeCalculatedException;
 import exceptions.RankCouldNotBeCalculatedException;
 
 public class RCallerApiTest {
@@ -70,4 +71,49 @@ public class RCallerApiTest {
 		
 		rcaller.getMeanOfVector(vector);
 	}
+	
+	@Test
+	public void test_getPvalueOfDistribution_differentLenghtOfCols() throws ConfigurationException, PValueCouldNotBeCalculatedException
+	{
+		double[][] doubleArray= new double[][] {new double[]{1.0,0.0,0.0}, new double[]{1.0,0.0}};
+		
+		
+		RCallerApi rcaller = new RCallerApiImpl(new MindConfigurationImpl());
+		Double expected = 0.7388;
+		Assert.assertEquals(expected, rcaller.getPvalue(doubleArray),0.0001);
+	}
+	
+	@Test
+	public void test_getPvalueOfDistribution_differentLenghtOfColsWithEmptyCols() throws ConfigurationException, PValueCouldNotBeCalculatedException
+	{
+		double[][] doubleArray= new double[][] {new double[]{1.0,0.0,0.0}, new double[]{1.0,0.0}, new double[]{}};
+		
+		
+		RCallerApi rcaller = new RCallerApiImpl(new MindConfigurationImpl());
+		Double expected = 0.7388;
+		Assert.assertEquals(expected, rcaller.getPvalue(doubleArray),0.0001);
+	}
+	
+	@Test
+	public void test_getPvalueOfDistribution_success() throws ConfigurationException, PValueCouldNotBeCalculatedException
+	{
+		double[][] doubleArray= new double[][] {new double[]{1.0,0.0,0.0}, new double[]{1.0,0.0,0.0}};
+		
+		
+		RCallerApi rcaller = new RCallerApiImpl(new MindConfigurationImpl());
+		Double expected = 1.0;
+		Assert.assertEquals(expected, rcaller.getPvalue(doubleArray));
+	}
+	
+	@Test
+	public void test_getPvalueOfDistribution_NaN() throws ConfigurationException, PValueCouldNotBeCalculatedException
+	{
+		double[][] doubleArray= new double[][] {new double[]{0.0,0.0,0.0}, new double[]{0.0,0.0,0.0}};
+		
+		
+		RCallerApi rcaller = new RCallerApiImpl(new MindConfigurationImpl());
+		Double expected = Double.NaN;
+		Assert.assertEquals(expected, rcaller.getPvalue(doubleArray));
+	}
+	
 }

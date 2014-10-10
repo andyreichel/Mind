@@ -1,5 +1,8 @@
 package mind;
 
+import java.io.IOException;
+import java.util.List;
+
 import interfaces.MindConfiguration;
 import interfaces.RCallerApi;
 
@@ -14,6 +17,7 @@ import com.google.inject.Inject;
 
 import exceptions.AverageCouldNotBeCalculatedException;
 import exceptions.LenghtOfDoubleArraysDifferException;
+import exceptions.PValueCouldNotBeCalculatedException;
 import exceptions.RankCouldNotBeCalculatedException;
 
 public class RCallerApiImpl implements RCallerApi {
@@ -77,5 +81,54 @@ public class RCallerApiImpl implements RCallerApi {
 		{
 			throw new AverageCouldNotBeCalculatedException("Average of vector could not be calculated with given values.\n");
 		}
+	}
+	
+	public Double getPvalue(double[][] mat) throws PValueCouldNotBeCalculatedException
+	{
+		RCaller caller = new RCaller();
+		caller.setRscriptExecutable(RscriptExecutablePath);
+		RCode code = new RCode();
+		
+		
+		addMatrixToRCode(mat, code, "li");
+		code.addRCode("li");
+		code.addRCode("res=kruskal.test(li)");
+		code.addRCode("res$p.value");
+		caller.setRCode(code);
+		
+		try
+		{
+			caller.redirectROutputToConsole();
+			caller.runAndReturnResult("res$p.value");
+			return caller.getParser().getAsDoubleArray("res$p.value")[0];
+		}catch(ParseException pe)
+		{
+			pe.printStackTrace();
+			throw new PValueCouldNotBeCalculatedException("Pvalue of distribution could not be calcultated with given data.\n");
+		}
+	}
+	
+	private void addMatrixToRCode(double[][] mat, RCode code, String nameInR) {
+		
+		int sizeOfMatrix = 0;
+		for(int i = 0 ; i < mat.length; i++)
+		{
+			if(mat[i].length != 0)
+			{
+				code.addDoubleArray(nameInR +"."+ sizeOfMatrix, mat[i]);
+				sizeOfMatrix++;
+			}
+		}
+		
+		StringBuilder list = new StringBuilder();
+		list.append("list(");
+		for(int i = 0; i < sizeOfMatrix; i++)
+		{
+			list.append("c(li." +i + ")");
+			if(i+1 < sizeOfMatrix)
+				list.append(",");
+		}
+		list.append(")");
+		code.addRCode("li=" + list.toString());
 	}
 }
