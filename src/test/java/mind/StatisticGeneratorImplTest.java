@@ -196,7 +196,7 @@ public class StatisticGeneratorImplTest {
 	}
 	
 	@Test
-	public void test_getViolationDensityDencityColumnForRule_success() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
+	public void test_getViolationDensityDencityColumnForRule_success() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException, LenghtOfDoubleArraysDifferException
 	{
 		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
 		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));
@@ -214,25 +214,12 @@ public class StatisticGeneratorImplTest {
 		Double[] expectedViolationsDensityColumn = new Double[]{1.0, 2.0};
 		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
 		stat.setTableDAO(table);
-		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityColumnForRule("r1"));
-	}
-	
-	@Test
-	public void test_getViolationDensityDencityColumnForRule_emptyTable() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
-	{
-		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
 		
-		TableDAO table = new TableDAO(toBeFilteredTable);
-		
-		Double[] expectedViolationsDensityColumn = new Double[]{};
-		
-		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
-		stat.setTableDAO(table);
-		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityColumnForRule("r1"));
+		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityForRule("r1"));
 	}
 	
 	@Test(expected=PropertyNotFoundException.class)
-	public void test_getViolationDensityDencityColumnForRule_doesNotContainRule() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
+	public void test_getViolationDensityColumnForRule_doesNotContainRule() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException, LenghtOfDoubleArraysDifferException
 	{
 		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
 		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));	
@@ -247,11 +234,10 @@ public class StatisticGeneratorImplTest {
 		TableDAO table = new TableDAO(toBeFilteredTable);
 		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
 		stat.setTableDAO(table);
-		stat.getViolationDensityColumnForRule("r4");
 	}
 	
 	@Test
-	public void test_getDefectInjectionFrequencyColumnForRule_success() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
+	public void test_getDefectInjectionFrequencyColumnForRule_success() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException, LenghtOfDoubleArraysDifferException
 	{
 		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
 		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8));

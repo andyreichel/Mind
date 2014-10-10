@@ -17,6 +17,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.taskadapter.redmineapi.RedmineException;
 
+import dao.StatisticsDAO;
 import dao.TableDAO;
 import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
@@ -49,15 +50,7 @@ public class Main {
 		 
 		 TableDAO table = tableGenerator.getTableWithCodeInfoForEveryClassInEveryRelease();
 		 table.filterTable();
-		 statisticGenerator.setTableDAO(table);
-		 HashMap<String, Double> ranks = statisticGenerator.getSpearmanCoefficientForAllRulesInTable();
-		 HashMap<String, Double> average =  statisticGenerator.getAverageViolationsForAllRulesInTable();
-		 Double pvalue = statisticGenerator.getPvalue();
-		 for(String rule: ranks.keySet())
-		 {
-			 System.out.println("rule: " + rule + " rank: " + ranks.get(rule) + " avg: " + average.get(rule));
-		 }
-		 System.out.println("pvalue: " + pvalue);
-		 
+		 StatisticsDAO stats = statisticGenerator.generateStatistcs(table);
+		 System.out.println(stats.toString());
 	}
 }

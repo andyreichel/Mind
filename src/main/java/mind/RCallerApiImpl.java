@@ -98,7 +98,6 @@ public class RCallerApiImpl implements RCallerApi {
 		
 		try
 		{
-			caller.redirectROutputToConsole();
 			caller.runAndReturnResult("res$p.value");
 			return caller.getParser().getAsDoubleArray("res$p.value")[0];
 		}catch(ParseException pe)
