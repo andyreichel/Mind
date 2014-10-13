@@ -2,8 +2,11 @@ package mind;
 
 import interfaces.StatisticGenerator;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.PrintWriter;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Level;
@@ -12,6 +15,8 @@ import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+
+import view.HTMLBuilder;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -51,6 +56,16 @@ public class Main {
 		 TableDAO table = tableGenerator.getTableWithCodeInfoForEveryClassInEveryRelease();
 		 table.filterTable();
 		 StatisticsDAO stats = statisticGenerator.generateStatistcs(table);
-		 System.out.println(stats.toString());
+		 
+         
+         try {
+                 File output = new File("c:\\temp\\test.html");
+                 PrintWriter out = new PrintWriter(new FileOutputStream(output));
+                 out.println(HTMLBuilder.getHtmlPage(table, stats));
+                 out.close();
+         } catch (FileNotFoundException e) {
+                 e.printStackTrace();
+         }
+
 	}
 }
