@@ -114,9 +114,16 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		{
 			for(ResourceInfoRow resourceRow : table.getResourceInfoRowsForVersion(version))
 			{
-				double numberOfDefects = resourceRow.getNumberDefects();
-				double locTouched = resourceRow.getLocTouched();
-				defectInjectionFrequencyColumn.add(numberOfDefects/locTouched);
+				Integer numberOfDefects = resourceRow.getNumberDefects();
+				Integer locTouched = resourceRow.getLocTouched();
+				
+				if(locTouched == null || locTouched == 0)
+				{
+					defectInjectionFrequencyColumn.add(null);
+				}else
+				{
+					defectInjectionFrequencyColumn.add(numberOfDefects.doubleValue()/locTouched.doubleValue());	
+				}
 			}
 		}
 		Double[] array = new Double[defectInjectionFrequencyColumn.size()];
@@ -198,7 +205,7 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 			
 			for(int i = 0; i < violationDensity.length; i++)
 			{
-				if(!violationDensity[i].equals(0.0))
+				if(!violationDensity[i].equals(0.0) && getDefectInjectionFrequencyColumn()[i] != null)
 				{
 					coefficientsBetweenDefInjAndViolationDens.add(getDefectInjectionFrequencyColumn()[i]/violationDensity[i]);
 				}

@@ -21,6 +21,7 @@ import testutils.TestUtils;
 import com.google.common.collect.ImmutableMap;
 
 import dao.ResourceInfoRow;
+import dao.StatisticsDAO;
 import dao.TableDAO;
 import exceptions.AverageCouldNotBeCalculatedException;
 import exceptions.LenghtOfDoubleArraysDifferException;
@@ -218,8 +219,8 @@ public class StatisticGeneratorImplTest {
 		Assert.assertArrayEquals(expectedViolationsDensityColumn, stat.getViolationDensityForRule("r1"));
 	}
 	
-	@Test(expected=PropertyNotFoundException.class)
-	public void test_getViolationDensityColumnForRule_doesNotContainRule() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException, LenghtOfDoubleArraysDifferException
+	@Test
+	public void test_getDefectInjFreqForRule_locNull() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException, LenghtOfDoubleArraysDifferException, PValueCouldNotBeCalculatedException
 	{
 		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
 		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));	
@@ -233,7 +234,10 @@ public class StatisticGeneratorImplTest {
 		
 		TableDAO table = new TableDAO(toBeFilteredTable);
 		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
-		stat.setTableDAO(table);
+		StatisticsDAO stats = stat.generateStatistcs(table);
+		Double[] defInjFreq = stats.getDefectInjectionFrequencyForAllRules();
+		Assert.assertEquals(null, defInjFreq[0]);
+		Assert.assertEquals(null, defInjFreq[1]);
 	}
 	
 	@Test
