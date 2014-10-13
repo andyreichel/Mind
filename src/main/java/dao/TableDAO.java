@@ -7,18 +7,30 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+
+/**
+ * 
+ * Table DAO that enables the access to the information stored in the table. Table structure looks like this:
+ * {"version1" : {ResourceInfoRow1, ResourceInfoRow2}} For more information have a look into ResourceInfoRowDAO
+ *
+ */
 public class TableDAO {
-	LinkedHashMap<String, List<ResourceInfoRow>> table;
-	public TableDAO(LinkedHashMap<String, List<ResourceInfoRow>> table)
+	LinkedHashMap<String, List<ResourceInfoRowDAO>> table;
+	public TableDAO(LinkedHashMap<String, List<ResourceInfoRowDAO>> table)
 	{
 		this.table = table;
 	}
 	
-	public LinkedHashMap<String, List<ResourceInfoRow>> getTable()
+	public LinkedHashMap<String, List<ResourceInfoRowDAO>> getTable()
 	{
 		return table;
 	}
 	
+	/**
+	 * Filters the table by certain criteria as: 
+	 * The first row of the table is not relevant because the size and violations are always 0 at the beginning.
+	 * Another rule is that the rows where loc touched is equal to 0 are not relevant. 
+	 */
 	public void filterTable()
 	{
 		if(table.isEmpty())
@@ -26,11 +38,11 @@ public class TableDAO {
 		
 		String key = table.keySet().iterator().next();
 		table.remove(key);
-		HashMap<String, List<ResourceInfoRow>> rememberDeletionMap = new HashMap<String, List<ResourceInfoRow>>();
+		HashMap<String, List<ResourceInfoRowDAO>> rememberDeletionMap = new HashMap<String, List<ResourceInfoRowDAO>>();
 		for(String version : table.keySet())
 		{
-			List<ResourceInfoRow> listOfdeleteTargetResources = new ArrayList<ResourceInfoRow>();
-			for(ResourceInfoRow resourceMap : table.get(version))
+			List<ResourceInfoRowDAO> listOfdeleteTargetResources = new ArrayList<ResourceInfoRowDAO>();
+			for(ResourceInfoRowDAO resourceMap : table.get(version))
 			{
 				if(!isResourceRowRelevant(resourceMap))
 				{
@@ -41,19 +53,22 @@ public class TableDAO {
 		}
 		for(String version : rememberDeletionMap.keySet())
 		{
-			for(ResourceInfoRow resource : rememberDeletionMap.get(version))
+			for(ResourceInfoRowDAO resource : rememberDeletionMap.get(version))
 			{
 				table.get(version).remove(resource);
 			}
 		}
 	}
 	
-	private boolean isResourceRowRelevant(ResourceInfoRow resourceRow)
+	private boolean isResourceRowRelevant(ResourceInfoRowDAO resourceRow)
 	{
 		return !(resourceRow.getLocTouched()==null || resourceRow.getLocTouched() == 0 || resourceRow.getSize()==0);
 	}
 
-	
+	/**
+	 * 
+	 * @return a set of all rules that have been analzyed by sonar.
+	 */
 	public Set<String> getAllRulesInTable()
 	{
 		
@@ -83,8 +98,9 @@ public class TableDAO {
 	{
 		return table.keySet();
 	}
+
 	
-	public List<ResourceInfoRow> getResourceInfoRowsForVersion(String version)
+	public List<ResourceInfoRowDAO> getResourceInfoRowsForVersion(String version)
 	{
 		return table.get(version);
 	}
@@ -98,7 +114,7 @@ public class TableDAO {
 		{
 			tableString.append(version);
 			tableString.append("\n");
-			for(ResourceInfoRow row : table.get(version))
+			for(ResourceInfoRowDAO row : table.get(version))
 			{
 				tableString.append(row.toString());
 				tableString.append("\n");

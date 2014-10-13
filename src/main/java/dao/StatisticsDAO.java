@@ -6,6 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 
+ * Data access object that stores the statistics of one analyze.
+ * Statistics are:
+ * Spearman coefficient describes how many defects will be produced when a rule is violated. The higher the worse
+ * Average for rules
+ * PValue that describes how good the distribution of violations is
+ *
+ */
 public class StatisticsDAO {
 	private HashMap<String, Double> spearmanCoefficientForAllRules;
 	private HashMap<String, Double> averageForAllRules;

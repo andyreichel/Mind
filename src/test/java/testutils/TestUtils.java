@@ -4,13 +4,13 @@ import java.util.HashMap;
 
 import com.google.common.collect.ImmutableMap;
 
-import dao.ResourceInfoRow;
+import dao.ResourceInfoRowDAO;
 
 public class TestUtils {
-	public static ResourceInfoRow getResourceInfoRow(String className, Integer numberDefects, Integer locTouched, Integer size,  ImmutableMap<String, Integer> violations)
+	public static ResourceInfoRowDAO getResourceInfoRow(String className, Integer numberDefects, Integer locTouched, Integer size,  ImmutableMap<String, Integer> violations)
 	{
 		
-		ResourceInfoRow row = new ResourceInfoRow(className);
+		ResourceInfoRowDAO row = new ResourceInfoRowDAO(className);
 		HashMap<String, Integer> violationsHashMap = new HashMap<String, Integer>();
 		if(violations == null)
 		{

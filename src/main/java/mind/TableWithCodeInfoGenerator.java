@@ -26,7 +26,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 import com.google.inject.Inject;
 import com.taskadapter.redmineapi.RedmineException;
 
-import dao.ResourceInfoRow;
+import dao.ResourceInfoRowDAO;
 import dao.TableDAO;
 import dao.VersionDAO;
 import exceptions.ConfiguredVersionNotExistInSonarException;
@@ -93,7 +93,7 @@ public class TableWithCodeInfoGenerator {
 			throws ConfigurationException, IOException, InvalidRemoteException,
 			TransportException, GitAPIException, RedmineException, VersionIdentifierConflictException, ConfiguredVersionNotExistInSonarException, UnequalNumberOfVersionsException, KeyNotFoundException {
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> table = new LinkedHashMap<String,  List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> table = new LinkedHashMap<String,  List<ResourceInfoRowDAO>>();
 		HashMap<String, HashMap<String, Integer>> sizeOfResourcePerVersion = new HashMap<String, HashMap<String,Integer>>();
 		HashMap<String, HashMap<String, HashMap<String, Integer>>> violationsOfResourcePerVersion = new HashMap<String, HashMap<String,HashMap<String,Integer>>>();
 		String previousVersionKey = "0";
@@ -104,14 +104,14 @@ public class TableWithCodeInfoGenerator {
 			List<String> resources = sonarReader.getListOfAllResources();
 			
 			HashMap<String,HashMap<String, Integer>> mapOfNumberOfDefectsRelatedToClassPerVersion = getMapOfNumberOfDefectsRelatedToResource(resources, scmReader.getHeadBranch());
-			List<ResourceInfoRow> resourceRows = new ArrayList<ResourceInfoRow>();
+			List<ResourceInfoRowDAO> resourceRows = new ArrayList<ResourceInfoRowDAO>();
 			HashMap<String, Integer> sizeOfResources = new HashMap<String, Integer>();
 			HashMap<String, HashMap<String, Integer>> violationsOfResource = new HashMap<String, HashMap<String, Integer>>();
 			
 			
 			for (String resource : resources)
 			{
-				ResourceInfoRow newRow = new ResourceInfoRow(resource);
+				ResourceInfoRowDAO newRow = new ResourceInfoRowDAO(resource);
 				int numberOfDefectsForThisResourceInThisVersion = mapOfNumberOfDefectsRelatedToClassPerVersion.get(versionDao.getMainKeyVersion(currentVersionKey)).get(resource);
 				
 				Integer numberOfLOCTouched;

@@ -20,7 +20,7 @@ import testutils.TestUtils;
 
 import com.google.common.collect.ImmutableMap;
 
-import dao.ResourceInfoRow;
+import dao.ResourceInfoRowDAO;
 import dao.StatisticsDAO;
 import dao.TableDAO;
 import exceptions.AverageCouldNotBeCalculatedException;
@@ -38,19 +38,19 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getSpearmanCoefficientForAllRulesInTable_success() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException, NoTableSetForCalculatingStatsException
 	{
-		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2, "r3", 0));
-		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8, "r3", 0));
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2, "r3", 0));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8, "r3", 0));
 		
-		ResourceInfoRow class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 1, 3, ImmutableMap.of("r1", 0, "r2", 2, "r3", 0));
+		ResourceInfoRowDAO class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 1, 3, ImmutableMap.of("r1", 0, "r2", 2, "r3", 0));
 		
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1_row);
 		v1rows.add(class2v1_row);
-		List<ResourceInfoRow> v2rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v2rows = new ArrayList<ResourceInfoRowDAO>();
 		v2rows.add(class1v2_row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		tableMap.put("v1", v1rows);
 		tableMap.put("v2", v2rows);
 		TableDAO table = new TableDAO(tableMap);
@@ -85,14 +85,14 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getAverageViolationsForAllRulesInTable_success() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException, NoTableSetForCalculatingStatsException, AverageCouldNotBeCalculatedException
 	{
-		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
-		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1_row);
 		v1rows.add(class2v1_row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		tableMap.put("v1", v1rows);
 		
 		TableDAO table = new TableDAO(tableMap);
@@ -113,12 +113,12 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getAverageViolationsForAllRulesInTable_rThrowsCalculationException() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException, NoTableSetForCalculatingStatsException, ConfigurationException, AverageCouldNotBeCalculatedException
 	{
-		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",1, "r2", 1, "r3", 1));
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1_row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		tableMap.put("v1", v1rows);
 		
 		TableDAO table = new TableDAO(tableMap);
@@ -138,17 +138,17 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getAverageViolationsForAllRulesInTable_ruleHasZeroViolations() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException, NoTableSetForCalculatingStatsException, ConfigurationException, AverageCouldNotBeCalculatedException
 	{
-		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 1, "r3", 0));
-		ResourceInfoRow class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",4, "r2", 1, "r3", 0));
-		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",4, "r2", 1, "r3", 0));
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 1, "r3", 0));
+		ResourceInfoRowDAO class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",4, "r2", 1, "r3", 0));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",4, "r2", 1, "r3", 0));
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1_row);
 		v1rows.add(class2v1_row);
-		List<ResourceInfoRow> v2rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v2rows = new ArrayList<ResourceInfoRowDAO>();
 		v2rows.add(class1v2_row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		tableMap.put("v1", v1rows);
 		tableMap.put("v2", v2rows);
 		
@@ -169,17 +169,17 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getAverageViolationsForAllRulesInTable_everyRuleHasZeroViolations() throws LenghtOfDoubleArraysDifferException, RankCouldNotBeCalculatedException, PropertyNotFoundException, NoTableSetForCalculatingStatsException, ConfigurationException, AverageCouldNotBeCalculatedException
 	{
-		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 0, "r3", 0));
-		ResourceInfoRow class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 0, "r3", 0));
-		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 0, "r3", 0));
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 0, "r3", 0));
+		ResourceInfoRowDAO class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 0, "r3", 0));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",0, "r2", 0, "r3", 0));
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1_row);
 		v1rows.add(class2v1_row);
-		List<ResourceInfoRow> v2rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v2rows = new ArrayList<ResourceInfoRowDAO>();
 		v2rows.add(class1v2_row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		tableMap.put("v1", v1rows);
 		tableMap.put("v2", v2rows);
 		
@@ -199,14 +199,14 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getViolationDensityDencityColumnForRule_success() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException, LenghtOfDoubleArraysDifferException
 	{
-		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
-		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));
+		ResourceInfoRowDAO class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRowDAO class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1row);
 		v1rows.add(class2v1row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		toBeFilteredTable.put("v1", v1rows);
 		
 		TableDAO table = new TableDAO(toBeFilteredTable);
@@ -222,14 +222,14 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getDefectInjFreqForRule_locNull() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException, LenghtOfDoubleArraysDifferException, PValueCouldNotBeCalculatedException
 	{
-		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
-		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));	
+		ResourceInfoRowDAO class1v1row = TestUtils.getResourceInfoRow("class1", 1, null, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRowDAO class2v1row = TestUtils.getResourceInfoRow("class2", 3, null, 2, ImmutableMap.of("r1",4, "r2", 8));	
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1row);
 		v1rows.add(class2v1row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		toBeFilteredTable.put("v1", v1rows);
 		
 		TableDAO table = new TableDAO(toBeFilteredTable);
@@ -243,14 +243,14 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getDefectInjectionFrequencyColumnForRule_success() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException, LenghtOfDoubleArraysDifferException
 	{
-		ResourceInfoRow class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
-		ResourceInfoRow class2v1row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8));
+		ResourceInfoRowDAO class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRowDAO class2v1row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8));
 		
-		List<ResourceInfoRow> v1Rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1Rows = new ArrayList<ResourceInfoRowDAO>();
 		v1Rows.add(class1v1row);
 		v1Rows.add(class2v1row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		toBeFilteredTable.put("v1", v1Rows);
 		
 		TableDAO table = new TableDAO(toBeFilteredTable);
@@ -264,14 +264,14 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getPValue() throws AverageCouldNotBeCalculatedException, PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException, PValueCouldNotBeCalculatedException, ConfigurationException
 	{
-		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",2, "r2", 3, "r3", 4));
-		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",6, "r2", 5, "r3", 5));
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",2, "r2", 3, "r3", 4));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",6, "r2", 5, "r3", 5));
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1_row);
 		v1rows.add(class2v1_row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		tableMap.put("v1", v1rows);
 		
 		TableDAO table = new TableDAO(tableMap);
@@ -286,14 +286,14 @@ public class StatisticGeneratorImplTest {
 	@Test
 	public void test_getPValue_lengthOfColumnsDiffer() throws AverageCouldNotBeCalculatedException, PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException, PValueCouldNotBeCalculatedException, ConfigurationException
 	{
-		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",2, "r2", 0, "r3", 0));
-		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",6, "r2", 0, "r3", 5));
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",2, "r2", 0, "r3", 0));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",6, "r2", 0, "r3", 5));
 		
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
 		v1rows.add(class1v1_row);
 		v1rows.add(class2v1_row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> tableMap = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		tableMap.put("v1", v1rows);
 		
 		TableDAO table = new TableDAO(tableMap);

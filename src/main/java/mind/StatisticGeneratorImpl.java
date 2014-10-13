@@ -13,7 +13,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import com.google.inject.Inject;
 
-import dao.ResourceInfoRow;
+import dao.ResourceInfoRowDAO;
 import dao.StatisticsDAO;
 import dao.TableDAO;
 import exceptions.AverageCouldNotBeCalculatedException;
@@ -112,7 +112,7 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		List<Double> defectInjectionFrequencyColumn = new ArrayList<Double>();
 		for(String version : table.getVersions())
 		{
-			for(ResourceInfoRow resourceRow : table.getResourceInfoRowsForVersion(version))
+			for(ResourceInfoRowDAO resourceRow : table.getResourceInfoRowsForVersion(version))
 			{
 				Integer numberOfDefects = resourceRow.getNumberDefects();
 				Integer locTouched = resourceRow.getLocTouched();
@@ -160,7 +160,7 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		List<Double> defectInjectionFrequencyColumn = new ArrayList<Double>();
 		for(String version : table.getVersions())
 		{
-			for(ResourceInfoRow resourceRow : table.getResourceInfoRowsForVersion(version))
+			for(ResourceInfoRowDAO resourceRow : table.getResourceInfoRowsForVersion(version))
 			{
 				double numberOfViolationsOfRule = resourceRow.getNumberOfViolationsForRule(rule);
 				double size = resourceRow.getSize();

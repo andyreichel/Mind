@@ -5,14 +5,33 @@ import java.util.Set;
 
 import exceptions.PropertyNotFoundException;
 
-public class ResourceInfoRow {
+
+/**
+ * 
+ * Class that stores the information for one row of a resource of one version for example
+ * {name: "class1", locTouched: 50, size: 100, numberDefects: 2, violationsPerRule : {"rule1": 5, "rule2": 7}}
+ *
+ */
+public class ResourceInfoRowDAO {
+	/**
+	 * Size of the resource
+	 */
 	private Integer size;
+	/**
+	 * lines of code that changed since the last version
+	 */
 	private Integer locTouched;
+	/**
+	 * number of defects that reference to this class in this revision
+	 */
 	private Integer numberDefects;
+	/**
+	 * map of number of violations per rule
+	 */
 	private HashMap<String, Integer> violationsPerRule;
 	private String resourceName;
 	
-	public ResourceInfoRow(String resourceName)
+	public ResourceInfoRowDAO(String resourceName)
 	{
 		this.resourceName = resourceName;
 	}
@@ -79,10 +98,10 @@ public class ResourceInfoRow {
 		if(obj == this)
 			return true;
 		
-		if(!(obj instanceof ResourceInfoRow))
+		if(!(obj instanceof ResourceInfoRowDAO))
 			return false;
 		
-		ResourceInfoRow object = (ResourceInfoRow) obj;
+		ResourceInfoRowDAO object = (ResourceInfoRowDAO) obj;
 		
 		return 	areObjectsEqual(this.numberDefects, object.getNumberDefects()) &&
 				areObjectsEqual(this.locTouched, object.getLocTouched()) &&

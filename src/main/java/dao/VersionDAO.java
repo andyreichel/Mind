@@ -15,6 +15,13 @@ import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
 import exceptions.UnequalNumberOfVersionsException;
 
+
+/**
+ * 
+ * DAO that gives the access of the version names in the different systems in that they occur.
+ * For example: Version 1 is named "1.0" in Sonar, and "1.0" in Redmine but "1.0-stable" in Git 
+ *
+ */
 public class VersionDAO {
 	private List<String> scmVersions;
 	private List<String> issueTrackerVersions;

@@ -29,7 +29,7 @@ import testutils.TestUtils;
 import com.google.common.collect.ImmutableMap;
 import com.taskadapter.redmineapi.RedmineException;
 
-import dao.ResourceInfoRow;
+import dao.ResourceInfoRowDAO;
 import dao.TableDAO;
 import exceptions.ConfiguredVersionNotExistInSonarException;
 import exceptions.KeyNotFoundException;
@@ -104,9 +104,9 @@ public class TableWithCodeInfoGeneratorTest {
 		
 		TableWithCodeInfoGenerator testAna = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> expectedTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
-		ResourceInfoRow class1v1_data = TestUtils.getResourceInfoRow("class1", 0, null, 0, ImmutableMap.of("r1",0));
-		List<ResourceInfoRow> v1Rows = new ArrayList<ResourceInfoRow>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> expectedTable = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
+		ResourceInfoRowDAO class1v1_data = TestUtils.getResourceInfoRow("class1", 0, null, 0, ImmutableMap.of("r1",0));
+		List<ResourceInfoRowDAO> v1Rows = new ArrayList<ResourceInfoRowDAO>();
 		v1Rows.add(class1v1_data);
 		expectedTable.put("v1", v1Rows);
 		
@@ -242,17 +242,17 @@ public class TableWithCodeInfoGeneratorTest {
 		
 		TableWithCodeInfoGenerator testAna = new TableWithCodeInfoGenerator(sonarReader, issueTrackerReader, scmReader, sonarRunner);
 		
-		ResourceInfoRow class1v1_row = TestUtils.getResourceInfoRow("class1", 1, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
-		ResourceInfoRow class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 150, 500, ImmutableMap.of("r1", 1, "r2", 0));
-		ResourceInfoRow class1v3_row = TestUtils.getResourceInfoRow("class1", 1, 50, 550, ImmutableMap.of("r1", 5, "r2", 7));
-		ResourceInfoRow class2v1_row = TestUtils.getResourceInfoRow("class2", 3, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
-		ResourceInfoRow class2v2_row = TestUtils.getResourceInfoRow("class2", 2, 150, 500, ImmutableMap.of("r1", 13, "r2", 9));
-		ResourceInfoRow class2v3_row = TestUtils.getResourceInfoRow("class2", 2, 25, 550, ImmutableMap.of("r1", 0, "r2", 7));
-		ResourceInfoRow class3v3_row = TestUtils.getResourceInfoRow("class3", 0, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
+		ResourceInfoRowDAO class1v2_row = TestUtils.getResourceInfoRow("class1", 1, 150, 500, ImmutableMap.of("r1", 1, "r2", 0));
+		ResourceInfoRowDAO class1v3_row = TestUtils.getResourceInfoRow("class1", 1, 50, 550, ImmutableMap.of("r1", 5, "r2", 7));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 3, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
+		ResourceInfoRowDAO class2v2_row = TestUtils.getResourceInfoRow("class2", 2, 150, 500, ImmutableMap.of("r1", 13, "r2", 9));
+		ResourceInfoRowDAO class2v3_row = TestUtils.getResourceInfoRow("class2", 2, 25, 550, ImmutableMap.of("r1", 0, "r2", 7));
+		ResourceInfoRowDAO class3v3_row = TestUtils.getResourceInfoRow("class3", 0, null, 0, ImmutableMap.of("r1", 0, "r2", 0));
 	
-		List<ResourceInfoRow> v1rows = new ArrayList<ResourceInfoRow>();
-		List<ResourceInfoRow> v2rows = new ArrayList<ResourceInfoRow>();
-		List<ResourceInfoRow> v3rows = new ArrayList<ResourceInfoRow>();
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
+		List<ResourceInfoRowDAO> v2rows = new ArrayList<ResourceInfoRowDAO>();
+		List<ResourceInfoRowDAO> v3rows = new ArrayList<ResourceInfoRowDAO>();
 		
 		v1rows.add(class1v1_row);
 		v1rows.add(class2v1_row);
@@ -262,7 +262,7 @@ public class TableWithCodeInfoGeneratorTest {
 		v3rows.add(class2v3_row);
 		v3rows.add(class3v3_row);
 		
-		LinkedHashMap<String, List<ResourceInfoRow>> expectedTable = new LinkedHashMap<String, List<ResourceInfoRow>>();
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> expectedTable = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
 		expectedTable.put("v1", v1rows);
 		expectedTable.put("v2", v2rows);
 		expectedTable.put("v3", v3rows);
