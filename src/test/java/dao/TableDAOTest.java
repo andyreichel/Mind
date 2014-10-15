@@ -14,6 +14,8 @@ import testutils.TestUtils;
 
 import com.google.common.collect.ImmutableMap;
 
+import exceptions.PropertyNotFoundException;
+
 
 public class TableDAOTest {
 	@Test
@@ -212,4 +214,36 @@ public class TableDAOTest {
 		
 		Assert.assertNotEquals(tableOneDAO, tableTwoDAO);
 	}
+	
+	@Test
+	public void test_getNumberOfDefectsThroughoutAllVersions()
+	{
+		ResourceInfoRowDAO class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRowDAO class2v1row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8));
+		
+		
+		List<ResourceInfoRowDAO> v1Rows = new ArrayList<ResourceInfoRowDAO>();
+		v1Rows.add(class1v1row);
+		v1Rows.add(class2v1row);
+		
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
+		toBeFilteredTable.put("v1", v1Rows);
+		
+		TableDAO table = new TableDAO(toBeFilteredTable);
+		
+		Integer expectedNumber = 4;
+		Assert.assertEquals(expectedNumber, table.getNumberOfDefectsThroughoutAllVersions());
+	}
+	
+	@Test
+	public void test_getNumberOfDefectsThroughoutAllVersions_nowRows()
+	{
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
+		TableDAO table = new TableDAO(toBeFilteredTable);
+		
+		Integer expectedNumber = 0;
+		Assert.assertEquals(expectedNumber, table.getNumberOfDefectsThroughoutAllVersions());
+	}
+	
+	
 }

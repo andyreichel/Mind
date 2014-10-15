@@ -18,7 +18,7 @@ public class RuleView {
 		cols.add("Rule");
 		cols.add("Rho");
 		cols.add("Rank");
-		cols.add("DefectInjectionFrequency");
+		cols.add("Defect / Violations");
 		cols.add("Violations");
 		cols.add("Effort fixing one");
 		cols.add("Effort fixing all");
@@ -35,11 +35,17 @@ public class RuleView {
 				HTMLBuilder.addColValueToRow(row, "NA");
 			else 
 				HTMLBuilder.addColValueToRow(row, stats.getSpearmanCoefficientForAllRules().get(rule).toString());
-			HTMLBuilder.addColValueToRow(row, "NA");//RANK
-			HTMLBuilder.addColValueToRow(row, "NA");// DEFECT/VIOLATION
-			HTMLBuilder.addColValueToRow(row, "NA");//VIOLATIONS
-			HTMLBuilder.addColValueToRow(row, "NA");//EFFORT for 1 
-			HTMLBuilder.addColValueToRow(row, "NA");//EFFORT for all
+			
+			HTMLBuilder.addColValueToRow(row, stats.getRankOfRules().get(rule).toString());//RANK
+			
+			if(stats.getAverageForAllRules().get(rule) == null)
+				HTMLBuilder.addColValueToRow(row, "NA");
+			else 
+				HTMLBuilder.addColValueToRow(row, stats.getAverageForAllRules().get(rule).toString());
+			
+			HTMLBuilder.addColValueToRow(row, stats.getNumberOfViolationsThroughoutAllVersions(rule).toString());//VIOLATIONS
+			HTMLBuilder.addColValueToRow(row, "to be developed");//EFFORT for 1 
+			HTMLBuilder.addColValueToRow(row, "to be developed");//EFFORT for all
 			ruleViewTable.appendChild(row);
 		}
 		

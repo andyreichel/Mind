@@ -19,15 +19,6 @@ public class RuleViewTest {
 	@Test
 	public void test_getRuleView()
 	{
-//		List<ResourceInfoRowDAO> rowsv1 = new ArrayList<ResourceInfoRowDAO>();
-//		rowsv1.add(TestUtils.getResourceInfoRow("class1", 5, null, 500, ImmutableMap.of("r1", 0, "r2", 5)));
-//		List<ResourceInfoRowDAO> rowsv2 = new ArrayList<ResourceInfoRowDAO>();
-//		rowsv2.add(TestUtils.getResourceInfoRow("class1", 5, null, 500, ImmutableMap.of("r1", 0, "r2", 5)));
-//		LinkedHashMap<String, List<ResourceInfoRowDAO>> table = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
-//		table.put("v1", rowsv1);
-//		table.put("v2", rowsv2);
-//		TableDAO tableDao = new TableDAO(table);
-		
 		StatisticsDAO stats = new StatisticsDAO();
 		HashMap<String, Double> averageForAllRules = new HashMap<String, Double>();
 		averageForAllRules.put("r1", 5.0);
@@ -39,7 +30,16 @@ public class RuleViewTest {
 		spearmanRank.put("r2", null);
 		spearmanRank.put("r3", 2.0);
 		stats.setSpearmanCoefficientForAllRules(spearmanRank);
-		
+		HashMap<String, Integer> rankOfRules = new HashMap<String, Integer>();
+		rankOfRules.put("r1", 1);
+		rankOfRules.put("r3", 2);
+		rankOfRules.put("r2", 3);
+		stats.setRankOfRules(rankOfRules);
+		HashMap<String, Integer> numberOfViolationsThroughoutAllVersions = new HashMap<String, Integer>();
+		numberOfViolationsThroughoutAllVersions.put("r1", 4);
+		numberOfViolationsThroughoutAllVersions.put("r2", 7);
+		numberOfViolationsThroughoutAllVersions.put("r3", 7);
+		stats.setNumberOfViolationsThroughoutAllVersions(numberOfViolationsThroughoutAllVersions);
 		System.out.println(RuleView.getRuleViewTable(stats).write());
 	}
 }

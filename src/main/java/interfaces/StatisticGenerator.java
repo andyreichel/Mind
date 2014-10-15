@@ -17,4 +17,6 @@ public interface StatisticGenerator  {
 	public Double getPvalue() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException, PValueCouldNotBeCalculatedException;
 	public Double[] getViolationDensityForRule(String rule) throws PropertyNotFoundException, NoTableSetForCalculatingStatsException;
 	public StatisticsDAO generateStatistcs(TableDAO table) throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException, PValueCouldNotBeCalculatedException;
+	public HashMap<String, Integer> getRankOfRules() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException;
+	public HashMap<String, Integer> getNumberOfViolationsThroughoutAllVersions() throws PropertyNotFoundException;
 }

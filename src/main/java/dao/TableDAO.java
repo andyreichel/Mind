@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import exceptions.PropertyNotFoundException;
+
 
 /**
  * 
@@ -65,6 +67,20 @@ public class TableDAO {
 		return !(resourceRow.getLocTouched()==null || resourceRow.getLocTouched() == 0 || resourceRow.getSize()==0);
 	}
 
+	public Integer getNumberOfDefectsThroughoutAllVersions()
+	{
+		Integer numberDefects = 0;
+		for(String version : table.keySet())
+		{
+			for(ResourceInfoRowDAO row : table.get(version))
+			{
+				numberDefects += row.getNumberDefects();
+			}
+		}
+		return numberDefects;
+	}
+	
+	
 	/**
 	 * 
 	 * @return a set of all rules that have been analzyed by sonar.

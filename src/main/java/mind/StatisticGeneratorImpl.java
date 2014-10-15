@@ -4,13 +4,18 @@ import interfaces.RCallerApi;
 import interfaces.StatisticGenerator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import com.google.common.collect.FluentIterable;
 import com.google.inject.Inject;
 
 import dao.ResourceInfoRowDAO;
@@ -33,6 +38,8 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 	private HashMap<String, Double[]> stat_violationDensityForAllRules;
 	private Double[] stat_defectInjectionFrequencyColumn;
 	private Double stat_pValue;
+	private HashMap<String, Integer> stat_numberOfViolationsThroughoutAllVersions;
+	HashMap<String, Integer> stat_rankOfRules;
 	
 	@Inject
 	StatisticGeneratorImpl(RCallerApi rcaller)
@@ -56,7 +63,16 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		stats.setpValue(getPvalue());
 		stats.setSpearmanCoefficientForAllRules(getSpearmanCoefficientForAllRulesInTable());
 		stats.setViolationDensityForAllRules(getViolationDensityForRules());
+		stats.setRankOfRules(getRankOfRules());
+		stats.setNumberOfViolationsThroughoutAllVersions(getNumberOfViolationsThroughoutAllVersions());
 		return stats;
+	}
+	
+	public HashMap<String, Integer> getRankOfRules() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException
+	{
+		if(stat_rankOfRules == null)
+			generateRankOfRules();
+		return stat_rankOfRules;
 	}
 	
 	public HashMap<String, Double> getSpearmanCoefficientForAllRulesInTable() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException
@@ -129,6 +145,36 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		Double[] array = new Double[defectInjectionFrequencyColumn.size()];
 		for(int i = 0; i < defectInjectionFrequencyColumn.size(); i++) array[i] = defectInjectionFrequencyColumn.get(i);
 		stat_defectInjectionFrequencyColumn = array;
+	}
+	
+	public HashMap<String, Integer> getNumberOfViolationsThroughoutAllVersions() throws PropertyNotFoundException
+	{
+		if(stat_numberOfViolationsThroughoutAllVersions == null)
+			generateNumberOfViolationsThroughoutAllVersions();
+		return stat_numberOfViolationsThroughoutAllVersions;
+	}
+	
+	public void generateNumberOfViolationsThroughoutAllVersions() throws PropertyNotFoundException
+	{
+		HashMap<String, Integer> numberOfViolationsMap = new HashMap<String, Integer>();
+		for(String rule : table.getAllRulesInTable())
+		{
+			numberOfViolationsMap.put(rule, getNumberOfViolationsForRuleThroughoutAllVersions(rule));
+		}
+		stat_numberOfViolationsThroughoutAllVersions = numberOfViolationsMap;
+	}
+	
+	private Integer getNumberOfViolationsForRuleThroughoutAllVersions(String rule) throws PropertyNotFoundException
+	{
+		Integer numberOfViolations = 0;
+		for(String version : table.getVersions())
+		{
+			for(ResourceInfoRowDAO row : table.getResourceInfoRowsForVersion(version))
+			{
+				numberOfViolations += row.getNumberOfViolationsForRule(rule);
+			}
+		}
+		return numberOfViolations;
 	}
 	
 	public Double[] getViolationDensityForRule(String rule) throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
@@ -261,4 +307,55 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		 }
 		 stat_spearmanCoefficientForAllRules = mapOfRoh;
 	}
+
+	public void generateRankOfRules() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException 
+	{
+		
+		HashMap<String, Integer> rankMap = new HashMap<String, Integer>();
+		HashMap<String, Double> spearmanForAllRules = new HashMap<String, Double>(getSpearmanCoefficientForAllRulesInTable());
+		List<Map.Entry<String, Double>> nullValueEntries = getAllEntriesThatsValueIsNull(spearmanForAllRules);
+		for(Map.Entry<String, Double> entry : nullValueEntries)
+		{
+			spearmanForAllRules.remove(entry.getKey());
+		}
+		SortedSet<Map.Entry<String, Double>> sortedMap = entriesSortedByValues(spearmanForAllRules);
+		int rank = 1;
+		for(Map.Entry<String, Double> rule : sortedMap)
+		{
+			rankMap.put(rule.getKey(), rank);
+			rank++;
+		}
+		
+		for(Map.Entry<String, Double> entry : nullValueEntries)
+		{
+			rankMap.put(entry.getKey(), rank);
+		}
+		
+		stat_rankOfRules = rankMap;
+	}
+	
+	private List<Map.Entry<String, Double>> getAllEntriesThatsValueIsNull(HashMap<String, Double> map)
+	{
+		List<Map.Entry<String, Double>> nullValueEntries = new ArrayList<Map.Entry<String, Double>>();
+		for(Map.Entry<String, Double> entry : map.entrySet())
+		{
+			if(entry.getValue() == null)
+				nullValueEntries.add(entry);
+		}
+		return nullValueEntries;
+	}
+	
+	static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+            new Comparator<Map.Entry<K,V>>() {
+                public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+                	
+                    int res = e1.getValue().compareTo(e2.getValue());
+                    return res != 0 ? res : 1; // Special fix to preserve items with equal values
+                }
+            }
+        );
+        sortedEntries.addAll(map.entrySet());
+        return sortedEntries;
+    }
 }

@@ -304,4 +304,83 @@ public class StatisticGeneratorImplTest {
 		Double expected = 1.0;
 		Assert.assertEquals(expected, stat.getPvalue(), 0.00001);
 	}
+	
+	@Test
+	public void test_getRankOfRules_successfull() throws ConfigurationException, PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException, RankCouldNotBeCalculatedException
+	{
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",2, "r2", 0, "r3", 0));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",6, "r2", 0, "r3", 5));
+		
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
+		v1rows.add(class1v1_row);
+		v1rows.add(class2v1_row);
+		
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
+		tableMap.put("v1", v1rows);
+		
+		TableDAO table = new TableDAO(tableMap);
+		
+		Mockito.when(rcaller.getSpearmanCoefficient(Mockito.any(Double[].class), Mockito.any(Double[].class))).thenReturn(1.0).thenReturn(2.0).thenReturn(3.0);
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		stat.setTableDAO(table);
+		
+		HashMap<String, Integer> expectedRank = new HashMap<String, Integer>();
+		expectedRank.put("r1", 1);
+		expectedRank.put("r2", 2);
+		expectedRank.put("r3", 3);
+		
+		Assert.assertEquals(expectedRank, stat.getRankOfRules());
+	}
+	
+	@Test
+	public void test_getRankOfRules_oneRuleIsNull() throws ConfigurationException, PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException, RankCouldNotBeCalculatedException
+	{
+		ResourceInfoRowDAO class1v1_row = TestUtils.getResourceInfoRow("class1", 1, 1, 1, ImmutableMap.of("r1",2, "r2", 0, "r3", 0, "r4", 9));
+		ResourceInfoRowDAO class2v1_row = TestUtils.getResourceInfoRow("class2", 1, 1, 1, ImmutableMap.of("r1",6, "r2", 0, "r3", 5, "r4", 9));
+		
+		List<ResourceInfoRowDAO> v1rows = new ArrayList<ResourceInfoRowDAO>();
+		v1rows.add(class1v1_row);
+		v1rows.add(class2v1_row);
+		
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> tableMap = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
+		tableMap.put("v1", v1rows);
+		
+		TableDAO table = new TableDAO(tableMap);
+		
+		Mockito.when(rcaller.getSpearmanCoefficient(Mockito.any(Double[].class), Mockito.any(Double[].class))).thenReturn(null).thenReturn(2.0).thenReturn(2.0).thenReturn(null);
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		stat.setTableDAO(table);
+		
+		HashMap<String, Integer> expectedRank = new HashMap<String, Integer>();
+		expectedRank.put("r2", 1);
+		expectedRank.put("r3", 2);
+		expectedRank.put("r1", 3);
+		expectedRank.put("r4", 3);
+		
+		Assert.assertEquals(expectedRank, stat.getRankOfRules());
+	}
+	
+	@Test
+	public void test_getNumberOfViolationsThroughoutAllVersions() throws PropertyNotFoundException, LenghtOfDoubleArraysDifferException, NoTableSetForCalculatingStatsException
+	{
+		ResourceInfoRowDAO class1v1row = TestUtils.getResourceInfoRow("class1", 1, 13, 5, ImmutableMap.of("r1",5, "r2", 2));
+		ResourceInfoRowDAO class2v1row = TestUtils.getResourceInfoRow("class2", 3, 8, 2, ImmutableMap.of("r1",4, "r2", 8));
+		
+		
+		List<ResourceInfoRowDAO> v1Rows = new ArrayList<ResourceInfoRowDAO>();
+		v1Rows.add(class1v1row);
+		v1Rows.add(class2v1row);
+		
+		LinkedHashMap<String, List<ResourceInfoRowDAO>> toBeFilteredTable = new LinkedHashMap<String, List<ResourceInfoRowDAO>>();
+		toBeFilteredTable.put("v1", v1Rows);
+		
+		TableDAO table = new TableDAO(toBeFilteredTable);
+		StatisticGenerator stat = new StatisticGeneratorImpl(rcaller);
+		stat.setTableDAO(table);
+		
+		Integer expectedNumberr1 = 9;
+		Assert.assertEquals(expectedNumberr1, stat.getNumberOfViolationsThroughoutAllVersions().get("r1"));
+		Integer expectedNumberr2 = 10;
+		Assert.assertEquals(expectedNumberr2, stat.getNumberOfViolationsThroughoutAllVersions().get("r2"));
+	}
 }

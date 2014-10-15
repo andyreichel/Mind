@@ -17,6 +17,7 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 
 import view.HTMLBuilder;
+import view.RuleView;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -59,9 +60,10 @@ public class Main {
 		 
          
          try {
-                 File output = new File("c:\\temp\\test.html");
+                 File output = new File("c:\\temp\\rule.html");
                  PrintWriter out = new PrintWriter(new FileOutputStream(output));
-                 out.println(HTMLBuilder.getHtmlPage(table, stats));
+                 out.println(RuleView.getRuleViewTable(stats).write());
+                 //out.println(HTMLBuilder.getHtmlPage(table, stats));
                  out.close();
          } catch (FileNotFoundException e) {
                  e.printStackTrace();

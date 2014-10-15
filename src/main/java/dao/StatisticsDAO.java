@@ -2,6 +2,7 @@ package dao;
 
 import interfaces.RCallerApi;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,8 @@ public class StatisticsDAO {
 	private HashMap<String, Double[]> violationDensityForAllRules;
 	private Double[] defectInjectionFrequencyForAllRules;
 	private Double pValue;
+	private HashMap<String, Integer> rankOfRules;
+	private HashMap<String, Integer> numberOfViolationsThroughoutAllVersions;
 	
 	public HashMap<String, Double> getSpearmanCoefficientForAllRules() {
 		return spearmanCoefficientForAllRules;
@@ -57,11 +60,33 @@ public class StatisticsDAO {
 			Double[] defectInjectionFrequencyForAllRules) {
 		this.defectInjectionFrequencyForAllRules = defectInjectionFrequencyForAllRules;
 	}
+	
+	
+	public Integer getNumberOfViolationsThroughoutAllVersions(String rule)
+	{
+		return numberOfViolationsThroughoutAllVersions.get(rule);
+	}
+	
+	public void setNumberOfViolationsThroughoutAllVersions(HashMap<String, Integer> numberOfViolationsThroughoutAllVersions)
+	{
+		this.numberOfViolationsThroughoutAllVersions = numberOfViolationsThroughoutAllVersions;
+	}
+	
 	public Double getpValue() {
 		return pValue;
 	}
 	public void setpValue(Double pValue) {
 		this.pValue = pValue;
+	}
+	
+	public void setRankOfRules(HashMap<String, Integer> rankOfRules)
+	{
+		this.rankOfRules = rankOfRules;
+	}
+	
+	public HashMap<String, Integer> getRankOfRules()
+	{
+		return rankOfRules;
 	}
 	
 	public String toString()
