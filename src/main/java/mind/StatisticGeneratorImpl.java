@@ -31,7 +31,7 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 	private HashMap<String, List<Double> > stat_coefficientsBetweenDefInjAndViolationsDensForRules;
 	private Set<String> stat_allRulesOfTable;
 	private HashMap<String, Double[]> stat_violationDensityForAllRules;
-	private Double[] stat_defectInjectionFrequencyForAllRules;
+	private Double[] stat_defectInjectionFrequencyColumn;
 	private Double stat_pValue;
 	
 	@Inject
@@ -52,7 +52,7 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		setTableDAO(table);
 		stats.setAverageForAllRules(getAverageViolationsForAllRulesInTable());
 		stats.setCoefficientsBetweenDefInjAndViolationsDensForRules(getCoefficientsBetweenDefInjAndViolationsDensForRules());
-		stats.setDefectInjectionFrequencyForAllRules(getDefectInjectionFrequencyColumn());
+		stats.setDefectInjectionFrequencyColumn(getDefectInjectionFrequencyColumn());
 		stats.setpValue(getPvalue());
 		stats.setSpearmanCoefficientForAllRules(getSpearmanCoefficientForAllRulesInTable());
 		stats.setViolationDensityForAllRules(getViolationDensityForRules());
@@ -99,9 +99,9 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 	
 	public Double[] getDefectInjectionFrequencyColumn() throws PropertyNotFoundException, NoTableSetForCalculatingStatsException
 	{
-		if(stat_defectInjectionFrequencyForAllRules == null)
+		if(stat_defectInjectionFrequencyColumn == null)
 			generateDefectInjectionFrequencyColumn();
-		return stat_defectInjectionFrequencyForAllRules;
+		return stat_defectInjectionFrequencyColumn;
 		
 	}
 	
@@ -128,7 +128,7 @@ public class StatisticGeneratorImpl implements StatisticGenerator {
 		}
 		Double[] array = new Double[defectInjectionFrequencyColumn.size()];
 		for(int i = 0; i < defectInjectionFrequencyColumn.size(); i++) array[i] = defectInjectionFrequencyColumn.get(i);
-		stat_defectInjectionFrequencyForAllRules = array;
+		stat_defectInjectionFrequencyColumn = array;
 	}
 	
 	public Double[] getViolationDensityForRule(String rule) throws PropertyNotFoundException, NoTableSetForCalculatingStatsException

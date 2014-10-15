@@ -53,7 +53,7 @@ public class StatisticsDAO {
 	public Double[] getDefectInjectionFrequencyForAllRules() {
 		return defectInjectionFrequencyForAllRules;
 	}
-	public void setDefectInjectionFrequencyForAllRules(
+	public void setDefectInjectionFrequencyColumn(
 			Double[] defectInjectionFrequencyForAllRules) {
 		this.defectInjectionFrequencyForAllRules = defectInjectionFrequencyForAllRules;
 	}

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 
 import com.google.inject.Inject;
@@ -15,6 +16,7 @@ import com.google.inject.Inject;
 public class SonarReaderImpl implements SonarReader {
 	private SonarWebApi api;
 	List<String> allRules;
+	private static org.apache.log4j.Logger log = Logger.getLogger(SonarReaderImpl.class);
 	
 	@Inject
 	public SonarReaderImpl(SonarWebApi api) throws IOException
@@ -33,9 +35,8 @@ public class SonarReaderImpl implements SonarReader {
 				numberOfViolationsPerRule.put(rule, api.getNumberOfViolationsOfSpecificRuleForResource(resourceKey, rule));
 			}catch(JSONException e)
 			{
-				//FIXME: DO SOMETHING
-				//System.out.println(e.getMessage());
-				//System.out.println("Version: " + version + " ResourceKey: " + resourceKey + " Rule: " + rule + " not found");
+				log.debug(rule + " for " + resourceKey + " could not be determined with api call.");
+				numberOfViolationsPerRule.put(rule, 0); //FIXME: Is this a okay solution?
 			}
 		}
 		

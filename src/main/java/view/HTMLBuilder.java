@@ -1,6 +1,8 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.H1;
@@ -35,6 +37,13 @@ public class HTMLBuilder {
 		return head;
 	}
 	
+	public static void addColValueToRow(Tr row, String value)
+	{
+		Td col = new Td();
+		col.appendChild(new Text(value));
+		row.appendChild(col);
+	}
+	
 	public static String getHtmlPage(TableDAO table, StatisticsDAO stats)
 	{
 		Html html = new Html();
@@ -52,82 +61,79 @@ public class HTMLBuilder {
 		return html.write();
 	}
 	
+	
 	public static Html getHtmlStatistics(StatisticsDAO stats)
 	{
 		Html statisticsHtml = new Html();
 		statisticsHtml.appendChild(new Text("P-value of analyze is: " + stats.getpValue()));
 		Table t = new Table();
 		t.setAttribute("cellspacing", "\"0\"");
-		Tr headerRow = new Tr();
-		Thead thead = new Thead();
-		Th spearmanRoh = new Th();
-		spearmanRoh.appendChild(new Text("Roh"));
-		headerRow.appendChild(spearmanRoh);
-		Th average = new Th();
-		average.appendChild(new Text("Average"));
-		headerRow.appendChild(average);
-		thead.appendChild(headerRow);
+		List<String> headerCols = new ArrayList<String>();
+		headerCols.add("rule");
+		headerCols.add("Roh");
+		headerCols.add("Average");
+		t.appendChild(getHeadRowWithColumns(headerCols));
 		Tbody tbody = new Tbody();
 		for(String rule : stats.getAverageForAllRules().keySet())
 		{
 			Tr row = new Tr();
-			Td ruleCol = new Td();
-			ruleCol.appendChild(new Text(rule));
-			row.appendChild(ruleCol);
-			Td spearmanCol = new Td();
+			addColValueToRow(row, rule);
 			if(stats.getSpearmanCoefficientForAllRules().get(rule) == null)
-				spearmanCol.appendChild(new Text("null"));
+			{
+				addColValueToRow(row, "null");
+			}
 			else
-				spearmanCol.appendChild(new Text(stats.getSpearmanCoefficientForAllRules().get(rule)));
-			
-			row.appendChild(spearmanCol);
-			Td averageCol = new Td();
+			{
+				addColValueToRow(row, stats.getSpearmanCoefficientForAllRules().get(rule).toString());
+			}
 			
 			if(stats.getAverageForAllRules().get(rule) == null)
-				averageCol.appendChild(new Text("null"));
+			{
+				addColValueToRow(row, "null");
+			}
 			else
-				averageCol.appendChild(new Text(stats.getAverageForAllRules().get(rule)));
-			
-			row.appendChild(averageCol);
-			
+			{
+				addColValueToRow(row, stats.getAverageForAllRules().get(rule).toString());
+			}
 			tbody.appendChild(row);
 		}
-		t.appendChild(thead);
+		
 		t.appendChild(tbody);
 		statisticsHtml.appendChild(t);
 		return statisticsHtml;
+	}
+	
+	public static Thead getHeadRowWithColumns(List<String> cols)
+	{
+		Thead tableHead = new Thead();
+		Tr headerRow = new Tr();
+		for(String col : cols)
+		{
+			Th colTh = new Th();
+			colTh.appendChild(new Text(col));
+			headerRow.appendChild(colTh);
+		}
+		tableHead.appendChild(headerRow);
+		return tableHead;
 	}
 	
 	public static Table getHtmlTableWithCodeInfo(TableDAO table)
 	{
 		Table t = new Table();
 		t.setAttribute("cellspacing", "\"0\"");
-		Tr headerRow = new Tr();
-		Thead thead = new Thead();
-		Th resourceNameHeaderCol = new Th();
-		resourceNameHeaderCol.appendChild(new Text("Resource"));
-		headerRow.appendChild(resourceNameHeaderCol);
-		Th versionHeaderCol = new Th();
-		versionHeaderCol.appendChild(new Text("Version"));
-		headerRow.appendChild(versionHeaderCol);
-		Th numberDefects = new Th();
-		numberDefects.appendChild(new Text("Number of Defects"));
-		headerRow.appendChild(numberDefects);
-		Th size = new Th();
-		size.appendChild(new Text("Size"));
-		headerRow.appendChild(size);
-		Th locTouched = new Th();
-		locTouched.appendChild(new Text("lines of code touched"));
-		headerRow.appendChild(locTouched);
-		
+		List<String> headerCols = new ArrayList<String>();
+		headerCols.add("Resource");
+		headerCols.add("Version");
+		headerCols.add("Number of Defects");
+		headerCols.add("Size");
+		headerCols.add("lines of code touched");
+				
 		for(String rule : table.getAllRulesInTable())
 		{
-			Th headerColumn = new Th();
-			headerColumn.appendChild(new Text(rule));
-			headerRow.appendChild(headerColumn);
+			headerCols.add(rule);
 		}
-		thead.appendChild(headerRow);
-		t.appendChild(thead);
+		t.appendChild(getHeadRowWithColumns(headerCols));
+
 		
 		Tbody tbody = new Tbody();
 		for(String version : table.getVersions())
@@ -136,33 +142,19 @@ public class HTMLBuilder {
 			for(ResourceInfoRowDAO resource : resourceRows)
 			{
 				Tr row = new Tr();
-				Td resourceCol = new Td();
-				resourceCol.appendChild(new Text(resource.getResourceName()));
-				row.appendChild(resourceCol);
-				Td versionCol = new Td();
-				versionCol.appendChild(new Text(version));
-				row.appendChild(versionCol);
+				addColValueToRow(row, resource.getResourceName());
+				addColValueToRow(row, version);
+				addColValueToRow(row, resource.getNumberDefects().toString());
+				addColValueToRow(row, resource.getSize().toString());
 				
-				Td defectCol = new Td();
-				defectCol.appendChild(new Text(resource.getNumberDefects()));
-				row.appendChild(defectCol);
-				
-				Td sizeCol = new Td();
-				sizeCol.appendChild(new Text(resource.getSize()));
-				row.appendChild(sizeCol);
-				
-				Td locTouchedCol = new Td();
 				if(resource.getLocTouched() == null)
-					locTouchedCol.appendChild(new Text("null"));
+					addColValueToRow(row, "null");
 				else
-					locTouchedCol.appendChild(new Text(resource.getLocTouched()));
-				row.appendChild(locTouchedCol);
+					addColValueToRow(row, resource.getLocTouched().toString());
 				
 				for(String violation : resource.getViolationsMap().keySet())
 				{
-					Td violationCol = new Td();
-					violationCol.appendChild(new Text(resource.getViolationsMap().get(violation)));
-					row.appendChild(violationCol);
+					addColValueToRow(row, resource.getViolationsMap().get(violation).toString());
 				}
 				tbody.appendChild(row);
 			}

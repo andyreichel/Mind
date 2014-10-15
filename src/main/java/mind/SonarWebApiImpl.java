@@ -51,7 +51,6 @@ public class SonarWebApiImpl implements SonarWebApi {
 		return rulesList;
 	}
 	
-
 	public List<String> getListOfAllResources() throws IOException {
 		String resourcesJSON = sendGet(sonarHost + "/api/resources?resource=" + project + ";depth=-1;scopes=FIL");
 		JSONArray resourcesArray = new JSONArray(resourcesJSON.substring(0, resourcesJSON.length()));
