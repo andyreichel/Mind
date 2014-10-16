@@ -62,8 +62,8 @@ public class Main {
          try {
                  File output = new File("c:\\temp\\rule.html");
                  PrintWriter out = new PrintWriter(new FileOutputStream(output));
-                 out.println(RuleView.getRuleViewTable(stats).write());
-                 //out.println(HTMLBuilder.getHtmlPage(table, stats));
+                 //out.println(RuleView.getRuleViewTable(stats).write());
+                 out.println(HTMLBuilder.getHtmlPage(table, stats));
                  out.close();
          } catch (FileNotFoundException e) {
                  e.printStackTrace();

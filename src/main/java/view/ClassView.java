@@ -38,7 +38,6 @@ public class ClassView {
 				ruleViewTable.appendChild(row);
 			}
 		}
-		
 		return ruleViewTable;
 	}
 }

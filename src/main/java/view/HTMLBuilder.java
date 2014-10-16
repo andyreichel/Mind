@@ -9,6 +9,7 @@ import com.hp.gagawa.java.elements.H1;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Link;
+import com.hp.gagawa.java.elements.Script;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Tbody;
 import com.hp.gagawa.java.elements.Td;
@@ -30,7 +31,7 @@ public class HTMLBuilder {
 		title.appendChild(new Text("MIND"));
 		head.appendChild(title);
 		Link css = new Link();
-		css.setHref("./CSS/style.css");
+		css.setHref("./bootstrap-3.2.0-dist/css/bootstrap.min.css");
 		css.setRel("stylesheet");
 		css.setType("text/css");
 		head.appendChild(css);
@@ -44,12 +45,23 @@ public class HTMLBuilder {
 		row.appendChild(col);
 	}
 	
+	public static Body getBody()
+	{
+		Body body = new Body();
+		Script jqueryScript = new Script("https://code.jquery.com/jquery.js");
+		Script bootstrapScript = new Script("./bootstrap-3.2.0-dist/js/bootstrap.min.js");
+		body.appendChild(jqueryScript);
+		body.appendChild(bootstrapScript);
+		return body;
+	}
+	
 	public static String getHtmlPage(TableDAO table, StatisticsDAO stats)
 	{
 		Html html = new Html();
 		html.appendChild(getHtmlHeader());
-		Body body = new Body();
-		html.appendChild(body);
+		
+		
+		Body body = getBody();
 		H1 h1 = new H1();
 		h1.appendChild(new Text("Table with information."));
 		body.appendChild(h1);
@@ -57,7 +69,9 @@ public class HTMLBuilder {
 		H1 statisticsHeadline = new H1();
 		statisticsHeadline.appendChild(new Text("Statistics"));
 		body.appendChild(statisticsHeadline);
-		body.appendChild(getHtmlStatistics(stats));
+		//body.appendChild(getHtmlStatistics(stats));
+		body.appendChild(RuleView.getRuleViewTable(stats));
+		html.appendChild(body);
 		return html.write();
 	}
 	
